@@ -1,20 +1,22 @@
 dec2 is
 
-  bag(r, g, b i32) is
+  bag(r, g, b) is
     ok(d draw) => (r >= d.r &&
                    g >= d.g &&
                    b >= d.b   )
 
   bag := bag 12 13 14
 
-  draw(s String) is
-    cubes := s.split ","
-    r := (cubes.map c->(c.ends_with "red"   ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum
-    g := (cubes.map c->(c.ends_with "green" ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum
-    b := (cubes.map c->(c.ends_with "blue"  ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum
+  draw(s) is
+    color(col) => s.split ","
+                   .map c->(c.ends_with col ? (c.split " ")[1].parse_i32.val : 0)
+                   .fold i32.type.sum
+    r := color "red"
+    g := color "green"
+    b := color "blue"
 
-  game(s String) is
-    s1 := s.split(":")
+  game(s) is
+    s1 := s.split ":"
     num   := (s1[0].split " ")[1].parse_i32.val
     draws := (s1[1].split ";").map (x->draw x)
 
@@ -24,11 +26,8 @@ dec2 is
       l := io.buffered.read_line
     while l != ""
       g := game l
-      ok := (g.draws.map (x->bag.ok x)).fold and
+      ok := g.draws.filter x->(!bag.ok x)
+                   .is_empty
     else
       "done: score $score"
   say r
-
-  and : Monoid bool is
-    public infix ∙ (a, b bool) => a && b
-    public e => true

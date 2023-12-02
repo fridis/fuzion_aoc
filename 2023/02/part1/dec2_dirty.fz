@@ -34,7 +34,7 @@ dec2 is
       "done: score $score"
   say r
 
-  # NYI: this should be defined in base.fum for bool.type:
+  # NYI: PR #2287: this should be defined in base.fum for bool.type:
   bool_and_monoid : Monoid bool is
     public redef infix ∙ (a, b bool) => a && b
     public redef e => true
