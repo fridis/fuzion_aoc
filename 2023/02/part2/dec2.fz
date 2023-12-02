@@ -1,0 +1,44 @@
+dec2 is
+
+  bag(r, g, b i32) is
+    ok(d draw) => (r >= d.b.r &&
+                   g >= d.b.g &&
+                   b >= d.b.b   )
+    power => r*g*b
+
+  bag_min_monoid : Monoid bag is
+    public redef infix ∙ (a, b bag) =>
+      (bag (max a.r b.r)
+           (max a.g b.g)
+           (max a.b b.b))
+    public redef e => bag 0 0 0
+
+  bag := bag 12 13 14
+
+  draw(s String) is
+    cubes := s.split ","
+    b := (bag ((cubes.map c->(c.ends_with "red"   ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum)
+              ((cubes.map c->(c.ends_with "green" ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum)
+              ((cubes.map c->(c.ends_with "blue"  ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum))
+
+  game(s String) is
+    s1 := s.split(":")
+    num   := (s1[0].split " ")[1].parse_i32.val
+    draws := (s1[1].split ";").map (x->draw x)
+    min => (draws.map x->x.b).fold bag_min_monoid
+
+  r := io.stdin.with ()->
+    for
+      score := 0, score + (ok ? g.num : 0)
+      score2 := 0, score2 + g.min.power
+      l := io.buffered.read_line
+    while l != ""
+      g := game l
+      ok := (g.draws.map (x->bag.ok x)).fold and
+    else
+      "done: score $score, score2 $score2"
+  say r
+
+  and : Monoid bool is
+    public redef infix ∙ (a, b bool) => a && b
+    public redef e => true

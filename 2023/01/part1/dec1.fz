@@ -1,0 +1,21 @@
+dec1 is
+
+  ascii_0 => "0".as_codepoints[0].val
+  ascii_9 => "9".as_codepoints[0].val
+  ascii_digit => ascii_0 .. ascii_9
+
+  r := io.stdin.with ()->
+    for
+      prev_sum := u32 0, sum
+      l := io.buffered.read_line
+      digits := l.as_codepoints
+                 .as_list
+                 .map x->x.val
+                 .filter x->(ascii_digit.contains x)
+      first := digits.head.get ascii_0 - ascii_0
+      last  := {if digits.is_empty then ascii_0 else digits.last} - ascii_0
+      sum := prev_sum + first * 10 + last
+    while l != "" else
+      sum
+
+  say r

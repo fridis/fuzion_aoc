@@ -1,0 +1,49 @@
+dec1 is
+
+  ascii_0 => "0".as_codepoints[0].val
+  ascii_9 => "9".as_codepoints[0].val
+  ascii_digit => ascii_0 .. ascii_9
+
+  num_to_digits_table := [
+    ("one"  , "1"),
+    ("two"  , "2"),
+    ("three", "3"),
+    ("four" , "4"),
+    ("five" , "5"),
+    ("six"  , "6"),
+    ("seven", "7"),
+    ("eight", "8"),
+    ("nine" , "9"),
+    ]
+
+  num_to_digit(s String) =>
+    s1 := for m in num_to_digits_table
+    until s.starts_with m.values.0
+      s.replace m.values.0 m.values.1 1
+    else
+      s
+    if s1 != ""
+      f := s1.substring 0 1
+      t := s.substring 1  # this should IMHO be s1.substring to avoid counting overlaps twice as in "fiveight", but ok.
+      r := f + num_to_digit t
+      # (s.substring 0 1) + num_to_digits (s.sub_string 1)
+      r
+    else
+      s
+
+  r := io.stdin.with ()->
+    for
+      prev_sum := u32 0, sum
+      l := io.buffered.read_line
+      d := num_to_digit l
+      digits := d.as_codepoints
+                 .as_list
+                 .map x->x.val
+                 .filter x->(ascii_digit.contains x)
+      first := digits.head.get ascii_0 - ascii_0
+      last  := {if digits.is_empty then ascii_0 else digits.last} - ascii_0
+      sum := prev_sum + first * 10 + last
+    while l != "" else
+      sum
+
+  say r
