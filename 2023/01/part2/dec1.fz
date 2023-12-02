@@ -40,8 +40,8 @@ dec1 is
                  .as_list
                  .map x->x.val
                  .filter x->(ascii_digit.contains x)
-      first := digits.head.get ascii_0 - ascii_0
-      last  := {if digits.is_empty then ascii_0 else digits.last} - ascii_0
+      first := digits.first ascii_0 - ascii_0
+      last  := digits.last  ascii_0 - ascii_0
       sum := prev_sum + first * 10 + last
     while l != "" else
       sum
