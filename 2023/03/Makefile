@@ -1,5 +1,7 @@
 all: part1 part2
 
+test: test1 test2
+
 part1:
 	$(FUZION)/bin/fz dec3_part1.fz <input
 
