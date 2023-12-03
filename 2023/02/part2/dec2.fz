@@ -34,8 +34,7 @@ dec2 is
       l := io.buffered.read_line
     while l != ""
       g := game l
-      ok := g.draws.filter x->(!bag.ok x)
-                   .is_empty
+      ok := g.draws ∀ x -> bag.ok x
     else
       "done: score1 $score1, score2 $score2"
   say r
