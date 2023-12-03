@@ -2,6 +2,8 @@ dec3_part1 is
 
   String.is_digit => "0" <= String.this <= "9"
   String.is_symbol => !is_digit && String.this != "."
+  bool.as_option(v Lazy T) option T => (bool.this ? TRUE  => v
+                                                  | FALSE => nil)
 
   lines =>
     o := io.stdin.with ()->
@@ -17,34 +19,22 @@ dec3_part1 is
     a := array2 cp.count cp[0].count i,j->cp[i][j]
     w => a.length1
     h => a.length0
-    index [](l,c) =>
+    at(l,c i32) =>
       if 0 <= l < h && 0 <= c < w then a[l,c] else "."
 
     number(l, c i32) is
-      len := for res := 1, res+1 while scheme.this[l,c+res].is_digit
-      ok := (-1..1) ∃ y -> (-1..len) ∃ x -> scheme.this[l+y,c+x].is_symbol
-      val := (0..len-1).map i->scheme.this[l,c+i]
-                       .fold String.type.concat
-                       .parse_i32
-                       .val
+      len := (0.. & (x -> !(at l c+x).is_digit)).first
+      ok bool := (-1..1) ∃ y -> (-1..len) ∃ x -> (at l+y c+x) .is_symbol
+      val i32 := ls[l].substring c c+len
+                      .parse_i32.val
 
     numbers =>
-      for res list number := nil, res ++ f
-          i in a.indices0
-          f := for found list number := nil, found ++ new
-                   j in a.indices1
-                   p := scheme.this[i,j-1]
-                   c := scheme.this[i,j  ]
-                   new option number := if !p.is_digit && c.is_digit
-                                          number i j
-                                        else
-                                          nil
-               else found
-      else res
+      a.indices0.flat_map_sequence number i->
+          a.indices1.flat_map_sequence number j->
+            (!(at i j-1).is_digit && (at i j).is_digit).as_option number (number i j)
 
     parts =>
-      numbers.filter x->x.ok
-             .map x->x.val
+      numbers.map (x -> if x.ok then x.val else 0)
              .fold i32.type.sum
 
   s := scheme lines
