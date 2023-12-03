@@ -35,7 +35,7 @@ dec3_part1 is
       for res list number := nil, res ++ f
           i in a.indices0
           f := for found list number := nil, found ++ new.as_list
-                   j in s.a.indices1
+                   j in a.indices1
                    p := scheme.this[i,j-1]
                    c := scheme.this[i,j  ]
                    new option number := if !p.is_digit && c.is_digit

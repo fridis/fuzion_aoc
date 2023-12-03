@@ -38,7 +38,7 @@ dec3_part2 is
       for res list number := nil, res ++ f
           i in a.indices0
           f := for found list number := nil, found ++ new.as_list  # NYI: PR #2291: `.as_list` not needed if option is a Sequence
-                   j in s.a.indices1
+                   j in a.indices1
                    p := scheme.this[i,j-1]
                    c := scheme.this[i,j  ]
                    new option number := if !p.is_digit && c.is_digit  # NYI: #2292: some syntax sugar `bool.as_option(v Lazy T)` might help
