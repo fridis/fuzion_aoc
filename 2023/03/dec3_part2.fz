@@ -1,4 +1,7 @@
-dec3_part1 is
+dec3_part2 is
+
+  String.is_digit => "0" <= String.this <= "9"
+  String.is_symbol => !is_digit && String.this != "."
 
   option.as_list list T => (option.this ? v T => v : nil
                                         | nil => nil   )
@@ -10,74 +13,59 @@ dec3_part1 is
         l := io.buffered.read_line
       while l != ""  else
         li
-    o.val
+    o.val.as_array
 
-  read_scheme =>
-    l := lines
-    a1 := array l.count i->l[i]
-    a2 := array2 l.count a1[0].as_codepoints.count i,j->a1[i].as_codepoints[j]
-    scheme a2 a1
+  scheme(ls) is
+    cp := ls.map x->x.as_codepoints
+    a := array2 cp.count cp[0].count i,j->cp[i][j]
+    w => a.length1
+    h => a.length0
+    index [](l,c) =>
+      if 0 <= l < h && 0 <= c < w then a[l,c] else "."
 
-  scheme(a,ls) is
-    w => a.length0
-    h => ls.count
-    index [](i,j) =>
-      if 0 <= i < h && 0 <= j < w then a[i,j] else "."
+    number(l, c i32) is
+      len := for res := 1, res+1 while scheme.this[l,c+res].is_digit
+      ok := (-1..1) ∃ y -> (-1..len) ∃ x -> scheme.this[l+y,c+x].is_symbol
+      val := (0..len-1).map i->scheme.this[l,c+i]
+                       .fold String.type.concat
+                       .parse_i32
+                       .val
+      adj (i,j i32) => (l-1 <= i <= l+1   &&
+                        c-1 <= j <= c+len   )
 
-  String.is_digit => "0" <= String.this <= "9"
-  String.is_symbol => !is_digit && String.this != "."
+    numbers =>
+      for res list number := nil, res ++ f
+          i in a.indices0
+          f := for found list number := nil, found ++ new.as_list
+                   j in s.a.indices1
+                   p := scheme.this[i,j-1]
+                   c := scheme.this[i,j  ]
+                   new option number := if !p.is_digit && c.is_digit
+                                          number i j
+                                        else
+                                          nil
+               else found
+      else res
 
-  number(s scheme, l, c i32) is
-    len := for res := 1, res+1
-         while s[l,c+res].is_digit else
-           res
-    str => s.ls[l].substring c c+len
-    redef as_string => "$ok" + s.ls[l].substring c c+len
-    ok =>
-      !(-1..1).filter y->
-                  !(-1..len).filter x->s[l+y,c+x].is_symbol
-                            .is_empty
-               .is_empty
-    val := str.parse_i32.val
-    adj (i,j i32) => l-1 <= i <= l+1 && c-1 <= j <= c+len
+    parts =>
+      numbers.filter x->x.ok
+             .map x->x.val
+             .fold i32.type.sum
 
-  find_numbers(s) =>
-    for
-      li list number := nil, li ++ f
-      i in s.a.indices0
-      f := for
-        found list number := nil, found ++ new.as_list
-        j in s.a.indices1
-        p := s[i,j-1]
-        c := s[i,j  ]
-        prev_is_num := "0" <= p <= "9"
-        this_is_num := "0" <= c <= "9"
-        new option number := if !prev_is_num && this_is_num then
-                               number s i j
-                             else
-                               nil
-      do
-       # say new
-      else
-        found
-    else
-      li
+    gears =>
+      lm : mutate.
+      lm.go ()->
+        res := lm.env.new 0
+        for i in a.indices0 do
+          for j in a.indices1 do
+            if scheme.this[i,j] = "*"
+              k := numbers.filter (x->x.adj i j)
+              if k.count = 2
+                res <- res.get + k.map x->x.val
+                                  .fold i32.type.product
+        res.get
 
-  s := read_scheme
-  n := find_numbers s
-  r := n.filter x->x.ok
-        .map x->x.val
-        .fold i32.type.sum
-
-  gears =>
-    res := mut 0
-    for i in s.a.indices0 do
-      for j in s.a.indices1 do
-        if s[i,j] = "*"
-          k := n.filter (x->x.adj i j)
-          if k.count = 2
-            res <- res.get + k.map x->x.val
-                              .fold i32.type.product
-    res
-
-  say "$r $gears"
+  s := scheme lines
+  p := s.parts
+  g := s.gears
+  say "$p $g"
