@@ -1,9 +1,5 @@
 dec1 is
 
-  ascii_0 => "0".as_codepoints[0].val
-  ascii_9 => "9".as_codepoints[0].val
-  ascii_digit => ascii_0 .. ascii_9
-
   num_to_digits_table := [
     ("one"  , "1"),
     ("two"  , "2"),
@@ -33,17 +29,15 @@ dec1 is
 
   r := io.stdin.with ()->
     for
-      prev_sum := u32 0, sum
+      sum := 0, sum + 10 * first + last
       l := io.buffered.read_line
+    while l != "" do
       d := num_to_digit l
       digits := d.as_codepoints
-                 .as_list
-                 .map x->x.val
-                 .filter x->(ascii_digit.contains x)
-      first := digits.first ascii_0 - ascii_0
-      last  := digits.last  ascii_0 - ascii_0
-      sum := prev_sum + first * 10 + last
-    while l != "" else
+                 .filter x->(codepoint.type.ascii_digit.contains x.val)
+      first := digits.first.parse_i32.val
+      last  := digits.last .parse_i32.val
+    else
       sum
 
   say r
