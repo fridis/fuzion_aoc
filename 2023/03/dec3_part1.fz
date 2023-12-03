@@ -3,9 +3,6 @@ dec3_part1 is
   String.is_digit => "0" <= String.this <= "9"
   String.is_symbol => !is_digit && String.this != "."
 
-  option.as_list list T => (option.this ? v T => v : nil
-                                        | nil => nil   )
-
   lines =>
     o := io.stdin.with ()->
       for
@@ -34,7 +31,7 @@ dec3_part1 is
     numbers =>
       for res list number := nil, res ++ f
           i in a.indices0
-          f := for found list number := nil, found ++ new.as_list
+          f := for found list number := nil, found ++ new
                    j in a.indices1
                    p := scheme.this[i,j-1]
                    c := scheme.this[i,j  ]
