@@ -15,7 +15,7 @@ dec3_part2 is
     o.val.as_array
 
   scheme(ls) is
-    cp := ls.map x->x.as_codepoints
+    cp := ls.map (.as_codepoints)
     a := array2 cp.count cp[0].count i,j->cp[i][j]
     w => a.length1
     h => a.length0
@@ -40,15 +40,15 @@ dec3_part2 is
       numbers.map (x -> if x.ok then x.val else 0)
              .fold i32.type.sum
 
-    gears =>
-      a.indices0.map i->
-        a.indices1.map j->
-           if at i j = "*"
-             k := numbers.filter (x -> x.adj i j)
-             if k.count = 2 then k.first.val * k.last.val else 0
-           else
-             0
-         .fold i32.type.sum
+    gears i32 =>
+      a.index_pairs
+       .map ij->
+         (i,j) := ij
+         if at i j = "*"
+           k := numbers.filter (x -> x.adj i j)
+           if k.count = 2 then k.first.val * k.last.val else 0
+         else
+           0
        .fold i32.type.sum
 
   s := scheme lines
