@@ -1,6 +1,4 @@
-dec4_part1 is
-
-  String.strip => String.this.replace " " ""
+dec4_part2 is
 
   lines =>
     o := io.stdin.with ()->
@@ -12,35 +10,24 @@ dec4_part1 is
     o.val.as_array
 
   card(s String) is
-    cl := s.split ": "
-    n => (cl[0].split " ").last.parse_i32.val
-    wy := cl[1].split " | "
-    win => parse wy[0]+" "
-    you => parse wy[1]+" "
-    parse(ns String) list i32 =>
-#      say ns
-      if ns.byte_length = 0
-        nil
-      else
-        (ns.substring 0 2
-           .strip
-           .parse_i32
-           .val) : parse (ns.substring 3)
-    redef as_string => "Card $n: $win | $you => $winning"
-    matches => win.flat_map i32 (w->you.filter =w)
-                  .count
-    winning => (1 << matches) >> 1
+    wy(i) => ((s.split ":")[1].split "|")[i].split.map (.parse_i32.val)
+    win => wy 0
+    you => wy 1
+    matches => ((win.combine you (=)).filter x->x).count
+    winning => 1 << matches >> 1
 
-  cards := (lines.map (x->card x)).as_array
+  cards := (lines.map (s->card s)).as_array
+
+  part1 := cards.map (.winning)
+                .fold i32.type.sum
+
   lm : mutate.
   part2 := lm.go ()->
-    a := (mutate.array i32).type.new lm cards.count 1
+    a := (lm.array i32).type.new lm cards.count 1
     for i in cards.indices do
       m := cards[i].matches
       for j in i+1..i+m do
-        a[j] := a[j]+a[i]
+        a[j] := a[j] + a[i]
     a.fold i32.type.sum
 
-  c := cards.map (.winning)
-            .fold i32.type.sum
-  say "dec 4: $c $part2"
+  say "dec 4: $part1 $part2"

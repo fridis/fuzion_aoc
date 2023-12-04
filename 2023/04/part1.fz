@@ -12,27 +12,15 @@ dec4_part1 is
     o.val.as_array
 
   card(s String) is
-    cl := s.split ": "
-    n => (cl[0].split " ").last.parse_i32.val
-    wy := cl[1].split " | "
-    win => parse wy[0]+" "
-    you => parse wy[1]+" "
-    parse(ns String) list i32 =>
-#      say ns
-      if ns.byte_length = 0
-        nil
-      else
-        (ns.substring 0 2
-           .strip
-           .parse_i32
-           .val) : parse (ns.substring 3)
-    redef as_string => "Card $n: $win | $you => $winning"
-    winning => (1 << (win.flat_map i32 w->
-                          you.filter =w
-                        .count)) >> 1
+    wy(i) => ((s.split ":")[1].split "|")[i].split.map (.parse_i32.val)
+    win => wy 0
+    you => wy 1
+    matches => ((win.combine you (=)).filter x->x).count
+    winning => 1 << matches >> 1
 
-  cards => lines.map (x->card x)
+  cards := (lines.map (s->card s)).as_array
 
-  c := cards.map (.winning)
-            .fold i32.type.sum
-  say "$c"
+  part1 := cards.map (.winning)
+                .fold i32.type.sum
+
+  say "dec 4: $part1"
