@@ -29,9 +29,10 @@ dec3_part1 is
                       .parse_i32.val
 
     numbers =>
-      a.indices0.flat_map_sequence number i->
-          a.indices1.flat_map_sequence number j->
-            (!(at i j-1).is_digit && (at i j).is_digit).as_option number (number i j)
+      a.index_pairs.flat_map number ij->
+        (i,j) := ij
+        (!(at i j-1).is_digit &&
+          (at i j  ).is_digit   ).as_option number (number i j)
 
     parts =>
       numbers.map (x -> if x.ok then x.val else 0)
