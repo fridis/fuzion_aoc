@@ -1,10 +1,8 @@
 dec5_part1 is
 
-  public minimum : Monoid u64 is
-    public redef infix ∙ (a, b u64) => if a < b then a else b
-    public redef e => u64.type.max
-
-  String.strip => String.this.replace " " ""
+  public minimum : Monoid i64 is
+    public redef infix ∙ (a, b i64) => if a < b then a else b
+    public redef e => i64.type.max
 
   input =>
     o := io.stdin.with ()->
@@ -16,28 +14,26 @@ dec5_part1 is
     ref : String
       utf8 => o.val
 
-#  say input
   lines := input.split "\n"
-  say "lines.count is {lines.count}"
   ls := lines.as_array
-  say "ls.count is {ls.length}"
 
   seeds := ls[0].split.drop 1
-                .map (.parse_u64.val)
+                .map (.parse_i64.val)
                 .as_array
+  range(start, len i64) is
+    r => start + len
+    l => start
 
-#  say ls
   maps => maps (ls.drop 2)
-  maps(ml) list map        => if ml.is_empty || ml.first = "" then nil
-                              else
-                                h := (ml.drop 1).take_while !=""
-                                r := ml.drop h.count+2
-                                map h : maps r
-  map(s list String) is
-    name => s.first
-    conversions => (s.drop 1).map (.split)
-                             .map (x -> conv x)
-    convert(i u64) =>
+  maps(ml) list map => if ml.is_empty || ml.first = "" then nil
+                       else
+                         h := (ml.drop 1).take_while !=""
+                         r := ml.drop h.count+2
+                         map ml.first h : maps r
+  map(name, s) is
+    conversions => s.map (.split)
+                    .map (x -> conv x)
+    convert(i) =>
       n := mut i
       for c in conversions do
         ni := c.convert i
@@ -45,30 +41,21 @@ dec5_part1 is
           n <- ni
       n.get
 
-  conv(l list String) is
-    to   := l[0].parse_u64.val
-    from := l[1].parse_u64.val
-    len  := l[2].parse_u64.val
-    convert(i u64) =>
+  conv(li list String) is
+    to   := li[0].parse_i64.val
+    from := li[1].parse_i64.val
+    len  := li[2].parse_i64.val
+    l => from
+    r => from+len
+    convert(i i64) =>
       if from <= i < from+len then i - from + to else i
 
-
-  say seeds
-  say maps
   p1 := seeds.map s->
-    for
-      v := s, v2
-      m in maps
-      v2 := m.convert v
-    else
-      v2
-  say (p1.fold minimum)
-  /*
-  for s in seeds do
-    for
-      v := s, v2
-      m in maps
-      v2 := m.convert v
-    else
-      say "$s -> $v2"
-*/
+      for v := s, v2
+          m in maps
+          v2 := m.convert v
+      else
+        v2
+    .fold minimum
+
+  say "part1 $p1"
