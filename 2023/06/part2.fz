@@ -1,0 +1,49 @@
+dec6_part1 is
+
+  input =>
+    o := io.stdin.with ()->
+      for
+        r Sequence u8 := [], r++n
+        n := (io.buffered.read_bytes 10000)
+      while n.count > 0 else
+        r
+    ref : String
+      utf8 => o.val
+
+  lines := input.split "\n"
+  ls := lines.as_array
+
+  l1 := lines[0].split.drop 1
+  l2 := lines[1].split.drop 1
+  races := l1.zip l2 t,d->(race t.parse_i64.val d.parse_i64.val)
+  race2 := (race ((lines[0].split ":")[1].replace " " "").parse_i64.val
+                 ((lines[1].split ":")[1].replace " " "").parse_i64.val)
+  race(t, d) is
+    redef as_string => "Race {t}ms {d}mm"
+    wins =>
+      (i64 0 .. t).map_sequence x->(d x t)
+                .filter x->(x>d)
+                .count
+    wins2 =>
+       # 0 = l²-t*l+d
+       #
+       # l1/2 = (+t +/- sqrt(t²-4d)/2
+       rt := t.as_f64
+       rd := d.as_f64
+       l1 := (rt - f64.type.square_root (rt*rt-4.0*rd))/2
+       l2 := (rt + f64.type.square_root (rt*rt-4.0*rd))/2
+       say "$l1 $l2"
+       i1 := l1.as_i64
+       i2 := l2.as_i64
+       say "$l1 $l2"
+       say "$i1 $i2"
+       i2-i1
+
+  d(l,t) => l*(t-l)
+
+  p1 := races.map (.wins)
+             .fold i32.type.product
+
+  p2 := race2.wins2
+
+  say "part1 $p1 part1 $p2"
