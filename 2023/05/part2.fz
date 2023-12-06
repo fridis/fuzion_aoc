@@ -1,0 +1,185 @@
+dec5_part1 is
+
+  public minimum : Monoid u64 is
+    public redef infix ∙ (a, b u64) => if a < b then a else b
+    public redef e => u64.type.max
+
+  public minimum_range : Monoid range is
+    public redef infix ∙ (a, b range) => if a.l < b.l then a else b
+    public redef e => range u64.type.max-1 1
+
+  String.strip => String.this.replace " " ""
+
+  input =>
+    o := io.stdin.with ()->
+      for
+        r Sequence u8 := [], r++n
+        n := (io.buffered.read_bytes 10000)
+      while n.count > 0 else
+        r
+    ref : String
+      utf8 => o.val
+
+#  say input
+  lines := input.split "\n"
+  say "lines.count is {lines.count}"
+  ls := lines.as_array
+  say "ls.count is {ls.length}"
+
+  seeds := ls[0].split.drop 1
+                .map (.parse_u64.val)
+                .as_array
+  seeds2 := array seeds.length/2 i->(range seeds[2*i] seeds[2*i+1])
+  range(start, len u64)
+    pre len > 0
+  is
+    r => start+len
+    l => start
+    redef as_string => "$l..{r-1}"
+
+#  say ls
+  maps => maps (ls.drop 2)
+  maps(ml) list map        => if ml.is_empty || ml.first = "" then nil
+                              else
+                                h := (ml.drop 1).take_while !=""
+                                #say "{ml.first} $h"
+                                r := ml.drop h.count+2
+                                map ml.first h : maps r
+  map(name String, s list String) is
+    #name => s.first
+    conversions => s.map (.split)
+                    .map (x -> conv x)
+    convert(i u64) =>
+      n := mut i
+      for c in conversions do
+        ni := c.convert i
+        if ni != i
+          n <- ni
+      n.get
+
+    convert2(r range) =>
+      for
+        rs Sequence range :=  [ r ] , rs2
+        c in conversions
+        rs2 := c.convert2s rs
+      else
+        rs
+    convert2B(r range) =>
+      for
+        from Sequence range :=  [ r ] , from2
+        res  Sequence range := [], res ++ res2
+        c in conversions
+        res2  := c.convert2sTo from
+        from2 := c.convert2sSame from
+      do #say "$name $c IN $from OUT $res NEW IN: $from2 NEW OUT {res++res2}"
+      else
+        from ++ res
+
+    convert2s(rs Sequence range) =>
+      rs.flat_map_sequence range (r -> convert2 r)
+    convert2sB(rs Sequence range) =>
+      rs.flat_map_sequence range (r -> convert2B r)
+
+
+  conv(li list String) is
+    redef as_string => $li
+    to   := li[0].parse_u64.val
+    from := li[1].parse_u64.val
+    len  := li[2].parse_u64.val
+    l => from
+    r => from+len
+    convert(i u64) =>
+      if from <= i < from+len then i - from + to else i
+    convert2(s range) Sequence range =>
+      res Sequence range := (if      s.r <= l           then s : nil
+        else if s.l >= r           then s : nil
+        else if l <= s.l && s.r <= r then [ range to+(s.l-l) s.len ]
+        else if s.r <= r then ll := l-s.l;              il := s.len-ll;  res0:=  [ range s.l ll, range to        il               ];  res0
+        else if l <= s.l then    rl := s.r-r; il := s.len-rl;    [               range to+len-il il, range s.r-il rl ]
+        else                   ll := l-s.l; rl := s.r-r; il := s.len-ll-rl;         res0 :=          [ range s.l ll, range to        il, range s.r-il rl ];  res0
+        )
+      #say "CONV $li from $s to $res"
+      res
+    convert2To(s range) Sequence range =>
+      res Sequence range := (if      s.r <= l           then []
+        else if s.l >= r                                then []
+        else if l <= s.l && s.r <= r                    then [ range to+(s.l-l) s.len ]
+        else if s.r <= r then ll := l-s.l;              il := s.len-ll;    [               range to        il                  ]
+        else if l <= s.l then              rl := s.r-r; il := s.len-rl;    [               range to+len-il il                  ]
+        else                  ll := l-s.l; rl := s.r-r; il := s.len-ll-rl; [               range to        il                  ]
+        )
+  #    say "CONV TO $li from $s to $res"
+      res
+    convert2Same(s range) Sequence range =>
+      res Sequence range := (if      s.r <= l           then s : nil
+        else if s.l >= r           then s : nil
+        else if l <= s.l && s.r <= r then [ ]
+        else if s.r <= r then ll := l-s.l;              il := s.len-ll;    [ range s.l ll                                      ]
+        else if l <= s.l then              rl := s.r-r; il := s.len-rl;    [                                   range s.r-rl rl ]
+        else                  ll := l-s.l; rl := s.r-r; il := s.len-ll-rl; [ range s.l ll,                     range s.r-rl rl ]
+        )
+ #     say "CONV SM $li from $s to $res"
+      res
+    convert2s(rs) => rs.flat_map_sequence range (x->convert2 x)
+    convert2sTo(rs)   => rs.flat_map_sequence range (x->convert2To   x)
+    convert2sSame(rs) => rs.flat_map_sequence range (x->convert2Same x)
+
+  say seeds
+  say maps
+  p1 := seeds.map s->
+      for
+        v := s, v2
+        m in maps
+        v2 := m.convert v
+      else
+        v2
+    .fold minimum
+
+  say "START: $seeds2"
+  /*
+  p2 := seeds2.flat_map_sequence range s->
+      for
+        v Sequence range := [s], v2
+        m in maps
+        v2 := m.convert2s v
+      do say "NEXXT -{m.name}- $v2"
+      else
+        v2
+    .fold minimum_range
+    .l*/
+  p2b := seeds2.flat_map_sequence range s->
+      for
+        v Sequence range := [s], v2
+        m in maps
+        v2 := m.convert2sB v
+      do say "NEXXT -{m.name}- $v2"
+      else
+        say "-------------------- $v2"
+        v2
+    .fold minimum_range
+    .l
+    /*
+  p2b := seeds2.flat_map_sequence range s->
+      for
+        from Sequence range := [s], from2
+        to Sequence range := [], to ++ to2
+        m in maps
+        to2   := m.convert2sTo   from
+        from2 := m.convert2sSame from
+      do say "NEXXT -{m.name}- $v2"
+      else
+        from ++ to
+    .fold minimum_range
+    .l*/
+
+  say "part1 $p1 part2 $p2b"
+
+  /*
+  for s in seeds do
+    for
+      v := s, v2
+      m in maps
+      v2 := m.convert v
+    else
+      say "$s -> $v2"
+*/
