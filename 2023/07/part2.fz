@@ -1,0 +1,186 @@
+# dec7_part1 : container is
+
+  say "start"
+  bytes0 =>
+    o := io.stdin.with ()->
+      for
+        r Sequence u8 := [], r++n
+        n := (io.buffered.read_bytes 10000)
+      while n.count > 0 else
+        r
+    o.val
+  bytes := bytes0
+  say "got bytes"
+  say "got bytes {bytes.count}"
+  input :=
+    ref : String
+      utf8 => bytes
+  say "got input {input.byte_length}"
+  lines := input.split "\n"
+                 .map s->(String.type.from_bytes s.utf8.as_array)
+                 .filter !=""
+  say "got lines {lines.count}"
+  ls := lines.as_array
+  say "got ls {ls.count}"
+
+  handbid(s) =>
+    s := s.split
+    say s
+    handbid (hand s[0]) s[1].parse_i32.val
+  handbid2(s) =>
+    s := s.split
+    say s
+    handbid2 (hand s[0]) s[1].parse_i32.val
+
+  handbid(h hand, bid i32) : property.orderable is
+    redef as_string => "{h.s} $bid"
+    public type.lteq(a, b handbid.this) bool is
+      cmp a.h b.h
+
+  handbid2(h hand, bid i32) : property.orderable is
+    redef as_string => "{h.s} $bid"
+    public type.lteq(a, b handbid2.this) bool is
+      cmp2 a.h b.h
+
+  cmp(a, b hand) =>
+      ak := a.k
+      bk := b.k
+      res := if ak.ord != bk.ord then ak.ord <= bk.ord
+             else a.ranked <= b.ranked # a.sorted <= b.sorted
+      res
+
+  cmp2(a, b hand) =>
+      ak := a.k2
+      bk := b.k2
+      res := if ak.ord != bk.ord then ak.ord <= bk.ord
+             else a.ranked2 <= b.ranked2 # a.sorted <= b.sorted
+      res
+
+  five_of_a_kind, four_of_a_kind, full_house, three_of_a_kind, two_pair, one_pair, high_card.
+  kind : choice five_of_a_kind four_of_a_kind full_house three_of_a_kind two_pair one_pair high_card is
+    ord => match kind.this
+      five_of_a_kind => 10
+      four_of_a_kind => 9
+      full_house => 8
+      three_of_a_kind => 7
+      two_pair => 6
+      one_pair => 5
+      high_card => 4
+
+  ranks := "AKQJT98765432"
+  ranks2:= "AKQT98765432J"
+  r     := "omlkj98765432".as_codepoints
+
+  hand(s String) : property.orderable is
+    rankedl := s.as_codepoints.map_sequence String x->{r[(ranks.find x).get] /* (codepoint (65+(ranks.find x).get).as_u32)*/}
+    ranked := rankedl.fold String.type.concat
+    sortedr := container.sorted_array_of String rankedl
+    sorted := sortedr.fold String.type.concat
+    sa := sorted.as_codepoints.as_array
+
+    j2 String := r[(ranks2.find "J").get]
+    rankedl2 := s.as_codepoints.map_sequence String x->r[(ranks2.find x).get]
+    ranked2 := rankedl2.fold String.type.concat
+    sortedr2 := container.sorted_array_of String rankedl2
+    sorted2 := sortedr2.fold String.type.concat
+    sa2 := sorted2.as_codepoints.as_array
+
+    #sorted := (container.sorted_array_of (s.as_codepoints.map_sequence String x->x)).fold String.type.concat
+
+    k2 := kk2
+    k := kk
+    kk kind =>
+      if       sa[0] = sa[1] =  sa[2] =  sa[3] = sa[4]  then five_of_a_kind
+      else if (sa[0] = sa[1] =  sa[2] =  sa[3]          ||
+                       sa[1] =  sa[2] =  sa[3] = sa[4]) then four_of_a_kind
+      else if (sa[0] = sa[1] =  sa[2] && sa[3] = sa[4]  ||
+               sa[0] = sa[1] && sa[2] =  sa[3] = sa[4]) then full_house
+      else if (sa[0] = sa[1] =  sa[2]                   ||
+                       sa[1] =  sa[2] =  sa[3]          ||
+                                sa[2] =  sa[3] = sa[4]) then three_of_a_kind
+      else if (sa[0] = sa[1] && sa[2] =  sa[3]          ||
+               sa[0] = sa[1] &&          sa[3] = sa[4]  ||
+                       sa[1] =  sa[2] && sa[3] = sa[4]) then two_pair
+      else if (sa[0] = sa[1]                            ||
+                       sa[1] =  sa[2]                   ||
+                                sa[2] =  sa[3]          ||
+                                         sa[3] = sa[4]) then one_pair
+      else high_card
+
+    j(i) => sa2[i] = j2
+    kk2 kind =>
+      res kind := (
+        if       sa2[0] =  sa2[1] =  sa2[2] =  sa2[3] =  sa2[4]  then five_of_a_kind
+        else if (j 0    && sa2[1] =  sa2[2] =  sa2[3] =  sa2[4]) then five_of_a_kind
+        else if (j 0    && j 1    && sa2[2] =  sa2[3] =  sa2[4]) then five_of_a_kind
+        else if (j 0    && j 1    && j 2    && sa2[3] =  sa2[4]) then five_of_a_kind
+        else if (j 0    && j 1    && j 2    && j 3             ) then five_of_a_kind
+        else if (sa2[0] =  sa2[1] =  sa2[2] =  sa2[3]            ||
+                           sa2[1] =  sa2[2] =  sa2[3] =  sa2[4]) then four_of_a_kind
+        else if (j 0    && sa2[1] =  sa2[2] =  sa2[3]          ) then four_of_a_kind
+        else if (j 0    &&           sa2[2] =  sa2[3] =  sa2[4]) then four_of_a_kind
+        else if (j 0    && j 1    && sa2[2] =  sa2[3]          ) then four_of_a_kind
+        else if (j 0    && j 1    &&           sa2[3] =  sa2[4]) then four_of_a_kind
+        else if (j 0    && j 1    && j 2                       ) then four_of_a_kind
+        else if (sa2[0] =  sa2[1] =  sa2[2] && sa2[3] =  sa2[4]  ||
+                 sa2[0] =  sa2[1] && sa2[2] =  sa2[3] =  sa2[4]) then full_house
+        else if (j 0    && sa2[1] =  sa2[2] =  sa2[3]          ) then full_house
+        else if (j 0    &&           sa2[2] =  sa2[3] =  sa2[4]) then full_house
+        else if (j 0    && sa2[1] =  sa2[2] && sa2[3] =  sa2[4]) then full_house
+        else if (sa2[0] =  sa2[1] =  sa2[2]                      ||
+                           sa2[1] =  sa2[2] =  sa2[3]            ||
+                                     sa2[2] =  sa2[3] =  sa2[4]) then three_of_a_kind
+        else if (j 0    && sa2[1] =  sa2[2]                    ) then three_of_a_kind
+        else if (j 0    &&           sa2[2] =  sa2[3]          ) then three_of_a_kind
+        else if (j 0    &&                     sa2[3] =  sa2[4]) then three_of_a_kind
+        else if (j 0    && j 1                                 ) then three_of_a_kind
+        else if (sa2[0] =  sa2[1] && sa2[2] =  sa2[3]            ||
+                 sa2[0] =  sa2[1] &&           sa2[3] =  sa2[4]  ||
+                           sa2[1] =  sa2[2] && sa2[3] =  sa2[4]) then two_pair
+        else if (sa2[0] =  sa2[1]                                ||
+                           sa2[1] =  sa2[2]                      ||
+                                     sa2[2] =  sa2[3]            ||
+                                               sa2[3] =  sa2[4]) then one_pair
+        else if (j 0) then one_pair
+//        else if (j 1 || j 2 || j 3 || j 4) panic "**** FAILED {hand.this}"
+        else high_card
+      )
+      say "kk2 of $s $sa2 {j 3} {j 4} => {res.ord}  j2: $j2"
+      res
+#     say "kind of $s $sa is {res.ord}"
+
+    say "got $s {k.ord} $sa type 2 {k2.ord} $sorted2"
+
+    redef as_string => $sorted
+    public type.lteq(a, b hand.this) bool is
+     a.sorted2 <= b.sorted2
+
+
+  ints Sequence i32 := (1..2000).as_array
+  part1 =>
+    a := ls.map x->(handbid x)
+#    (container.sorted_array_of a).zip (1..) a,b->a.bid*b
+#    (container.sorted_array_of a).zip [1,2,3,4,5] a,b->a.bid*b
+    sa := container.sorted_array_of a
+    for i := 0 , i+1
+        r := 0, r+w
+    while i<sa.length do
+      w := (i+1)*sa[i].bid
+      say "{sa[i]} {i>sa.length-2 || sa[i] >= sa[i+1]} {sa[i].bid} $w {r+w}"
+    r := sa.zip ints a,b->a.bid*b
+    r.fold i32.type.sum
+
+  part2 =>
+    a := ls.map x->(handbid2 x)
+#    (container.sorted_array_of a).zip (1..) a,b->a.bid*b
+#    (container.sorted_array_of a).zip [1,2,3,4,5] a,b->a.bid*b
+    sa := container.sorted_array_of a
+    r := sa.zip ints a,b->a.bid*b
+    r.fold i32.type.sum
+
+
+
+#  p1 := part1
+  p2 := part2
+
+  say "part2 $p2"

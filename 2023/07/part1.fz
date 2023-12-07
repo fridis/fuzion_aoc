@@ -1,0 +1,118 @@
+# dec7_part1 : container is
+
+  say "start"
+  bytes0 =>
+    o := io.stdin.with ()->
+      for
+        r Sequence u8 := [], r++n
+        n := (io.buffered.read_bytes 10000)
+      while n.count > 0 else
+        r
+    o.val
+  bytes := bytes0
+  say "got bytes"
+  say "got bytes {bytes.count}"
+  input :=
+    ref : String
+      utf8 => bytes
+  say "got input {input.byte_length}"
+  lines := input.split "\n"
+                 .map s->(String.type.from_bytes s.utf8.as_array)
+                 .filter !=""
+  say "got lines {lines.count}"
+  ls := lines.as_array
+  say "got ls {ls.count}"
+
+  handbid(s) =>
+    s := s.split
+    say s
+    handbid (hand s[0]) s[1].parse_i32.val
+
+  handbid(h hand, bid i32) : property.orderable is
+    redef as_string => "{h.s} $bid"
+    public type.lteq(a, b handbid.this) bool is
+      cmp a.h b.h
+
+  cmp(a, b hand) =>
+      ak := a.k
+      bk := b.k
+      res := if ak.ord != bk.ord then ak.ord <= bk.ord
+             else a.ranked <= b.ranked # a.sorted <= b.sorted
+#      say "$a <= $b = $res"
+      res
+#      true
+      /*
+      (ak != bk && ak <= bk ||
+       ak  = bk && a.h.sorted <= b.h.sorted)
+       */
+
+  five_of_a_kind, four_of_a_kind, full_house, three_of_a_kind, two_pair, one_pair, high_card.
+  kind : choice five_of_a_kind four_of_a_kind full_house three_of_a_kind two_pair one_pair high_card is
+    ord => match kind.this
+      five_of_a_kind => 10
+      four_of_a_kind => 9
+      full_house => 8
+      three_of_a_kind => 7
+      two_pair => 6
+      one_pair => 5
+      high_card => 4
+
+  ranks := "AKQJT987654321"
+  r     := "omlkj987654321".as_codepoints
+
+  hand(s String) : property.orderable is
+    rankedl := s.as_codepoints.map_sequence String x->{r[(ranks.find x).get] /* (codepoint (65+(ranks.find x).get).as_u32)*/}
+    ranked := rankedl.fold String.type.concat
+    sorted2 := container.sorted_array_of String rankedl
+    sorted := sorted2.fold String.type.concat
+    sa := sorted.as_codepoints.as_array
+    #sorted := (container.sorted_array_of (s.as_codepoints.map_sequence String x->x)).fold String.type.concat
+
+    k := kk
+    kk kind =>
+     res kind := (
+      if       sa[0] = sa[1] =  sa[2] =  sa[3] = sa[4]  then five_of_a_kind
+      else if (sa[0] = sa[1] =  sa[2] =  sa[3]          ||
+                       sa[1] =  sa[2] =  sa[3] = sa[4]) then four_of_a_kind
+      else if (sa[0] = sa[1] =  sa[2] && sa[3] = sa[4]  ||
+               sa[0] = sa[1] && sa[2] =  sa[3] = sa[4]) then full_house
+      else if (sa[0] = sa[1] =  sa[2]                   ||
+                       sa[1] =  sa[2] =  sa[3]          ||
+                                sa[2] =  sa[3] = sa[4]) then three_of_a_kind
+      else if (sa[0] = sa[1] && sa[2] =  sa[3]          ||
+               sa[0] = sa[1] &&          sa[3] = sa[4]  ||
+                       sa[1] =  sa[2] && sa[3] = sa[4]) then two_pair
+      else if (sa[0] = sa[1]                            ||
+                       sa[1] =  sa[2]                   ||
+                                sa[2] =  sa[3]          ||
+                                         sa[3] = sa[4]) then one_pair
+      else high_card)
+#     say "kind of $s $sa is {res.ord}"
+     res
+
+    say "got $s {k.ord} $sa"
+
+    redef as_string => $sorted
+    public type.lteq(a, b hand.this) bool is
+     a.sorted <= b.sorted
+
+
+  ints Sequence i32 := (1..2000).as_array
+  part1 =>
+    a := ls.map x->(handbid x)
+#    (container.sorted_array_of a).zip (1..) a,b->a.bid*b
+#    (container.sorted_array_of a).zip [1,2,3,4,5] a,b->a.bid*b
+    sa := container.sorted_array_of a
+    for i := 0 , i+1
+        r := 0, r+w
+    while i<sa.length do
+      w := (i+1)*sa[i].bid
+      say "{sa[i]} {i>sa.length-2 || sa[i] >= sa[i+1]} {sa[i].bid} $w {r+w}"
+    r := sa.zip ints a,b->a.bid*b
+    r.fold i32.type.sum
+
+
+
+  p1 := part1
+
+  say "part1 $p1"
