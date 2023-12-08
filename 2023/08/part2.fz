@@ -55,6 +55,51 @@ dec8_part1 is
                panic "huh"
     count
 
+  part2 =>
+    start := (names.filter s->(s.ends_with "A")).map s->name_to_num[s].get
+    end   := (names.map s->(s.ends_with "Z")).as_array
+
+    lm : mutate.
+    lm.go ()->
+      res := mut u64 1
+      for s in start do
+        ms := mut s
+        n := mut 0
+        num_ends := mut 0
+        period := mut -1
+        lr := mut lrs.cycle.as_list
+        visited := (lm.array i32).type.new lm lrscnt*names.length -1
+        visited_index(n i32, cell i32) => (n % lrscnt) * names.length + cell
+        do_it unit =>
+          lrv := lr.get.first
+          cur := ms.get
+          next := forks[cur].get lrv
+          lr <- lr.get.tail
+          vi := visited_index n.get cur
+          on := n.get
+          n <- n.get + 1
+          if visited[vi] >= 0
+            period <- on - visited[vi]
+          if visited[vi] < 0 || !end[next]
+            ms <- next
+            visited[vi] := on
+            if end[next]
+              num_ends <- num_ends.get + 1
+            do_it
+        do_it
+        vi := visited_index n.get-1 ms.get
+        offset := n.get % period.get
+        gcd := res.get.gcd period.get.as_u64
+        prod := (res.get * period.get.as_u64)
+        res <- prod / gcd
+      res.get
+
+  say "part1 $part1 part2 $part2"
+
+
+  # an exhaustive iteration seems infeasible, so giving up on this code, even though it ran quite fast,
+  # this crashed my whole Linux system while running in a JVM due to memory exhaustion...
+  #
   part2_retired =>
     start := (names.filter s->(s.ends_with "A")).map s->name_to_num[s].get
     say start.count
@@ -105,86 +150,3 @@ dec8_part1 is
         n
       else
         panic "huh"
-
-  part2 =>
-    start := (names.filter s->(s.ends_with "A")).map s->name_to_num[s].get
-    say start.count
-    end   := (names.map s->(s.ends_with "Z")).as_array
-    #    say "$start -> $end"
-    t0 := time.nano.read
-    show(n i32) =>
-      t1 := time.nano.read
-      say "..$n..{time.durations.ns (t1-t0)/n.as_u64}/it"
-
-    if true
-      lm : mutate.
-      lm.go ()->
-        res := mut u64 1
-        for s in start do
-          ms := mut s
-          n := mut 0
-          num_ends := mut 0
-          period := mut -1
-          lr := mut lrs.cycle.as_list
-          visited := (lm.array i32).type.new lm lrscnt*names.length -1
-          visited_index(n i32, cell i32) => (n % lrscnt) * names.length + cell
-          do_it unit =>
-            lrv := lr.get.first
-            cur := ms.get
-            next := forks[cur].get lrv
-            lr <- lr.get.tail
-            vi := visited_index n.get cur
-#            say "$vi for {n.get} $cur"
-            on := n.get
-#            say "$on {lrv?"L":"R"}: {names[cur]} -> {names[next]}"
-#            if (on & (on+1)) = 0 then show on+1
-            n <- n.get + 1
-            if visited[vi] >= 0
-              period <- on - visited[vi]
-            if visited[vi] < 0 || !end[next]
-              ms <- next
-              visited[vi] := on
-              if end[next]
-                num_ends <- num_ends.get + 1
-              do_it
-          do_it
-          vi := visited_index n.get-1 ms.get
-#          say "$vi for {n.get-1} {ms.get}"
-          offset := n.get % period.get
-#          period := n.get - offset - 1
-          say "$s cycles after {n.get} back to {visited[vi]} num ends {num_ends.get}: ==> ends at n*{period.get} + $offset"
-          gcd := res.get.gcd period.get.as_u64
-          prod := (res.get * period.get.as_u64)
-          res <- prod / gcd
-          say "prod $prod gcd $gcd res {res.get}"
-        res.get
-/*
-        for s := s, next
-            n in 1..
-            next := forks[s].get lr
-        do
-          if (n & (n-1)) = 0 then show n
-        until end[next]
-          say "start: $s len $n"
-        else
-          panic "huh"
-          */
-#      panic "done."
-    else
-/*
-      for i := start, next
-          lr in lrs.cycle
-          n in 1..
-          next := i.map ii->(forks[ii].get lr)
-      do
-        if (n & (n-1)) = 0 then show n
-      until next ∀ x->end[x]
-        n
-      else
-*/
-        panic "huh"
-
-
-#  p1 := part1
-#  say "part1 $p1"
-  say "part1 $part1 part2 $part2"
