@@ -1,0 +1,190 @@
+dec8_part1 is
+
+  bytes0 =>
+    o := io.stdin.with ()->
+      for
+        r Sequence u8 := [], r++n
+        n := (io.buffered.read_bytes 10000)
+      while n.count > 0 else
+        r
+    o.val
+  bytes := bytes0
+  input :=
+    ref : String
+      utf8 => bytes
+  lines := input.split "\n"
+                 .map s->(String.type.from_bytes s.utf8.as_array)
+                 .filter !=""
+  ls := lines.as_array
+
+  lrs := ls[0].as_codepoints.map_sequence s->s="L"
+  lrscnt := lrs.count
+  tuples := for i i32 := 1, i+1
+                t list (tuple String String String) := nil, t ++ nl
+            while i < ls.length
+              ns := ls[i]
+              nl := if ns != ""
+                  name  := ns.substring 0 3
+                  left  := ns.substring 7 10
+                  right := ns.substring 12 15
+                  (name, left, right) : nil
+                else
+                  nil
+            else
+              t
+  names := (tuples.map t->t.values.0).as_array
+  nums  := (0..names.length-1).as_array
+  name_to_num := container.map_of names nums
+  fork(l,r) is
+    get(s) =>
+      if s  then l else r
+  forks := tuples.map t->
+                   (n,l,r) := t
+                   fork name_to_num[l].get name_to_num[r].get
+                 .as_array
+  part1 =>
+    start := name_to_num["AAA"].get
+    end   := name_to_num["ZZZ"].get
+    count := for i := start, next
+                 lr in lrs.cycle
+                 n in 1..
+                 next := forks[i].get lr
+             until next = end
+               n
+             else
+               panic "huh"
+    count
+
+  part2_retired =>
+    start := (names.filter s->(s.ends_with "A")).map s->name_to_num[s].get
+    say start.count
+    end   := (names.map s->(s.ends_with "Z")).as_array
+    #    say "$start -> $end"
+    t0 := time.nano.read
+    show(n i32) =>
+      t1 := time.nano.read
+      say "..$n..{time.durations.ns (t1-t0)/n.as_u64}/it"
+    if start.count = 6
+      s0 := start[0]
+      s1 := start[1]
+      s2 := start[2]
+      s3 := start[3]
+      s4 := start[4]
+      s5 := start[5]
+      for i0 := s0, next0
+          i1 := s1, next1
+          i2 := s2, next2
+          i3 := s3, next3
+          i4 := s4, next4
+          i5 := s5, next5
+          lr in lrs.cycle
+          n in 1..
+          next0 := {if lr then forks[i0].l else forks[i0].r}
+          next1 := {if lr then forks[i1].l else forks[i1].r}
+          next2 := {if lr then forks[i2].l else forks[i2].r}
+          next3 := {if lr then forks[i3].l else forks[i3].r}
+          next4 := {if lr then forks[i4].l else forks[i4].r}
+          next5 := {if lr then forks[i5].l else forks[i5].r}
+          done := end[next0] && end[next1] && end[next2] && end[next3] && end[next4] && end[next5]
+      do
+   //     if (n & (n-1)) = 0 then show n
+      until done
+        n
+      else
+        do // panic "huh"
+
+
+    else
+      for i := start, next
+          lr in lrs.cycle
+          n in 1..
+          next := i.map ii->(forks[ii].get lr)
+      do
+        if (n & (n-1)) = 0 then show n
+      until next ∀ x->end[x]
+        n
+      else
+        panic "huh"
+
+  part2 =>
+    start := (names.filter s->(s.ends_with "A")).map s->name_to_num[s].get
+    say start.count
+    end   := (names.map s->(s.ends_with "Z")).as_array
+    #    say "$start -> $end"
+    t0 := time.nano.read
+    show(n i32) =>
+      t1 := time.nano.read
+      say "..$n..{time.durations.ns (t1-t0)/n.as_u64}/it"
+
+    if true
+      lm : mutate.
+      lm.go ()->
+        res := mut u64 1
+        for s in start do
+          ms := mut s
+          n := mut 0
+          num_ends := mut 0
+          period := mut -1
+          lr := mut lrs.cycle.as_list
+          visited := (lm.array i32).type.new lm lrscnt*names.length -1
+          visited_index(n i32, cell i32) => (n % lrscnt) * names.length + cell
+          do_it unit =>
+            lrv := lr.get.first
+            cur := ms.get
+            next := forks[cur].get lrv
+            lr <- lr.get.tail
+            vi := visited_index n.get cur
+#            say "$vi for {n.get} $cur"
+            on := n.get
+#            say "$on {lrv?"L":"R"}: {names[cur]} -> {names[next]}"
+#            if (on & (on+1)) = 0 then show on+1
+            n <- n.get + 1
+            if visited[vi] >= 0
+              period <- on - visited[vi]
+            if visited[vi] < 0 || !end[next]
+              ms <- next
+              visited[vi] := on
+              if end[next]
+                num_ends <- num_ends.get + 1
+              do_it
+          do_it
+          vi := visited_index n.get-1 ms.get
+#          say "$vi for {n.get-1} {ms.get}"
+          offset := n.get % period.get
+#          period := n.get - offset - 1
+          say "$s cycles after {n.get} back to {visited[vi]} num ends {num_ends.get}: ==> ends at n*{period.get} + $offset"
+          gcd := res.get.gcd period.get.as_u64
+          prod := (res.get * period.get.as_u64)
+          res <- prod / gcd
+          say "prod $prod gcd $gcd res {res.get}"
+        res.get
+/*
+        for s := s, next
+            n in 1..
+            next := forks[s].get lr
+        do
+          if (n & (n-1)) = 0 then show n
+        until end[next]
+          say "start: $s len $n"
+        else
+          panic "huh"
+          */
+#      panic "done."
+    else
+/*
+      for i := start, next
+          lr in lrs.cycle
+          n in 1..
+          next := i.map ii->(forks[ii].get lr)
+      do
+        if (n & (n-1)) = 0 then show n
+      until next ∀ x->end[x]
+        n
+      else
+*/
+        panic "huh"
+
+
+#  p1 := part1
+#  say "part1 $p1"
+  say "part1 $part1 part2 $part2"

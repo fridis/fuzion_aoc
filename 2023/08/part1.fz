@@ -1,0 +1,61 @@
+dec8_part1 is
+
+  bytes0 =>
+    o := io.stdin.with ()->
+      for
+        r Sequence u8 := [], r++n
+        n := (io.buffered.read_bytes 10000)
+      while n.count > 0 else
+        r
+    o.val
+  bytes := bytes0
+  input :=
+    ref : String
+      utf8 => bytes
+  lines := input.split "\n"
+                 .map s->(String.type.from_bytes s.utf8.as_array)
+                 .filter !=""
+  ls := lines.as_array
+
+  lrs := ls[0].as_codepoints
+  tuples := for i i32 := 1, i+1
+                t list (tuple String String String) := nil, t ++ nl
+            while i < ls.length
+              ns := ls[i]
+              nl := if ns != ""
+                  name  := ns.substring 0 3
+                  left  := ns.substring 7 10
+                  right := ns.substring 12 15
+                  (name, left, right) : nil
+                else
+                  nil
+            else
+              t
+  names := (tuples.map t->t.values.0).as_array
+  nums  := (0..names.length-1).as_array
+  name_to_num := container.map_of names nums
+  fork(l,r) is
+    get(s) =>
+      if s = "L" then l
+      else if s = "R" then r
+      else panic "direction '$s' unkown"
+  forks := tuples.map t->
+                   (n,l,r) := t
+                   fork name_to_num[l] name_to_num[r]
+                 .as_array
+  start := name_to_num["AAA"].get
+  end   := name_to_num["ZZZ"].get
+  count := for i := start, next
+               lr in lrs.cycle
+               n in 1..
+               next := (forks[i].get lr).get
+           until next = end
+             n
+           else
+             panic "huh"
+
+  part1 => count
+
+  p1 := part1
+
+  say "part1 $p1"
