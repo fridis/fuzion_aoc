@@ -1,4 +1,4 @@
-dec8_part1 is
+dec8_part2 is
 
   bytes0 =>
     o := io.stdin.with ()->
