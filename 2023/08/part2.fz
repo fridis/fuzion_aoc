@@ -62,33 +62,25 @@ dec8_part1 is
     lm : mutate.
     lm.go ()->
       res := mut u64 1
-      for s in start do
-        ms := mut s
-        n := mut 0
-        period := mut -1
-        lr := mut lrs.cycle.as_list
+      for res := u64 1, prod / gcd
+          s in start
+      do
         visited := (lm.array i32).type.new lm lrscnt*names.length -1
         visited_index(n i32, cell i32) => (n % lrscnt) * names.length + cell
-        for
-          lrv := lr.get.first
-          cur := ms.get
-          next := forks[cur].get lrv
-          on := n.get
-          vi := visited_index on cur
-        do
-          lr <- lr.get.tail
-          n <- n.get + 1
-          period <- on - visited[vi]
-          ms <- next
-          done := visited[vi] >= 0 && end[next]
-          if !done
-            visited[vi] := on
-        until done
-        offset := n.get % period.get
-        gcd := res.get.gcd period.get.as_u64
-        prod := (res.get * period.get.as_u64)
-        res <- prod / gcd
-      res.get
+        period := for cur := s, next
+                      n in 0..
+                      vi := visited_index n cur
+                      v  := visited[vi]
+                      lr in lrs.cycle
+                      next := forks[cur].get lr
+                  do  visited[vi] := n
+                  until v >= 0 && end[next] then n - v
+                  else  panic "*** unreachable, lr is infinite ***"
+
+        gcd := res.gcd period.as_u64
+        prod := res * period.as_u64
+      else
+        res
 
   say "part1 $part1 part2 $part2"
 
