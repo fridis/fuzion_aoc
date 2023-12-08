@@ -73,19 +73,17 @@ dec8_part1 is
           lrv := lr.get.first
           cur := ms.get
           next := forks[cur].get lrv
+          on := n.get
+          vi := visited_index on cur
         do
           lr <- lr.get.tail
-          vi := visited_index n.get cur
-          on := n.get
           n <- n.get + 1
-          if visited[vi] >= 0
-            period <- on - visited[vi]
+          period <- on - visited[vi]
+          ms <- next
           done := visited[vi] >= 0 && end[next]
           if !done
-            ms <- next
             visited[vi] := on
         until done
-        vi := visited_index n.get-1 ms.get
         offset := n.get % period.get
         gcd := res.get.gcd period.get.as_u64
         prod := (res.get * period.get.as_u64)
