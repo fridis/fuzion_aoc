@@ -1,36 +1,21 @@
-dec9_part1 is
+dec9_part2 is
 
-  bytes0 =>
-    o := io.stdin.with ()->
-      for
-        r Sequence u8 := [], r++n
-        n := (io.buffered.read_bytes 10000)
-      while n.count > 0 else
-        r
-    o.val
-  bytes := bytes0
-  input :=
-    ref : String
-      utf8 => bytes
-  lines := input.split "\n"
-                 .map s->(String.type.from_bytes s.utf8.as_array)
-                 .filter !=""
-  ls := lines.as_array
+  ls := (io.stdin.with ()->io.buffered.read_lines).val
 
   # parse input into sequence of sequence of i32
   seqs := ls.map_sequence s->(s.split.map (.parse_i32.val)).as_array
 
-  # extend given seuence at both ends by one element
+  # find new first and last elements to extend given sequence at both ends
   #
   extend(sq Sequence i32) =>
-    if sq ∀ =0 then                                       # 0..0 is easy, just add 0 on both ends
-      [0] ++ sq ++ [0]
+    if sq ∀ =0 then
+      (0,0)                                               # 0..0 is easy, just add 0 on both ends
     else
-      di := extend ((sq.drop 1).zip sq (-))               # extend diffs
-      [sq.first - di.first] ++ sq ++ [sq.last + di.last]  # use diffs to add first + last
+      di := extend (sq.map_pairs a,b->b-a).as_array       # extend diffs
+      (sq.first - di.values.0, sq.last + di.values.1)     # use diffs to determine first + last
 
-  ex := seqs.map (s -> extend s)
-  part1 => (ex.map (.last )).fold i32.type.sum
-  part2 => (ex.map (.first)).fold i32.type.sum
+  ex := (seqs.map (s -> extend s)).as_array
+  part1 => (ex.map (.values.1)).fold i32.type.sum
+  part2 => (ex.map (.values.0)).fold i32.type.sum
 
   say "part1 $part1 part2 $part2"
