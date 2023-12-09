@@ -1,0 +1,47 @@
+dec8_part1 is
+
+  bytes0 =>
+    o := io.stdin.with ()->
+      for
+        r Sequence u8 := [], r++n
+        n := (io.buffered.read_bytes 10000)
+      while n.count > 0 else
+        r
+    o.val
+  bytes := bytes0
+  input :=
+    ref : String
+      utf8 => bytes
+  lines := input.split "\n"
+                 .map s->(String.type.from_bytes s.utf8.as_array)
+                 .filter !=""
+  ls := lines.as_array
+
+  part12 =>
+    seqs := ls.map s->
+                (s.split.map (.parse_i64.val)).as_array
+              .as_array
+
+    process(sq Sequence i64) =>
+#      say "process $sq START"
+      if sq ∀ =0 then
+        i64 0
+      else
+        diffs := (sq.drop 1).zip sq (-)
+        (f2, l2) := process diffs
+#        say "$diffs --> {sq.last} + $p2"
+        (sq.first -f2, sq.last + l2)
+
+    for res0 := i64 0, res + n.values.0
+        res1 := i64 0, res + n.values.1
+        sq in seqs
+        _ := say sq
+        n := process sq
+    else
+      (res0, rest1)
+#    $seqs
+
+  p1 := part12.values.1
+  p2 := part12.values.0
+
+  say "part1 $p1 part2 $p2"

@@ -1,0 +1,44 @@
+dec8_part1 is
+
+  bytes0 =>
+    o := io.stdin.with ()->
+      for
+        r Sequence u8 := [], r++n
+        n := (io.buffered.read_bytes 10000)
+      while n.count > 0 else
+        r
+    o.val
+  bytes := bytes0
+  input :=
+    ref : String
+      utf8 => bytes
+  lines := input.split "\n"
+                 .map s->(String.type.from_bytes s.utf8.as_array)
+                 .filter !=""
+  ls := lines.as_array
+
+  part12 =>
+    seqs := ls.map s->
+                (s.split.map (.parse_i64.val)).as_array
+              .as_array
+
+    process(sq Sequence i64) (i64,i64) =>
+      if sq ∀ =0 then
+        (i64 0, i64 0)   # NYI: would be nice if type inference worked here to avoid `i64`
+      else
+        diffs := (sq.drop 1).zip sq (-)   # NYI: some simple sq.fold2 (-) would do
+        (f2, l2) := process diffs
+        (sq.first - f2, sq.last + l2)
+
+    for res0 := i64 0, res0 + n.values.0  # NYI: would be nice to not just wrilte n.0 not n.values.0
+        res1 := i64 0, res1 + n.values.1
+        sq in seqs
+        n := process sq
+    else
+      (res0, res1)
+
+  p12 := part12
+  p1 := p12.values.1
+  p2 := p12.values.0
+
+  say "part1 $p1 part2 $p2"
