@@ -1,21 +1,6 @@
 dec9_part1 is
 
-  bytes0 =>
-    o := io.stdin.with ()->
-      for
-        r Sequence u8 := [], r++n
-        n := (io.buffered.read_bytes 10000)
-      while n.count > 0 else
-        r
-    o.val
-  bytes := bytes0
-  input :=
-    ref : String
-      utf8 => bytes
-  lines := input.split "\n"
-                 .map s->(String.type.from_bytes s.utf8.as_array)
-                 .filter !=""
-  ls := lines.as_array
+  ls := (io.stdin.with ()->io.buffered.read_lines).val
 
   # parse input into sequence of sequence of i32
   seqs := ls.map_sequence s->(s.split.map (.parse_i32.val)).as_array
@@ -24,12 +9,12 @@ dec9_part1 is
   #
   extend(sq Sequence i32) =>
     if sq ∀ =0 then                                       # 0..0 is easy, just add 0
-      sq ++ [0]
+      0
     else
-      di := extend ((sq.drop 1).zip sq (-))               # extend diffs
-      sq ++ [sq.last + di.last]                           # use diffs to add  last
+      di := extend (sq.map_pairs a,b->b-a).as_array       # extend diffs
+      sq.last + di                                        # use diffs to add  last
 
   ex := seqs.map (s -> extend s)
-  part1 => (ex.map (.last )).fold i32.type.sum
+  part1 => ex.fold i32.type.sum
 
   say "part1 $part1"
