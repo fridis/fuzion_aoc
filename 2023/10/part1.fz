@@ -1,0 +1,39 @@
+dec10_part1 is
+
+  ls := ((io.stdin.with ()->io.buffered.read_lines).val.filter !="").as_array
+  cs := ls.map s->s.as_codepoints
+
+#  ns,ew,ne,nw,sw,se,g,start.
+#  tile : choice ns ew ne nw sw se g start is
+#  s_to_tile := container.map_of String tile [("|",ns),("-",ew),("L",ne),("J",nw),("7",sw),("F",se),(".",g),("S",start)]
+
+#  area1 := array2 cs.length cs[0].count i,j->(s_to_tile cs[i][j])
+  area := array2 cs.length cs[0].count i,j->cs[i][j]
+  at(i,j) => if area.indices0.contains i && area.indices1.contains j then area[i,j] else "."
+  part1 =>
+    for i in area.indices0
+        oj := for j in area.indices1 until area[i,j]="S"
+                option j
+              else
+                nil
+    until oj.exists
+      j := oj.get
+      n := at i-1 j
+      s := at i+1 j
+      e := at i j+1
+      w := at i j-1
+      res := if      n = "|" || n = "F" || n = "7" then north i-1 j   1
+             else if s = "|" || s = "L" || n = "J" then south i+1 j   1
+             else if e = "-" || s = "7" || n = "J" then east  i   j+1 1
+             else if w = "-" || s = "L" || n = "F" then west  i   j-1 1
+             else panic "start not connectd at $i $j"
+      north(ii,jj,n i32) i32 => t := at ii jj; say "N: $ii $jj $n $t"; if t = "|" then north ii-1 jj   n+1 else if t = "F" then east  ii   jj+1 n+1 else if t = "7" then west  ii   jj-1 n+1 else if t = "S" then n else panic "north $t"
+      south(ii,jj,n i32) i32 => t := at ii jj; say "S: $ii $jj $n $t"; if t = "|" then south ii+1 jj   n+1 else if t = "L" then east  ii   jj+1 n+1 else if t = "J" then west  ii   jj-1 n+1 else if t = "S" then n else panic "south $t"
+      east (ii,jj,n i32) i32 => t := at ii jj; say "E: $ii $jj $n $t"; if t = "-" then east  ii   jj+1 n+1 else if t = "7" then south ii+1 jj   n+1 else if t = "J" then north ii-1 jj   n+1 else if t = "S" then n else panic "east  $t"
+      west (ii,jj,n i32) i32 => t := at ii jj; say "W: $ii $jj $n $t"; if t = "-" then west  ii   jj-1 n+1 else if t = "F" then south ii+1 jj   n+1 else if t = "L" then north ii-1 jj   n+1 else if t = "S" then n else panic "north $t"
+      say res
+      res / 2
+    else
+      panic "no start found"
+
+  say "part1 $part1"

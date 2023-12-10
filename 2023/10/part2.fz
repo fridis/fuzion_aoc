@@ -1,0 +1,65 @@
+dec10_part2 is
+
+  ls := ((io.stdin.with ()->io.buffered.read_lines).val.filter !="").as_array
+  cs := ls.map s->s.as_codepoints
+
+#  ns,ew,ne,nw,sw,se,g,start.
+#  tile : choice ns ew ne nw sw se g start is
+#  s_to_tile := container.map_of String tile [("|",ns),("-",ew),("L",ne),("J",nw),("7",sw),("F",se),(".",g),("S",start)]
+
+#  area1 := array2 cs.length cs[0].count i,j->(s_to_tile cs[i][j])
+  area := array2 cs.length cs[0].count i,j->cs[i][j]
+  at(i,j) => if area.indices0.contains i && area.indices1.contains j then area[i,j] else "."
+  loup =>
+    lm : mutate.
+    res := lm.go ()->
+      lp := array area.length0 i->((lm.array String).type.new lm area.length1 ".")
+      for ij in area.index_pairs do
+        (i,j) := ij
+      until area[i,j] = "S"
+        n := at i-1 j; cn := n = "|" || n = "F" || n = "7"
+        s := at i+1 j; cs := s = "|" || s = "L" || s = "J"
+        e := at i j+1; ce := e = "-" || e = "7" || e = "J"
+        w := at i j-1; cw := w = "-" || w = "L" || w = "F"
+        res := if      cn then north i-1 j
+               else if cs then south i+1 j
+               else if ce then east  i   j+1
+               else if cw then west  i   j-1
+               else panic "start not connectd at $i $j"
+        v(ii,jj i32) => lp[ii][jj] := at ii jj; at ii jj
+        north(ii,jj i32) unit => t := v ii jj; say "N: $ii $jj $n $t"; if t = "|" then north ii-1 jj   else if t = "F" then east  ii   jj+1 else if t = "7" then west  ii   jj-1 else if t != "S" panic "north $t"
+        south(ii,jj i32) unit => t := v ii jj; say "S: $ii $jj $n $t"; if t = "|" then south ii+1 jj   else if t = "L" then east  ii   jj+1 else if t = "J" then west  ii   jj-1 else if t != "S" panic "south $t"
+        east (ii,jj i32) unit => t := v ii jj; say "E: $ii $jj $n $t"; if t = "-" then east  ii   jj+1 else if t = "7" then south ii+1 jj   else if t = "J" then north ii-1 jj   else if t != "S" panic "east  $t"
+        west (ii,jj i32) unit => t := v ii jj; say "W: $ii $jj $n $t"; if t = "-" then west  ii   jj-1 else if t = "F" then south ii+1 jj   else if t = "L" then north ii-1 jj   else if t != "S" panic "north $t"
+        lp[i][j] := (if      cn && cs then "|"
+                     else if ce && cw then "-"
+                     else if cn && ce then "L"
+                     else if cn && cw then "J"
+                     else if cs && ce then "F"
+                     else if cs && cw then "7"
+                     else panic "start $i $j {area[i,j]} needs two connections $cn $cs $ce $cw")
+        array2 area.length0 area.length1 i,j->lp[i][j]
+      else
+        panic "no start found"
+    res
+
+  part1 =>
+    loup.filter !="."
+        .count / 2
+
+
+  part2 =>
+    state(cnt i32, inside bool, from String) is
+      next(s String) =>
+        if      s = "|" then state cnt  !inside              "."
+        else if s = "F" then state cnt   inside              "F"
+        else if s = "L" then state cnt   inside              "L"
+        else if s = "J" then state cnt   inside^(from = "F") "."
+        else if s = "7" then state cnt   inside^(from = "L") "."
+        else if s = "-" then state cnt   inside              from
+        else if inside  then state cnt+1 inside              "."
+        else                 state cnt   inside              "."
+
+    (((loup.reduce (state 0 false ".") a,b->(a.next b))).cnt)
+
+  say "part1 $part1 part2 $part2"
