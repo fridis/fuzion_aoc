@@ -9,7 +9,7 @@ dec10_part2 is
   at(i,j) => if map.indices0.contains i && map.indices1.contains j then map[i,j] else "."
 
   # a direction
-  dir(di, dj i32,   # delte to move one step in this direction
+  dir(di, dj i32,   # delta to move one step in this direction
       next String,  # possible next tiles
       cur  String)  # possible current tiles
   is
@@ -25,7 +25,7 @@ dec10_part2 is
                       dir  0 +1 "J7-#" "-LF",   # east
                       dir  0 -1 "LF#-" "-J7" ]  # west
 
-  # find the start tile cooridinates
+  # find the start tile coordinates
   start =>
     for ij in map.index_pairs do
       (i,j) := ij
