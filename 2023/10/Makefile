@@ -9,7 +9,7 @@ test1:
 	$(FUZION)/bin/fz part1.fz <test_input
 
 part2:
-	FUZION_JAVA_STACK_SIZE=200m $(FUZION)/bin/fz part2.fz <input
+	FUZION_JAVA_STACK_SIZE=100m $(FUZION)/bin/fz part2.fz <input
 
 test2:
 	$(FUZION)/bin/fz part2.fz <test_input2

@@ -1,65 +1,85 @@
 dec10_part2 is
 
-  ls := ((io.stdin.with ()->io.buffered.read_lines).val.filter !="").as_array
-  cs := ls.map s->s.as_codepoints
+  cp := ((io.stdin.with ()->io.buffered.read_lines).val.filter !="").map s->s.as_codepoints
 
-#  ns,ew,ne,nw,sw,se,g,start.
-#  tile : choice ns ew ne nw sw se g start is
-#  s_to_tile := container.map_of String tile [("|",ns),("-",ew),("L",ne),("J",nw),("7",sw),("F",se),(".",g),("S",start)]
+  # our map
+  map := array2 cp.count cp[0].count i,j->cp[i][j]
 
-#  area1 := array2 cs.length cs[0].count i,j->(s_to_tile cs[i][j])
-  area := array2 cs.length cs[0].count i,j->cs[i][j]
-  at(i,j) => if area.indices0.contains i && area.indices1.contains j then area[i,j] else "."
+  # element at i,j on map extended with "." in all directions
+  at(i,j) => if map.indices0.contains i && map.indices1.contains j then map[i,j] else "."
+
+  # a direction
+  dir(di, dj i32,   # delte to move one step in this direction
+      next String,  # possible next tiles
+      cur  String)  # possible current tiles
+  is
+    # get next direction using given tile, nil if that tile is not connected
+    next(i,j i32) => (next.find (at i j)).map ix->dirs[ix]
+
+    # move one step from i,j and check if that tile connects to i,j
+    connects(i,j) => (next i+di j+dj).exists
+
+  # all four directions
+  dirs array dir := [ dir -1  0 "|#F7" "|LJ",   # north
+                      dir +1  0 "#|LJ" "|F7",   # south
+                      dir  0 +1 "J7-#" "-LF",   # east
+                      dir  0 -1 "LF#-" "-J7" ]  # west
+
+  # find the start tile cooridinates
+  start =>
+    for ij in map.index_pairs do
+      (i,j) := ij
+    until map[i,j] = "S"
+      ij
+    else
+      panic "no start found"
+
+  # find the loop:
   loup =>
     lm : mutate.
-    res := lm.go ()->
-      lp := array area.length0 i->((lm.array String).type.new lm area.length1 ".")
-      for ij in area.index_pairs do
-        (i,j) := ij
-      until area[i,j] = "S"
-        n := at i-1 j; cn := n = "|" || n = "F" || n = "7"
-        s := at i+1 j; cs := s = "|" || s = "L" || s = "J"
-        e := at i j+1; ce := e = "-" || e = "7" || e = "J"
-        w := at i j-1; cw := w = "-" || w = "L" || w = "F"
-        res := if      cn then north i-1 j
-               else if cs then south i+1 j
-               else if ce then east  i   j+1
-               else if cw then west  i   j-1
-               else panic "start not connectd at $i $j"
-        v(ii,jj i32) => lp[ii][jj] := at ii jj; at ii jj
-        north(ii,jj i32) unit => t := v ii jj; say "N: $ii $jj $n $t"; if t = "|" then north ii-1 jj   else if t = "F" then east  ii   jj+1 else if t = "7" then west  ii   jj-1 else if t != "S" panic "north $t"
-        south(ii,jj i32) unit => t := v ii jj; say "S: $ii $jj $n $t"; if t = "|" then south ii+1 jj   else if t = "L" then east  ii   jj+1 else if t = "J" then west  ii   jj-1 else if t != "S" panic "south $t"
-        east (ii,jj i32) unit => t := v ii jj; say "E: $ii $jj $n $t"; if t = "-" then east  ii   jj+1 else if t = "7" then south ii+1 jj   else if t = "J" then north ii-1 jj   else if t != "S" panic "east  $t"
-        west (ii,jj i32) unit => t := v ii jj; say "W: $ii $jj $n $t"; if t = "-" then west  ii   jj-1 else if t = "F" then south ii+1 jj   else if t = "L" then north ii-1 jj   else if t != "S" panic "north $t"
-        lp[i][j] := (if      cn && cs then "|"
-                     else if ce && cw then "-"
-                     else if cn && ce then "L"
-                     else if cn && cw then "J"
-                     else if cs && ce then "F"
-                     else if cs && cw then "7"
-                     else panic "start $i $j {area[i,j]} needs two connections $cn $cs $ce $cw")
-        array2 area.length0 area.length1 i,j->lp[i][j]
-      else
-        panic "no start found"
-    res
+    lm.go (array2 String) ()->
+      lp := array map.length0 i->((lm.array String).type.new lm map.length1 ".")
 
-  part1 =>
-    loup.filter !="."
-        .count / 2
+      (i,j) := start
+      for first := true, !first && !d.connects i j
+          d in dirs
+      do
+        if d.connects i j
+          if first
+            go d i j
+            lp[i][j] := d.cur                          # set start to possible tiles
+          else
+            lp[i][j] := lp[i][j].as_codepoints         # find correct start tile
+                                .filter c->(d.cur.contains c)
+                                .as_string ""
 
+      # recursively go along the pipe
+      go(d dir, i0, j0 i32) =>
+        ii := i0 + d.di
+        jj := j0 + d.dj
+        lp[ii][jj] := at ii jj                # record path
+        match d.next ii jj
+          d dir => go d ii jj
+          nil   =>
+
+      # collect the resulting path as an array
+      array2 map.length0 map.length1 i,j->lp[i][j]
+
+  part1 => loup.filter !="."     # count the tiles in the loop and divide by 2
+               .count / 2
 
   part2 =>
-    state(cnt i32, inside bool, from String) is
-      next(s String) =>
-        if      s = "|" then state cnt  !inside              "."
-        else if s = "F" then state cnt   inside              "F"
-        else if s = "L" then state cnt   inside              "L"
-        else if s = "J" then state cnt   inside^(from = "F") "."
-        else if s = "7" then state cnt   inside^(from = "L") "."
-        else if s = "-" then state cnt   inside              from
-        else if inside  then state cnt+1 inside              "."
-        else                 state cnt   inside              "."
+    state(cnt i32,           # inside count so far
+          p String,          # previous tile
+          inside bool)       # are we currently inside?
+    is
+      # get state after tile t
+      next(t String) =>
+        cnt1 := cnt + (if t = "." && inside then 1 else 0)           # count the dots inside
+        p1 := if t = "-" p else t                                    # carry on previous
+        flip := t = "|" || p = "F" && t = "J" || p = "L" && t = "7"  # flip inside
+        state cnt1 p1 inside^flip
 
-    (((loup.reduce (state 0 false ".") a,b->(a.next b))).cnt)
+    (loup.reduce (state 0 "" false) s,t->(s.next t)).cnt
 
   say "part1 $part1 part2 $part2"
