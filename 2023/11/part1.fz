@@ -1,4 +1,4 @@
-dec10_part1 is
+dec11_part1 is
 
   input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
                                                      .map (.as_codepoints.map_sequence ="#")
