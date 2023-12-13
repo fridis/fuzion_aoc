@@ -1,0 +1,51 @@
+dec13_part1 is
+
+  input := (io.stdin.with ()->io.buffered.read_lines).val
+  areas(inp Sequence String) list (array2 bool) =>
+    inp := inp.drop_while =""
+    n := (inp.take_while !="").count
+    if   n=0 then nil
+    else
+      p := inp.split_at n
+      area p.values.0 : (areas p.values.1)
+
+  area(inp) =>
+    inp := inp.map s->s.as_codepoints
+    array2 inp.count inp[0].count i,j->inp[i][j]="#"
+
+  areas  := areas input
+  array2.transpose => array2 length1 length0 i,j->index[](j,i)
+
+  mirrors(a) =>
+    for i in 0..a.length0-2
+        res :=  for j in 0..
+                    l := i-j
+                    r := i+1+j
+                while a.indices0.contains l && a.indices0.contains r
+                until (a.indices1 ∃ ix->a[l,ix]!=a[r,ix]) then 0   # NYI: why do we need parentheses here?
+                else i+1
+    while res = 0 else
+      res
+
+  mirrors2(a) =>
+    for i in 0..a.length0-2
+        res :=  for s := 0, s+sm
+                    j := 0, j+1
+                    l := i-j
+                    r := i+1+j
+                while a.indices0.contains l && a.indices0.contains r
+                  ll := a.indices1.map ix->a[l,ix];
+                  lr := a.indices1.map ix->a[r,ix];
+                  ls := a.indices1.map  ix->a[l,ix]!=a[r,ix]
+                  sm := a.indices1.filter ix->a[l,ix]!=a[r,ix]
+                                  .count
+                else
+                  if s = 1 then i+1 else 0
+    while res = 0 else
+      res
+
+  part1 => areas.map (a -> 100 * mirrors  a + mirrors  a.transpose) |> sum
+  part2 => areas.map (a -> 100 * mirrors2 a + mirrors2 a.transpose) |> sum
+
+
+  say "part1 $part1 part2 $part2"
