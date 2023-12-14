@@ -1,18 +1,23 @@
 dec14_part1 is
 
   input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
-                                                         .map s->s.as_codepoints
-  area := array2 input.count input[0].count i,j->input[i][j]
+                                                     .map (.as_codepoints)
+  area := array2 String input.count input[0].count i,j->input[i][j]
 
-  part1 =>
-   sum (area.indices0.map x->
-     (nd, nl) := area.indices1.reduce (i32, list String) (0,(list String).type.empty) a,y->
-       (ndots, l) := a
-       if      area[y,x] = "O" (ndots, l ++ ["O"])
-       else if area[y,x] = "." (ndots+1, l)
-       else if area[y,x] = "#" (0, l ++ (["."].cycle.take ndots) ++ ["#"])
-       else panic area[y,x]
-     nl := nl ++ ["."].cycle.take nd
-     (1..nl.count).zip nl.reverse (a,b -> if b = "O" then a else 0) |> sum)
+  a2(a) => array2 String a.count a[0].count i,j->a[j][i]
+  dots(n) => ["."].cycle.take n
+
+  tilt(a) =>
+    a2 (a.indices0.map x->
+       (nd, nl) := a.indices1.reduce (0,(list String).type.empty) t,y->
+         (ndots, l) := t
+         if      a[y,x] = "O" (ndots  , l ++ ["O"])
+         else if a[y,x] = "." (ndots+1, l)
+         else                 (0      , l ++ dots ndots ++ ["#"])
+       nl ++ dots nd)
+
+  weight(a) => a.index_pairs.map (||> y,x -> if a[y,x] = "O" then a.length0-y else 0) |> sum
+
+  part1 => tilt area |> weight
 
   say "part1 $part1"
