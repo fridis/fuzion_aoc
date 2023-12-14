@@ -1,0 +1,18 @@
+dec14_part1 is
+
+  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
+                                                         .map s->s.as_codepoints
+  area := array2 input.count input[0].count i,j->input[i][j]
+
+  part1 =>
+   sum (area.indices0.map x->
+     (nd, nl) := area.indices1.reduce (i32, list String) (0,(list String).type.empty) a,y->
+       (ndots, l) := a
+       if      area[y,x] = "O" (ndots, l ++ ["O"])
+       else if area[y,x] = "." (ndots+1, l)
+       else if area[y,x] = "#" (0, l ++ (["."].cycle.take ndots) ++ ["#"])
+       else panic area[y,x]
+     nl := nl ++ ["."].cycle.take nd
+     (1..nl.count).zip nl.reverse (a,b -> if b = "O" then a else 0) |> sum)
+
+  say "part1 $part1"

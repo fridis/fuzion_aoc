@@ -1,0 +1,74 @@
+dec14_part2 is
+
+  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
+                                                     .map s->s.as_codepoints
+
+  // NYI: free types DOES NOT WORK: a2(a S1 : Sequence (S2 : Sequence codepoint)) => array2 a.count a[0].count i,j->a[i][j]
+  // a2(S2 type : Sequence codepoint, S1 type : Sequence S2, a S1) => array2 a.count a[0].count i,j->a[i][j]
+#  a2a(a S1 : Sequence (S2 : Sequence (CP : String))) => array2 a.count a[0].count i,j->a[i][j]
+  a2a(a) => array2 String a.count a[0].count i,j->a[i][j]
+  a2b(a) => array2 String a.count a[0].count i,j->a[j][i]
+  area := a2a input
+
+  part1 =>
+#    say area
+#    say (tilt_north area)
+    tilt area |> weight
+
+  tilt(ar) =>
+    rs := (ar.indices0.map x->
+       (nd, nl) := ar.indices1.reduce (i32, list String) (0,(list String).type.empty) a,y->
+         (ndots, l) := a
+         if      ar[y,x] = "O" (ndots, l ++ ["O"])
+         else if ar[y,x] = "." (ndots+1, l)
+         else if ar[y,x] = "#" (0, l ++ (["."].cycle.take ndots) ++ ["#"])
+         else panic ar[y,x]
+       r := (nl ++ ["."].cycle.take nd).as_array
+       # say "tilt col $x is $r"
+       r
+     .as_array) |> a2b
+#    say "tilt result is $rs"
+    rs
+
+  if false then right area
+  if false then left area
+  right(a) => array2 a.length1 a.length0 y,x->a[x,a.length1-y-1]
+  left (a) => array2 a.length1 a.length0 y,x->a[a.length1-x-1,y]
+
+  weight(a) => sum (a.index_pairs.map (p-> p ||> (y,x -> if a[y,x] = "O" then a.length0-y else 0)))
+#  weight2(a) => sum (a.index_pairs.map (p-> p ||> (y,x -> if a[y,x] = "O" then say "$x,$y:{a.length0-y}";a.length0-y else 0)))
+
+  infix == (a1,a2) => a1.zip a2 x,y->x=y ∀ x->x
+
+  part2 =>
+#    say "go: "
+#    say area
+#    say (area |> tilt)
+#    say (weight2 (area |> tilt))
+#    say (area |> tilt |> left |> tilt |> left |> left |> left)
+#    say (area |> tilt |> left |> tilt |> left |> tilt |> left |> left)
+#    say (area |> tilt |> left |> tilt |> left |> tilt |> left |> tilt |> left)
+    for s Sequence (array2 String) := [], s ++ [a]
+#        ss Sequence String := [], ss ++ [$a]
+        a := area, a |> tilt |> left |> tilt |> left |> tilt |> left |> tilt |> left
+        n in 0..100000
+    do
+      yak "."
+#      say a
+#      if !(a == a) then panic "a is not a for "+a
+    until !(s.filter ==a).is_empty then
+#    until !(ss.filter =($a)).is_empty then
+      say ""
+      from := ((s.take_while (x -> ! (x==a))).count-1)
+      say "REPEATING from "+from+" to $n"
+      l := n-from-1
+      i := from + (1_000_000_000-from) % l
+      say "index is $i = $from + (1_000_000_000-$from)%$l = $from + {(1_000_000_000-from)%l}"
+      say "weight at 1B is {weight s[i]}"
+
+    else
+      say "all different"
+
+
+
+  say "part1 $part1 part2 $part2"
