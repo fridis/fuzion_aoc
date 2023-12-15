@@ -11,17 +11,16 @@ dec15_part2 is
     lm.go i32 ()->
       entry(is_add bool, s Sequence String) is
         k => s[0]
-        hash => hash k
         val  => s[1].trim.parse_i32.val
       hm := (lm.array (Sequence entry)).type.new lm 256 []
       for e in input.split ","
                     .map (e -> if e.contains "=" then e.split "=" |> entry true
                                                  else e.split "-" |> entry false)
       do
-        b := hm[e.hash]
-        hm[e.hash] := if      !e.is_add        then b.filter x->x.k!=e.k
-                      else if b ∃ (x->x.k=e.k) then b.map    x->if x.k=e.k then e else x
-                      else                          b ++ [e]
+        b := hm[hash e.k]
+        hm[hash e.k] := if      !e.is_add        then b.filter x->x.k!=e.k
+                        else if b ∃ (x->x.k=e.k) then b.map    x->if x.k=e.k then e else x
+                        else                          b ++ [e]
       else
         hm.indexed.map (||> b,l->
           (l.indexed 1).map (||> n,e->(b+1)*n*e.val) |> sum) |> sum
