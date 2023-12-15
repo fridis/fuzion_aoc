@@ -1,4 +1,4 @@
-dec13_part2 is
+dec13_part1 is
 
   input := (io.stdin.with ()->io.buffered.read_lines).val
   areas(inp Sequence String) (list (array2 bool)) =>
