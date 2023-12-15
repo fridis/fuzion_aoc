@@ -2,20 +2,16 @@ dec15_part2 is
 
   input := (io.stdin.with ()->io.buffered.read_line).val
 
-  hash(sq Sequence u8) =>
-    for h := 0, (h + c.as_i32) * 17 % 256
-        c in sq
-    else
-      h
+  hash(s String) => s.utf8.reduce 0 (h,c -> (h + c.as_i32) * 17 % 256)
 
-  part1 => input.split "," |> (.map (s->hash s.utf8)) |> sum
+  part1 => input.split "," |> (.map hash) |> sum
 
   part2 =>
     lm : mutate.
     lm.go i32 ()->
       entry(is_add bool, s Sequence String) is
         k => s[0]
-        hash => hash k.utf8
+        hash => hash k
         val  => s[1].trim.parse_i32.val
       hm := (lm.array (Sequence entry)).type.new lm 256 []
       for e in input.split ","
