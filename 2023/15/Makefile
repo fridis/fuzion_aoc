@@ -9,7 +9,7 @@ test1:
 	$(FUZION)/bin/fz part1.fz <test_input
 
 part2:
-	$(FUZION)/bin/fz part2.fz <input
+	$(FUZION)/bin/fz -c -o=part2 part2.fz && ./part2 <input
 
 test2:
 	$(FUZION)/bin/fz part2.fz <test_input
