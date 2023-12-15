@@ -1,0 +1,39 @@
+dec15_part2 is
+
+  input := (io.stdin.with ()->io.buffered.read_fully).val
+  comma := ",".utf8.first
+  hash(sq Sequence u8) =>
+    for llh := 0, last_h
+        last_h := 0, if c=comma then 0 else h
+        c in sq
+        h := (last_h + c.as_i32) * 17 % 256
+    else
+      last_h
+
+  part1 => hash input
+
+  part2 =>
+    entry(is_add bool, s Sequence String) ref is
+      k => s[0]
+      hash => hash k.utf8
+      val  => s[1].trim.parse_i32.val
+      redef as_string => "[$k {if is_add then val else -1}]"
+    entries := String.type.from_bytes input
+                          .split ","
+                          .map (e -> if e.contains "=" then e.split "=" |> entry true
+                                     else if !(e.contains "-") then panic "no -"
+                                                       else e.split "-" |> entry false)
+
+    lm : mutate.
+    lm.go ()->
+      hm := (lm.array (Sequence entry)).type.new lm 256 []
+      for e in entries do
+        b := hm[e.hash]
+        hm[e.hash] := if      !e.is_add        then b.filter       x->x.k!=e.k
+                      else if b ∃ (x->x.k=e.k) then b.map_sequence x->if x.k=e.k then e else x
+                      else                          b ++ [e]
+      else
+        hm.indexed.map_sequence (||> b,l->
+          (l.indexed 1).map_sequence (||> n,e->(b+1)*n*e.val) |> sum) |> sum
+
+  say "part1 $part1 part2 $part2"
