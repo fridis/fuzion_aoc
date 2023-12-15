@@ -9,7 +9,13 @@ test1:
 	$(FUZION)/bin/fz part1.fz <test_input
 
 part2:
-	$(FUZION)/bin/fz -c -o=part2 part2.fz && ./part2 <input
+	$(FUZION)/bin/fz -c -o=part2.bin part2.fz && ./part2.bin <input
 
 test2:
-	$(FUZION)/bin/fz part2.fz <test_input
+	$(FUZION)/bin/fz -c -o=part2.bin part2.fz && ./part2.bin <test_input
+
+part2_mini:
+	$(FUZION)/bin/fz -c -o=part2.bin part2_mini.fz && ./part2.bin <input
+
+test2_mini:
+	$(FUZION)/bin/fz -c -o=part2.bin part2_mini.fz && ./part2.bin <test_input

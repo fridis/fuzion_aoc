@@ -1,0 +1,14 @@
+input := (io.stdin.with ()->io.buffered.read_line).val.split ","
+hash(s String) => s.utf8.reduce 0 (h,c -> (h + c.as_i32) * 17 % 256)
+say "part1 {(input.map hash) |> sum}"
+lm : mutate is; lm.go unit ()->
+  hm := (lm.array (Sequence (tuple String i32))).type.new lm 256 []
+  input | e->
+    k := e.substring 0 ((e.find "=").get (e.find "-").get)
+    p := (k, (e.split "=").last.parse_i32.val -1)
+    b := hm[hash k]
+    hm[hash k] :=
+       if      e.contains "-"        then b.filter (x -> x.values.0 != k)
+       else if b ∃ (x->x.values.0=k) then b.map    (x -> if x.values.0=k then p else x)
+       else                               b ++ [p]
+  say "part2 {hm.indexed.map (p -> p ||> b,l->sum ((l.indexed 1).map (||> n,e->(b+1)*n*e.values.1))) |> sum}"
