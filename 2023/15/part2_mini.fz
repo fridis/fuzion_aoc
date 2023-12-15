@@ -11,4 +11,4 @@ lm : mutate is; lm.go unit ()->
        if      e.contains "-"        then b.filter (x -> x.values.0 != k)
        else if b ∃ (x->x.values.0=k) then b.map    (x -> if x.values.0=k then p else x)
        else                               b ++ [p]
-  say "part2 {hm.indexed.map (p -> p ||> b,l->sum ((l.indexed 1).map (||> n,e->(b+1)*n*e.values.1))) |> sum}"
+  say "part2 {hm.indexed.map (p -> p ||> b,l->((l.indexed 1).map (||> n,e->(b+1)*n*e.values.1)) |> sum) |> sum}"
