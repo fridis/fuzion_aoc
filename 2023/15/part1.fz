@@ -3,12 +3,11 @@ dec15_part1 is
   input := (io.stdin.with ()->io.buffered.read_fully).val
   comma := ",".utf8.first
   part1 =>
-    for s := 0, s + (if c=comma then last_h else 0)
-        llh := 0, last_h
-        last_h := 0, if c=comma then 0 else h
+    for s := 0, s + (if c=comma then h else 0)
+        last_h := 0, h
+        h := 0, if c=comma then 0 else (h + c.as_i32) * 17 % 256
         c in input
-        h := (last_h + c.as_i32) * 17 % 256
     else
-      s+llh
+      s+last_h
 
   say "part1 $part1"
