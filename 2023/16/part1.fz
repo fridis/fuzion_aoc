@@ -1,0 +1,63 @@
+dec16_part1 is
+
+  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
+                                                     .map (.as_codepoints)
+  area := array2 String input.count input[0].count i,j->input[i][j]
+
+  part1 =>
+    lm : mutate.
+    lm.go ()->
+      visited := (lm.array i32).type.new lm area.length 0
+      r => 1
+      l => 2
+      u => 4
+      d => 8
+      ix(x,y) => y+x*area.length1
+      trace(x,y,w i32) unit =>
+        if ((x ∈ area.indices1) &&
+            (y ∈ area.indices0) &&
+            (visited[ix x y] & w) = 0) then
+          visited[ix x y] := visited[ix x y] | w
+          c := area[y,x]
+          if false
+            say "---$x $y: $d $c"
+            for yy in area.indices0 do
+              for xx in area.indices1 do
+                yak (if visited[ix xx yy]=0 then " " else $visited[ix xx yy])
+              else
+                say ""
+          if  w = r  &&  c = "."              then trace x+1 y   w
+          if  w = l  &&  c = "."              then trace x-1 y   w
+          if  w = u  &&  c = "."              then trace x   y-1 w
+          if  w = d  &&  c = "."              then trace x   y+1 w
+          if  w = r  &&  c = "-"              then trace x+1 y   w
+          if  w = l  &&  c = "-"              then trace x-1 y   w
+          if  w = u  &&  c = "|"              then trace x   y-1 w
+          if  w = d  &&  c = "|"              then trace x   y+1 w
+          if (w = r) && (c = "/"  || c = "|") then trace x   y-1 u
+          if (w = r) && (c = "\\" || c = "|") then trace x   y+1 d
+          if (w = l) && (c = "/"  || c = "|") then trace x   y+1 d
+          if (w = l) && (c = "\\" || c = "|") then trace x   y-1 u
+          if (w = u) && (c = "/"  || c = "-") then trace x+1 y   r
+          if (w = u) && (c = "\\" || c = "-") then trace x-1 y   l
+          if (w = d) && (c = "/"  || c = "-") then trace x-1 y   l
+          if (w = d) && (c = "\\" || c = "-") then trace x+1 y   r
+      trace 0 0 r
+      s(v) => " ><━^┗┛┻v┏┓┳┃┣┫╋".as_codepoints[v]
+      if !false
+            say "---"
+            for yy in area.indices0 do
+              for xx in area.indices1 do
+                yak (if visited[ix xx yy]=0 then " " else s visited[ix xx yy]   )
+              else
+                say ""
+            say "---"
+            for yy in area.indices0 do
+              for xx in area.indices1 do
+                c := area[yy,xx]
+                yak (if visited[ix xx yy]!=0 then (c+(s visited[ix xx yy])).background_yellow else c+" ")
+              else
+                say ""
+      (visited.filter !=0).count
+
+  say "part1 $part1"
