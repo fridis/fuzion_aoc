@@ -1,0 +1,205 @@
+dec17_part1 is
+
+  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
+                                                     .map (.as_codepoints)
+  area := array2 input.count input[0].count i,j->input[i][j].parse_i32.val
+  xs => area.indices1
+  ys => area.indices0
+
+  r => {0}; l => {1}; u => {2}; d => {3}; s => {4}
+  part1a =>
+    zig_zag(x, y, loss i32) =>
+      loss := loss + area[y,x]
+      if x = xs.upper && y = ys.upper then loss
+      else if x*ys.upper > y * xs.upper then zig_zag x   y+1 loss
+      else                                   zig_zag x+1 y   loss
+    traverse(x, y, dir, straight, loss, max i32) =>
+      loss := if       dir = s                            then 0
+              else if  (x ∉ xs) || (y ∉ ys) || loss > max then max
+              else                                             loss + area[y,x]
+      if loss >= max then max
+      else
+        max := min max (if dir != l && (dir != r || straight < 3) then traverse x+1 y r (dir = r ? straight+1 : 0) loss max else max)
+        max := min max (if dir != r && (dir != l || straight < 3) then traverse x-1 y l (dir = l ? straight+1 : 0) loss max else max)
+        max := min max (if dir != d && (dir != u || straight < 3) then traverse x y+1 u (dir = u ? straight+1 : 0) loss max else max)
+        max := min max (if dir != u && (dir != d || straight < 3) then traverse x y-1 d (dir = d ? straight+1 : 0) loss max else max)
+//        say "traverse at $x $y is $max"
+        max
+    loss := zig_zag 1 0 0
+    say "zig zag loss is $loss"
+    traverse 0 0 s 0 0 loss
+  part1 =>
+    lm : mutate.
+    lm.go ()->
+      la := (lm.array i32).type.new lm area.length0*area.length1*4*4 -1
+      from := (lm.array (tuple i32 i32 i32 i32)).type.new lm area.length0*area.length1*4*4 (-1,-1,-1,-1)
+      ix(y, x, dir, straight) =>
+        res := ((y*area.length1+x)*4+dir)*4+straight
+        if res < 0 || res >= la.length then panic "ix $y $x $dir $straight res $res len {la.length}"
+        res
+      la[ix 0 0 r 0] := 0
+      modified := lm.env.new false
+      res := lm.env.new i32.type.max
+      path := lm.env.new (Sequence (tuple i32 i32 i32 i32)) []
+      put(x, y, dir, straight, loss0 i32, fx, fy, fd, fs i32) =>
+        if  (x ∉ xs) || (y ∉ ys) then
+        else
+          loss := loss0 + area[y,x]
+#          if (x = 1 && y=0 && loss = 3) then say "----------PUT $x $y $dir $straight $loss0 FROM $fx $fy $fd $fs"
+          #if y=0 then say "put $x $y $dir $straight $loss"
+          ol := la[ix y x dir straight];
+          if ol < 0 || ol > loss then
+            la[ix y x dir straight] := loss
+            from[ix y x dir straight] := (fy,fx,fd,fs)
+            modified <- true
+          if x = xs.upper && y = ys.upper && loss < res.get then
+            res <- loss
+            for p (Sequence (tuple i32 i32 i32 i32)) := [] , [(ffy,ffx,ffd,ffs)] ++ p
+                f := (fy,fx,fd,fs), from[ix ffy ffx ffd ffs]
+                ffy := f.values.0
+                ffx := f.values.1
+                ffd := f.values.2
+                ffs := f.values.3
+            while f.values.0 != 0 || f.values.1 != 0
+            do # say "new res $loss from $ffx $ffy"
+            else
+              path <- p
+
+#            say "new res $x $y $dir $straight is $res la is {la[ ix y x dir straight]}"
+      update =>
+        for y in ys do
+          for x in xs do
+            for dir in 0..3 do
+              for straight in 0..3 do
+                loss := if y=0 && x=0 then 0 else la[ix y x dir straight]
+                if loss >= 0 then
+#                  if x = 0 && y = 0 then
+#                    say "$x $y: cc is {dir != l && (dir != r || straight < 3)}"
+                  if dir != l && (dir != r || straight < 3) then put x+1 y r (dir = r ? straight+1 : 1) loss x y dir straight
+                  if dir != r && (dir != l || straight < 3) then put x-1 y l (dir = l ? straight+1 : 1) loss x y dir straight
+                  if dir != d && (dir != u || straight < 3) then put x y-1 u (dir = u ? straight+1 : 1) loss x y dir straight
+                  if dir != u && (dir != d || straight < 3) then put x y+1 d (dir = d ? straight+1 : 1) loss x y dir straight
+      show =>
+        for y in ys do
+          for x in xs do
+            for
+              mi1 := i32.type.max-1000, min mi1 ls3
+              dir in 0..3
+              ls3 := for
+                        mi := i32.type.max-1000, min mi ls
+                        straight in 0..3
+                        loss := if y=0 && x=0 then 0 else la[ix y x dir straight]
+                        ls := (if loss < 0 then i32.type.max else loss)
+                      else
+                        mi
+            else
+              for yes := false, yes || p.values.1 = x && p.values.0 = y
+                  sy := "", if p.values.1 = x && p.values.0 = y then "{la[ix ffy ffx ffd ffs]} ($ffx $ffy $ffd $ffs)" else sy
+#                  sy := "", if p.values.1 = x && p.values.0 = y then "{la[ix ffy ffx ffd ffs]}" else sy
+                  p in path.get
+                  ffy := p.values.0
+                  ffx := p.values.1
+                  ffd := p.values.2
+                  ffs := p.values.3
+              else
+                sep := yes ? "*"+sy+"*" : " "+((1000+mi1).as_string.substring 1)+" "
+                yak sep
+          else
+            say ""
+
+      for i in 0.. do
+        say "iteration $i res $res"
+        modified <- false
+        update
+        //        show
+      until !modified.get
+      res.get
+
+  part2 =>
+    lm : mutate.
+    lm.go ()->
+      la := (lm.array i32).type.new lm area.length0*area.length1*4*11 -1
+      from := (lm.array (tuple i32 i32 i32 i32)).type.new lm area.length0*area.length1*4*11 (-1,-1,-1,-1)
+      ix(y, x, dir, straight) =>
+        res := ((y*area.length1+x)*4+dir)*11+straight
+        if res < 0 || res >= la.length then panic "ix $y $x $dir $straight res $res len {la.length}"
+        res
+      la[ix 0 0 r 0] := 0
+      modified := lm.env.new false
+      res := lm.env.new i32.type.max
+      path := lm.env.new (Sequence (tuple i32 i32 i32 i32)) []
+      put(x, y, dir, straight, loss0 i32, fx, fy, fd, fs i32) =>
+        if  (x ∉ xs) || (y ∉ ys) then
+        else
+          loss := loss0 + area[y,x]
+#          if (x = 1 && y=0 && loss = 3) then say "----------PUT $x $y $dir $straight $loss0 FROM $fx $fy $fd $fs"
+#          say "----------PUT $x $y $dir $straight $loss0 FROM $fx $fy $fd $fs"
+          #if y=0 then say "put $x $y $dir $straight $loss"
+          ol := la[ix y x dir straight];
+          if ol < 0 || ol > loss then
+            la[ix y x dir straight] := loss
+            from[ix y x dir straight] := (fy,fx,fd,fs)
+            modified <- true
+          if x = xs.upper && y = ys.upper && straight >= 4 && loss < res.get then
+            res <- loss
+            for p (Sequence (tuple i32 i32 i32 i32)) := [] , [(ffy,ffx,ffd,ffs)] ++ p
+                f := (fy,fx,fd,fs), from[ix ffy ffx ffd ffs]
+                ffy := f.values.0
+                ffx := f.values.1
+                ffd := f.values.2
+                ffs := f.values.3
+            while f.values.0 != 0 || f.values.1 != 0
+            do # say "new res $loss from $ffx $ffy"
+            else
+              path <- p
+
+#            say "new res $x $y $dir $straight is $res la is {la[ ix y x dir straight]}"
+      update =>
+        for y in ys do
+          for x in xs do
+            for dir in 0..3 do
+              for straight in 0..10 do
+                loss := if y=0 && x=0 then 0 else la[ix y x dir straight]
+                if loss >= 0 then
+#                  if x = 0 && y = 0 then
+#                    say "$x $y: cc is {dir != l && (dir != r || straight < 3)}"
+                  if dir != l && (dir != r && straight >= 4 || dir = r && straight < 10) then put x+1 y r (dir = r ? straight+1 : 1) loss x y dir straight
+                  if dir != r && (dir != l && straight >= 4 || dir = l && straight < 10) then put x-1 y l (dir = l ? straight+1 : 1) loss x y dir straight
+                  if dir != d && (dir != u && straight >= 4 || dir = u && straight < 10) then put x y-1 u (dir = u ? straight+1 : 1) loss x y dir straight
+                  if dir != u && (dir != d && straight >= 4 || dir = d && straight < 10) then put x y+1 d (dir = d ? straight+1 : 1) loss x y dir straight
+      show =>
+        for y in ys do
+          for x in xs do
+            for
+              mi1 := i32.type.max-1000, min mi1 ls3
+              dir in 0..3
+              ls3 := for
+                        mi := i32.type.max-1000, min mi ls
+                        straight in 0..10
+                        loss := if y=0 && x=0 then 0 else la[ix y x dir straight]
+                        ls := (if loss < 0 then i32.type.max else loss)
+                      else
+                        mi
+            else
+              for yes := false, yes || p.values.1 = x && p.values.0 = y
+                  sy := "", if p.values.1 = x && p.values.0 = y then "{la[ix ffy ffx ffd ffs]} ($ffx $ffy $ffd $ffs)" else sy
+#                  sy := "", if p.values.1 = x && p.values.0 = y then "{la[ix ffy ffx ffd ffs]}" else sy
+                  p in path.get
+                  ffy := p.values.0
+                  ffx := p.values.1
+                  ffd := p.values.2
+                  ffs := p.values.3
+              else
+                sep := yes ? "*"+sy+"*" : " "+((1000+mi1).as_string.substring 1)+" "
+                yak sep
+          else
+            say ""
+
+      for i in 0.. do
+        say "iteration $i res $res"
+        modified <- false
+        update
+  #      show
+      until !modified.get
+      res.get
+  say "part2 $part2"
