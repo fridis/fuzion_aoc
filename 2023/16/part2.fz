@@ -25,9 +25,9 @@ dec16_part2 is
       (visited.filter !=0).count
 
   part1 => start 0 0 r
-  part2 => (xs.map (x -> start x              0              d) ++
-            xs.map (x -> start x              area.length0-1 u) ++
-            ys.map (y -> start 0              y              r) ++
-            ys.map (y -> start area.length1-1 y              l)    ).reduce 0 m,v->(max m v)
+  part2 => (xs.map (x -> start x        0        d) ++
+            xs.map (x -> start x        ys.upper u) ++
+            ys.map (y -> start 0        y        r) ++
+            ys.map (y -> start xs.upper y        l)    ).reduce 0 max
 
   say "part1 $part1 part2 $part2"
