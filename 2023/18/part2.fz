@@ -1,0 +1,257 @@
+dec18_part2 is
+
+  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
+
+  data := input.map action
+  action(s String) =>
+    s3 := s.split " "
+    h := (s3[2].substring 2 8).parse_i32_hex.val
+    d2 := "RDLU".substring (h % 16) (h % 16)+1
+    l2 := h / 16
+    action s3[0] s3[1].parse_i32.val d2 l2
+  action(dir String, len i32, dir2 String, len2 i32) is
+
+  dirs := "UDLR"
+  dx := [0,0,-1,+1]
+  dy := [-1,+1,0,0]
+
+  part1 =>
+    lm : mutate.
+    lm.go i32 ()->
+      cell(n lm.new String) ref is
+      area := array2 cell 1000 1000 _,_->(cell (lm.env.new "."))
+      say "start: "
+      for px := 500, nx
+          py := 500, ny
+          min_x := px-1, min min_x px-1
+          min_y := py-1, min min_y py-1
+          max_x := px+1, max max_x px+1
+          max_y := py+1, max max_y py+1
+          a in data
+          d := (dirs.find a.dir).get
+      do
+        for i in 0..(a.len-1) do
+          area[px+i*dx[d],py+i*dy[d]].n <- "#"
+        nx := px + a.len*dx[d]
+        ny := py + a.len*dy[d]
+      else
+        show =>
+          for y in min_y..max_y do
+            for x in min_x..max_x do
+              yak area[x,y].n.get
+            say ""
+        show
+        say "fill: "
+        fill(x,y i32) unit =>
+          if (min_x <= x <= max_x &&
+              min_y <= y <= max_y) then
+            if area[x,y].n.get = "." then
+              area[x,y].n <- "_"
+              fill x-1 y
+              fill x+1 y
+              fill x y-1
+              fill x y+1
+        fill min_x min_y
+        say "filled: "
+        show
+        res := lm.env.new 0 # (max_x-min_x+1)*(max_y-min_y+1)
+        for y in min_y..max_y do
+          for x in min_x..max_x do
+            c := area[x,y].n.get
+            if c = "#" || c = "." then
+              res <- res.get + 1
+#          else say "$y: $res"
+        res.get
+/*
+        for res := 0, res + end_x - start_x + 1
+            y in min_y..max_y
+        do
+            start_x := ((min_x..max_x).filter x->area[x,y].n.get).first
+            end_x   := ((min_x..max_x).filter x->area[x,y].n.get).last
+#            say "$y: $start_x .. $end_x ==> $res"
+        else
+          res
+          */
+
+  part2 =>
+    lm : mutate.
+    lm.go i64 ()->
+      cell(n lm.new String) ref is
+      icell(n lm.new i32) ref is
+      size => 2000
+      area := array2 cell 2*size 2*size _,_->(cell (lm.env.new "."))
+      # widths := array icell 1000 _->(icell (lm.env.new 0))
+      # height := array icell 1000 _->(icell (lm.env.new 0))
+      say "widths / heights: "
+      # l  := lm.env.new -1
+      # nx := lm.env.new -1
+      # ny := lm.env.new -1
+      for p0x := 1, nx
+          p0y := 1, ny
+          ws Sequence i64 := [i64.type.max,i64.type.max], nws.as_array
+          hs Sequence i64 := [i64.type.max,i64.type.max], nhs.as_array
+          a in data
+      do
+        l := a.len2.as_i64
+#        say "a.dir2 is {a.dir2} $p0x $ws"
+        (nx, nws) := if a.dir2 = "R" then
+                       for al := l, al-ws[ax]
+                           ax := p0x, ax+1
+                       while al >= ws[ax] else
+                         wl := ws.take ax
+                         wm := ws[ax]
+                         wr := ws.drop ax+1
+                         if al = 0 then
+                           if wm-1 = 0 then
+                             (ax, ws)
+                           else
+                             wn Sequence i64 := wl ++ [1, wm-1] ++ wr
+                             (ax, wn)
+                         else
+                           wn Sequence i64 := wl ++ [al-1,1, wm-al] ++ wr
+                           (ax+2, wn)
+                     else if a.dir2 = "L" then
+                       for al := l, al-ws[ax-1]
+                           ax := p0x, ax-1
+                       while al >= ws[ax-1] else
+                         wl := ws.take ax-1
+                         wm := ws[ax-1]
+                         wr := ws.drop ax
+                         if al = 0 then
+                           if wm-1=0
+                             (ax, ws)
+                           else
+                             wn Sequence i64 := wl ++ [wm-1, 1] ++ wr
+                             (ax, wn)
+                         else
+                           wn Sequence i64 := wl ++ [wm-al-1, 1, al] ++ wr
+                           (ax+1, wn)
+                     else
+                       (p0x, ws)
+        (ny, nhs) := if a.dir2 = "D" then
+                       for al := l, al-hs[ay]
+                           ay := p0y, ay+1
+                       while al >= hs[ay] else
+                         wl := hs.take ay
+                         wm := hs[ay]
+                         wr := hs.drop ay+1
+                         if al = 0 then
+                           if wm-1 = 0 then
+                             (ay, hs)
+                           else
+                             wn Sequence i64 := wl ++ [1, wm-1] ++ wr
+                             (ay, wn)
+                         else
+                           if (wm-al-1=0) panic "wm-al-1 is 0 A"
+                           wn Sequence i64 := wl ++ [al-1, 1, wm-al] ++ wr
+                           (ay+2, wn)
+                     else if a.dir2 = "U" then
+                       for al := l, al-hs[ay-1]
+                           ay := p0y, ay-1
+                       while al >= hs[ay-1] else
+                         wl := hs.take ay-1
+                         wm := hs[ay-1]
+                         wr := hs.drop ay
+                         if al = 0 then
+                           if wm-1=0
+                             (ay, hs)
+                           else
+                             wn Sequence i64 := wl ++ [wm-1, 1] ++ wr
+                             (ay, wn)
+                         else
+                           if (wm-al-1=0) panic "wm-al-1 is 0"
+                           wn Sequence i64 := wl ++ [wm-al-1, 1, al] ++ wr
+                           (ay+1, wn)
+                     else
+                       (p0y, hs)
+      else
+        say "p0x: $p0x weights: $ws"
+        say "p0y: $p0y heights: $hs"
+
+        say "start "
+        for p1x := p0x, nx
+            p1y := p0y, ny
+            px := p1x + size
+            py := p1y + size
+            min_x := px-1, min min_x px-1
+            min_y := py-1, min min_y py-1
+            max_x := px+1, max max_x px+1
+            max_y := py+1, max max_y py+1
+            a in data
+#          d := (dirs.find a.dir).get
+            d := a.dir2
+            l := a.len2.as_i64
+        do
+          say "DO $p1x $p1y $px $py $d {ws.count} {hs.count}"
+          nx := if d = "R" then
+                  for al := l, al - ws[pnx]
+                      pnx := p1x, pnx+1
+                  while al > 0 do
+//                    say "$pnx $p1y $al $pnx ALL $ws"
+//                    say "$pnx $p1y $al $pnx {ws[pnx]}"
+                    area[pnx+size,p1y+size].n <- "#"
+                  else
+                    pnx
+                else if d = "L" then
+                  for al := l, al - ws[pnx-1]
+                      pnx := p1x, pnx-1
+                  while al > 0 do
+#                    say "$pnx $p1y"
+                    area[pnx+size,p1y+size].n <- "#"
+                  else
+                    pnx
+                else
+                  p1x
+          ny := if d = "D" then
+                  for al := l, al - hs[pny]
+                      pny := p1y, pny+1
+                  while al > 0 do
+#                    say "$p1x $pny"
+                    area[p1x+size,pny+size].n <- "#"
+                  else
+                    pny
+                else if d = "U" then
+                  for al := l, al - hs[pny-1]
+                      pny := p1y, pny-1
+                  while al > 0 do
+                    area[p1x+size,pny+size].n <- "#"
+                    pny
+                else
+                  p1y
+        else
+          say "ELSE"
+          show =>
+            for y in min_y..max_y do
+              for x in min_x..max_x do
+                yak area[x,y].n.get
+              say ""
+          show
+          say "fill: "
+          fill(x,y i32) unit =>
+            if (min_x <= x <= max_x &&
+                min_y <= y <= max_y) then
+              if area[x,y].n.get = "." then
+                area[x,y].n <- "_"
+                fill x-1 y
+                fill x+1 y
+                fill x y-1
+                fill x y+1
+          fill min_x min_y
+          say "filled: "
+          show
+          res := lm.env.new i64 0 # (max_x-min_x+1)*(max_y-min_y+1)
+          say "ws is $ws"
+          say "hs is $hs"
+          for y in min_y..max_y do
+            for x in min_x..max_x do
+              c := area[x,y].n.get
+              if c = "#" || c = "." then
+                ww := ws[x-size] > (i64 1 << 60) ? 1 : ws[x-size]
+                hh := hs[y-size] > (i64 1 << 60) ? 1 : hs[y-size]
+#                say "$res: $ww*$hh {ww*hh} xy: {x-size},{y-size}: {ws[x-size]} {hs[y-size]}"
+                res <- res.get + ww*hh
+#          else say "$y: $res"
+          res.get
+
+  say "part1 $part1"
+  say "part2 $part2"
