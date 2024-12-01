@@ -1,4 +1,4 @@
-dec1_part1 is
+dec1_part2 is
 
   LM : mutate is
   input := LM ! ()->

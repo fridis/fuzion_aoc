@@ -8,8 +8,9 @@ dec1_part1 is
     n := s.split "   "
     (n[0].parse_i32.val, n[1].parse_i32.val)
 
-  l := data.map x->x.0 |> .sort
-  r := data.map x->x.1 |> .sort
-  d := l.zip r a,b->(|a-b|)
-        .reduce 0 (+)
-  say d
+  l := data.map x->x.0
+  r := data.map x->x.1
+
+  part1 => (l.sort).zip r.sort a,b->(|a-b|) |> sum
+
+  say part1
