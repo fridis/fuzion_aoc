@@ -1,0 +1,15 @@
+dec1_part1 is
+
+  LM : mutate is
+  input := LM ! ()->
+    ((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
+
+  data := input.map s->
+    n := s.split "   "
+    (n[0].parse_i32.val, n[1].parse_i32.val)
+
+  l := data.map x->x.0 |> .sort
+  r := data.map x->x.1 |> .sort
+  d := l.zip r a,b->(|a-b|)
+        .reduce 0 (+)
+  say d

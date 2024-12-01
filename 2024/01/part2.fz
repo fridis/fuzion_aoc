@@ -1,0 +1,18 @@
+dec1_part1 is
+
+  LM : mutate is
+  input := LM ! ()->
+    ((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
+
+  data := input.map s->
+    n := s.split "   "
+    (n[0].parse_i32.val, n[1].parse_i32.val)
+
+  l := data.map x->x.0
+  r := data.map x->x.1
+
+  part1 => (l.sort).zip r.sort a,b->(|a-b|) |> sum
+  part2 => l.map (n -> n * (r.filter =n).count) |> sum
+
+  say part1
+  say part2
