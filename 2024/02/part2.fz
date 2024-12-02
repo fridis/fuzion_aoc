@@ -22,11 +22,10 @@ dec2_part2 is
     else
       rh := r.take 1
       rt := r.drop 1
-      h := id (Sequence i32) l++rt
+      h Sequence i32 := l++rt
       h : parts (l ++ rh) rt
 
-  part2 => data.map (x -> part1 (parts [] x) > 0)
-               .filter id
+  part2 => data.filter (x -> part1 (parts [] x) > 0)
                .count
 
   say part1
