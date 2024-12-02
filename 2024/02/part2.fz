@@ -3,7 +3,8 @@ dec2_part2 is
   LM : mutate is
   input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
 
-  data := input.map (s -> (s.split " ").map (.parse_i32.val))
+  data := input.map (.split " "
+                     .map (.parse_i32.val))
 
   mono(s)  => s.map_pairs (<=)
                .map_pairs (=) ∀ id
