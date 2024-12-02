@@ -1,0 +1,17 @@
+dec2_part1 is
+
+  LM : mutate is
+  input := LM ! ()->
+    ((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
+
+  data := input.map (s -> (s.split " ").map (.parse_i32.val))
+
+  mono(s)  => s.map_pairs (<=)
+               .map_pairs (=) ∀ id
+  diffs(s) => s.map_pairs a,b->(|a-b|) ∀ ∈(1..3)
+
+  part1 => data.filter mono
+               .filter diffs
+               .count
+
+  say part1

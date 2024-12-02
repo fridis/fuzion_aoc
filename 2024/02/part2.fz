@@ -1,0 +1,32 @@
+dec2_part2 is
+
+  LM : mutate is
+  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
+
+  data := input.map (s -> (s.split " ").map (.parse_i32.val))
+
+  mono(s)  => s.map_pairs (<=)
+               .map_pairs (=) ∀ id
+  diffs(s) => s.map_pairs a,b->(|a-b|) ∀ ∈(1..3)
+
+  part1(d) => d.filter mono
+               .filter diffs
+               .count
+
+  part1 => part1 data
+
+  parts(l, r Sequence i32) =>
+    if r.count = 1
+      l : nil
+    else
+      rh := r.take 1
+      rt := r.drop 1
+      h := id (Sequence i32) l++rt
+      h : parts (l ++ rh) rt
+
+  part2 => data.map (x -> part1 (parts [] x) > 0)
+               .filter id
+               .count
+
+  say part1
+  say part2
