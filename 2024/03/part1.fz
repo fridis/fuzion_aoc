@@ -1,0 +1,67 @@
+dec3_part2 is
+
+  LM : mutate is
+  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
+
+  data := for res := "", res + "\n" + l
+              l in input
+          else
+            res
+
+  parser(d) is
+    ok option u32 =>
+     if d.starts_with "mul(" then
+       cp := d.as_codepoints.drop 4
+       n1 := skip_num cp
+       comma := skip "," n1.rest
+       n2 := skip_num comma.rest
+       cl := skip ")" n2.rest
+#       say "{n1.val} {n1.rest} {n1.r??} && {comma.skip_ok} && {n2.r??} && {cl.skip_ok}"
+       if n1.r?? && comma.skip_ok && n2.r?? && cl.skip_ok then
+         n1.val * n2.val
+       else
+         nil
+     else
+       nil
+
+
+    skip(c, dd) is
+      skip_ok => dd.first = c
+      rest Sequence codepoint => skip_ok ? dd.drop 1 : id (Sequence codepoint) []
+
+    skip_num(dd Sequence codepoint) is
+      r option (tuple u32 (Sequence codepoint)) :=
+           for
+             v := u32 0, v*10 + cp.val - "0".val
+             res option (tuple u32 (Sequence codepoint)) := nil, (v, rst)
+             rst := dd, rst.drop 1
+             cp := rst.first "X"
+           while cp.val ∈ codepoint.ascii_digit
+           else
+             res
+      rest Sequence codepoint => match r
+        nil => dd.drop 1
+        vs tuple => vs.1.drop 1
+      val =>  match r
+        nil => 0
+        vs tuple => vs.0
+
+    remaining_data => d.substring (ok?? ? 3 : 1)
+    calc => match ok
+      v u32 => v
+      nil   => 0
+
+  part1 =>
+    for
+      s := u32 0, s+p.calc
+      d := data, p.remaining_data
+      p := parser d
+    while d != ""
+#      say "$s: $d"
+    else
+      s
+
+  part2 => "TBD"
+
+  say part1
+  say part2
