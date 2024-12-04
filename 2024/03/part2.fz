@@ -8,60 +8,49 @@ dec3_part2 =>
   LM : mutate is
   input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
 
-  data := for res := "", res + "\n" + l
-              l in input
-          else
-            res
-
-  mul  := "mul(".as_codepoints
-  do_  := "do()".as_codepoints
-  dont := "don't()".as_codepoints
+  data := input.reduce "" (+)
+               .as_codepoints
 
   parser(d) is
-    ok() (option u32, Sequence codepoint) =>
-      err.try ()->
-           if !d.starts_with mul then err
-           cp := d.drop 4
-           n1 := skip_num cp
-           comma := skip "," n1.rest
-           n2 := skip_num comma.rest
-           cl := skip ")" n2.rest
-           if !(comma.skip_ok && cl.skip_ok) then
-             err
-           (option u32 n1.val*n2.val, cl.rest)
-         .catch _->
-           a := id (option u32) nil
-           b Sequence codepoint := d.drop 1
-           (a,b)
 
-    skip(c, dd) is
-      skip_ok := dd.first = c
-      rest Sequence codepoint => dd.drop 1
+    skip(str, dd) Sequence codepoint =>
+      cps := str.as_codepoints
+      if dd.starts_with cps
+        dd.drop cps.count
+      else
+        err
 
-    skip_num(dd Sequence codepoint) is
-      r tuple u32 (Sequence codepoint) :=
-           for
-             v := u32 0, v*10 + cp.val - "0".val
-             res option (tuple u32 (Sequence codepoint)) := nil, (v, rst)
-             rst := dd, rst.drop 1
-             cp := rst.first "X"
-           while cp.val ∈ codepoint.ascii_digit
-           else
-             match res
-               nil => err
-               t tuple => t
-      rest Sequence codepoint => r.1.drop 1
-      val => r.0
+    skip_num(dd) =>
+      match dd.first
+        nil         => err
+        x codepoint => if x.val ∉ codepoint.ascii_digit then err
+      for
+        v := u32 0, v*10 + cp.val - "0".val
+        rst Sequence codepoint := dd, rst.drop 1
+        cp in rst
+      while cp.val ∈ codepoint.ascii_digit else
+        (v, rst)
 
-    remaining_data => ok.1
-    calc => match ok.0
-      v u32 => v
-      nil   => 0
+    (num, rest) :=
+       err.try ()->
+            n1 := skip "mul(" d |> skip_num
+            n2 := skip "," n1.1 |> skip_num
+            (n1.0*n2.0, skip ")" n2.1)
+          .catch _->
+            (u32 0, id (Sequence codepoint) (d.drop 1))
+
+    is_str(s) => err.try ()->
+                    _ := skip s d
+                    true
+                  .catch _->
+                    false
+    is_do   := is_str "do()"
+    is_dont := is_str "don't"
 
   part1 =>
     for
-      s := u32 0, s+p.calc
-      d := data.as_codepoints, p.remaining_data
+      s := u32 0, s + p.num
+      d := data, p.rest
       p := parser d
     while !d.is_empty
     else
@@ -69,11 +58,10 @@ dec3_part2 =>
 
   part2 =>
     for
-      enabled := true, enabled && !d.starts_with dont || d.starts_with do_
-      s := u32 0, s + (enabled ? p.calc : 0)
-      d := data.as_codepoints, p.remaining_data
-      p := parser d
-    while !d.is_empty
+      enabled := true, enabled && !p.is_dont || p.is_do
+      s := u32 0, s + (enabled ? p.num : 0)
+      p := parser data, parser p.rest
+    while !p.rest.is_empty
     else
       s
 
