@@ -1,7 +1,7 @@
-err(h unit->void) : eff.fallible unit h is
-  public fixed redef type.new(h unit->void) => err h
+parese_err(h unit->void) : eff.fallible unit h is
+  public fixed redef type.new(h unit->void) => parse_err h
 
-err => err.env.cause unit
+parse_err => parse_err.env.cause unit
 
 dec3_part2 =>
 
@@ -18,12 +18,12 @@ dec3_part2 =>
       if dd.starts_with cps
         dd.drop cps.count
       else
-        err
+        parse_err
 
     skip_num(dd) =>
       match dd.first
-        nil         => err
-        x codepoint => if x.val ∉ codepoint.ascii_digit then err
+        nil         => parse_err
+        x codepoint => if x.val ∉ codepoint.ascii_digit then parse_err
       for
         v := u32 0, v*10 + cp.val - "0".val
         rst Sequence codepoint := dd, rst.drop 1
@@ -32,14 +32,14 @@ dec3_part2 =>
         (v, rst)
 
     (num, rest) :=
-       err.try ()->
+       parse_err.try ()->
             n1 := skip "mul(" d |> skip_num
             n2 := skip "," n1.1 |> skip_num
             (n1.0*n2.0, skip ")" n2.1)
           .catch _->
             (u32 0, id (Sequence codepoint) (d.drop 1))
 
-    is_str(s) => err.try ()->
+    is_str(s) => parse_err.try ()->
                     _ := skip s d
                     true
                   .catch _->
