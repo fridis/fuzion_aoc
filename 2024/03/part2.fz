@@ -13,14 +13,14 @@ dec3_part2 =>
 
   parser(d) is
 
-    skip(str, dd) Sequence codepoint =>
+    skip(str, dd) Sequence codepoint ! parse_err =>
       cps := str.as_codepoints
       if dd.starts_with cps
         dd.drop cps.count
       else
         parse_err
 
-    skip_num(dd) =>
+    skip_num(dd) ! parse_err =>
       match dd.first
         nil         => parse_err
         x codepoint => if x.val ∉ codepoint.ascii_digit then parse_err
@@ -50,10 +50,8 @@ dec3_part2 =>
   part1 =>
     for
       s := u32 0, s + p.num
-      d := data, p.rest
-      p := parser d
-    while !d.is_empty
-    else
+      p := parser data, parser p.rest
+    while !p.rest.is_empty else
       s
 
   part2 =>
@@ -61,8 +59,7 @@ dec3_part2 =>
       enabled := true, enabled && !p.is_dont || p.is_do
       s := u32 0, s + (enabled ? p.num : 0)
       p := parser data, parser p.rest
-    while !p.rest.is_empty
-    else
+    while !p.rest.is_empty else
       s
 
   say part1
