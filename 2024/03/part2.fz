@@ -1,4 +1,4 @@
-parese_err(h unit->void) : eff.fallible unit h is
+parse_err(h unit->void) : eff.fallible unit h is
   public fixed redef type.new(h unit->void) => parse_err h
 
 parse_err => parse_err.env.cause unit
