@@ -1,0 +1,43 @@
+dec4_part1 =>
+
+  LM : mutate is
+  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
+                                                                     .map (.as_codepoints)
+
+  area := array2 String input.count input[0].count i,j->input[i][j]
+
+  get(y,x) =>
+    if (0 <= y < area.length0 &&
+        0 <= x < area.length1    )
+      area[y,x]
+    else
+      "."
+
+  count(y,x,dy,dx) =>
+    for i in 0..
+        c in ["X","M","A","S"]
+    until get y+i*dy x+i*dx != c
+      0
+    else
+      1
+
+  part1 =>
+    for sy := 0, sy+cy
+        y in area.indices0
+    do
+      cy := for sx := 0, sx+cx1+cx2+cx3+cx4+cx5+cx6+cx7+cx8
+                x in area.indices1
+                cx1 := count y x 0 +1
+                cx2 := count y x 0 -1
+                cx3 := count y x +1 0
+                cx4 := count y x -1 0
+                cx5 := count y x +1 +1
+                cx6 := count y x -1 -1
+                cx7 := count y x +1 -1
+                cx8 := count y x -1 +1
+            else
+              sx
+    else
+      sy
+
+  say part1
