@@ -1,0 +1,41 @@
+dec5_part2 =>
+
+  LM : mutate is
+  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM))
+
+  input1 := input.filter (s -> (s.find "|")??)
+  input2 := input.filter (s -> (s.find ",")??)
+
+  is_ordered(s Sequence i32) =>
+    match s.first
+      nil => true
+      v i32 =>
+        t := s.drop 1
+        (t ∀ is_less_than v) && is_ordered t
+
+  is_less_than(a,b) =>
+    input1.map (e -> e.split "|"
+                      .map (.parse_i32.val)
+                      .as_array)
+          .filter (e -> e[0] = b && e[1] = a)
+          .is_empty
+
+  mid(s) => s.drop s.count/2 .first.val
+
+  part1 =>
+    sum <| input2.map s->
+        n := s.split ","
+              .map (.parse_i32.val)
+        is_ordered n ? mid n : 0
+
+  part2 =>
+    sum <| input2.map s->
+        n := s.split ","
+              .map (.parse_i32.val)
+        if is_ordered n
+          0
+        else
+          n.sort_by is_less_than |> mid
+
+  if (false)  say part1
+  say part2
