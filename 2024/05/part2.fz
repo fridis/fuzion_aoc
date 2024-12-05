@@ -3,14 +3,14 @@ dec5_part2 =>
   LM : mutate is
   input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM))
 
-  # the relation defined by input1 as an array
+  # the relation defined by input as an array
   rel := input.filter (.contains "|")
               .map (.split "|"
                     .map (.parse_i32.val)
                     .as_array)
               .as_array
 
-  # the numbers defined by input2
+  # the page number sequences defined by input
   nums := input.filter (.contains ",")
                .map (.split "," .map (.parse_i32.val))
 
