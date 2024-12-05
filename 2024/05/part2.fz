@@ -15,16 +15,16 @@ dec5_part2 =>
                .map (.split "," .map (.parse_i32.val))
 
   # infix operator for rel
-  infix <<< (a,b) => rel ∀ (e -> e[0] != b || e[1] != a)
+  infix <? (a,b) => rel ∀ (e -> e[0] != b || e[1] != a)
 
-  # is given sequence orderd wrt <<<
-  is_ordered(s) => s.first ∀ (v -> t := s.drop 1; (t ∀ v<<<) && is_ordered t)
+  # is given sequence orderd wrt <?
+  is_ordered(s) => s.first ∀ (v -> t := s.drop 1; (t ∀ v<?) && is_ordered t)
 
   # middle element
   mid(s) => s.drop s.count/2 .first.val
 
   part1 => nums.map (n -> is_ordered n ? mid n : 0) |> sum
-  part2 => nums.map (n -> is_ordered n ? 0 : n.sort_by (<<<) |> mid) |> sum
+  part2 => nums.map (n -> is_ordered n ? 0 : n.sort_by (<?) |> mid) |> sum
 
   say part1
   say part2
