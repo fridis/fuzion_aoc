@@ -1,96 +1,84 @@
 dec6_part2 =>
 
   LM : mutate is
-  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM))
+  LM ! ()->
+    input := io.stdin LM ! (() -> io.buffered.read_lines LM)
 
-  # the relation defined by input as an array
-  arr := input.filter !=""
-              .map (.as_codepoints.as_array)
-              .as_array
+    # the relation defined by input as an array
+    arr := input.filter !=""
+                .map (.as_codepoints.as_array)
+                .as_array
 
-  h := arr.length.as_i64
-  w := arr[0].length.as_i64
+    h := arr.length.as_i64
+    w := arr[0].length.as_i64
 
-  (starty, startx) := arr.indices.reduce (option (i32,i32) nil) a1,y->
-     row := arr[y]
-     row.indices.reduce a1 (a2,x -> row[x] = "^" ? (y,x) : a2)
-   .val
+    data := array2 arr.length arr[0].length y,x->arr[y][x]
+    area := (mutate.array2 codepoint).type.new LM h w y,x->data[y.as_i32,
+                                                                x.as_i32]
+    start := data.index_pairs.filter (yx -> data[yx.0,yx.1] = "^")
+                             .first.val ||> y,x -> pos y.as_i64 x.as_i64
 
-  part1 =>
-    LM ! ()->
-      state := (mutate.array2 codepoint).type.new LM h w y,x->arr[y.as_i32][x.as_i32]
-      res := LM.env.new 0
-      for dy i64 := -1, dy2
-          dx i64 :=  0, dx2
-          y := starty.as_i64, y + dy
-          x := startx.as_i64, x + dx
-          yy := y + dy
-          xx := x + dx
-      while  0 <= y < h && 0 <= x < w do
-        # say "$y $x $yy $xx $dy $dx "
-        if state[y,x] != "X"
-          state[y,x] := "X"
-          res <- 1 + res
-        (dy2,dx2) := if 0 <= yy < h && 0 <= xx < w && state[yy,xx] = "#" then
-                       (dx,-dy)
-                     else
-                       (dy,dx)
-      else
-        res.get
+    # direction, bit gives a unique bit 1, 2, 4, 8
+    dir(dy, dx i64) is
+      turn => dir dx -dy
+      bit => (dx = 0 ? (dy+3)*2 : (dx+3)/2).as_u8
 
-  dir(dy, dx i64, v i32, turn Lazy dir) is
+    # up is the only dir we need, the others are the result of calls to turn
+    up => dir -1 0
 
-  up    => dir -1  0 1 ()->right
-  right => dir  0  1 2 ()->down
-  down  => dir  1  0 4 ()->left
-  left  => dir  0 -1 8 ()->up
+    # a position is our most important helper feature
+    pos(y,x) is
 
-  part2 =>
-    LM ! ()->
-      state := (mutate.array2 codepoint).type.new LM h w y,x->arr[y.as_i32][x.as_i32]
-      state2 := (mutate.array2 codepoint).type.new LM h w y,x->arr[y.as_i32][x.as_i32]
+      # move position in given direction
+      infix +(d) => pos y+d.dy x+d.dx
 
-      for d := up, d3
-          y := starty.as_i64, y + d.dy
-          x := startx.as_i64, x + d.dx
-      while  0 <= y < h && 0 <= x < w do
-        d3 := for d1 := d, d2
-                  yy := y + d1.dy
-                  xx := x + d1.dx
-              while 0 <= yy < h && 0 <= xx < w && state[yy,xx] = "#" do
-                d2 := d1.turn
-              else
-                if 0 <= yy < h && 0 <= xx < w && state[yy,xx] = "."
-                  state2[yy,xx] := "o"
-                d1
-      else
-        unit
+      # is position inside our area
+      ok => 0 <= y < h && 0 <= x < w
 
-      res := LM.env.new 0
-      for cy in state.indices0 do
-        for cx in state.indices1 do
-          cstate := (mutate.array2 codepoint).type.new LM h w y,x->arr[y.as_i32][x.as_i32]
-          if state2[cy,cx] = "o" then
-            cvisited := (mutate.array2 i32).type.new LM h w y,x->0
-            for d := up, d3
-                y := starty.as_i64, y + d.dy
-                x := startx.as_i64, x + d.dx
-            while  0 <= y < h && 0 <= x < w do
-              d3 := for d1 := d, d2
-                        yy := y + d1.dy
-                        xx := x + d1.dx
-                    while 0 <= yy < h && 0 <= xx < w && (state[yy,xx] = "#" || (yy=cy && xx=cx)) do
-                      d2 := d1.turn
-                    else
-                      d1
-              lo0p := (cvisited[y,x] & d3.v) != 0
-              cvisited[y,x] := cvisited[y,x] | d3.v
-            until lo0p
-              res <- 1 + res
-            else
-              unit
-      else
-        res.get
+      # get or set value in given mutable array2
+      get(a container.Mutable_Array2 X LM) => a[y,x]
+      put(a container.Mutable_Array2 X LM, v X) => a[y,x] := v
 
-  say part1
-  say part2
+      # is this equal to o?
+      infix =(o) => y=o.y && x=o.x
+
+      # does given dir change at this position, return the new dir
+      #
+      # f checks if pos is blocked, i.e., we must turn
+      #
+      change_dir(d dir, f pos->bool) =>
+        for dd := d, dd.turn
+            p := infix + dd
+        while p.ok && f p else
+          dd
+
+    # candidate positions  that should be checked in part2, filled in part1
+    cand := (mutate.array2 bool).type.new LM h w y,x->false
+
+    # perform part1 and fill cand
+    part1_res := LM.env.new 0
+    _ := for d := up, p.change_dir d q->{q.put cand true; q.get area = "#"}
+             p := start, p + d
+         while p.ok
+           if p.get area != "X"
+             p.put area "X"
+             part1_res <- 1 + part1_res
+
+    part1 => part1_res.get
+
+    part2 =>
+      area.index_pairs
+          .map (c -> c ||> pos)
+          .filter (p -> p.get cand && p.get area != "#")
+          .filter cp->
+              visited := (mutate.array2 u8).type.new LM h w y,x->0
+              for d := up, p.change_dir d q->(q.get area = "#" || q = cp)
+                  p := start, p + d
+                  loup := false, (v & d.bit) != 0
+              while p.ok && !loup
+                v := p.get visited
+                p.put visited (v | d.bit)
+          .count
+
+    say part1
+    say part2
