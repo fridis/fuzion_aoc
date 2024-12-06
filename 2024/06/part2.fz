@@ -1,0 +1,96 @@
+dec6_part2 =>
+
+  LM : mutate is
+  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM))
+
+  # the relation defined by input as an array
+  arr := input.filter !=""
+              .map (.as_codepoints.as_array)
+              .as_array
+
+  h := arr.length.as_i64
+  w := arr[0].length.as_i64
+
+  (starty, startx) := arr.indices.reduce (option (i32,i32) nil) a1,y->
+     row := arr[y]
+     row.indices.reduce a1 (a2,x -> row[x] = "^" ? (y,x) : a2)
+   .val
+
+  part1 =>
+    LM ! ()->
+      state := (mutate.array2 codepoint).type.new LM h w y,x->arr[y.as_i32][x.as_i32]
+      res := LM.env.new 0
+      for dy i64 := -1, dy2
+          dx i64 :=  0, dx2
+          y := starty.as_i64, y + dy
+          x := startx.as_i64, x + dx
+          yy := y + dy
+          xx := x + dx
+      while  0 <= y < h && 0 <= x < w do
+        # say "$y $x $yy $xx $dy $dx "
+        if state[y,x] != "X"
+          state[y,x] := "X"
+          res <- 1 + res
+        (dy2,dx2) := if 0 <= yy < h && 0 <= xx < w && state[yy,xx] = "#" then
+                       (dx,-dy)
+                     else
+                       (dy,dx)
+      else
+        res.get
+
+  dir(dy, dx i64, v i32, turn Lazy dir) is
+
+  up    => dir -1  0 1 ()->right
+  right => dir  0  1 2 ()->down
+  down  => dir  1  0 4 ()->left
+  left  => dir  0 -1 8 ()->up
+
+  part2 =>
+    LM ! ()->
+      state := (mutate.array2 codepoint).type.new LM h w y,x->arr[y.as_i32][x.as_i32]
+      state2 := (mutate.array2 codepoint).type.new LM h w y,x->arr[y.as_i32][x.as_i32]
+
+      for d := up, d3
+          y := starty.as_i64, y + d.dy
+          x := startx.as_i64, x + d.dx
+      while  0 <= y < h && 0 <= x < w do
+        d3 := for d1 := d, d2
+                  yy := y + d1.dy
+                  xx := x + d1.dx
+              while 0 <= yy < h && 0 <= xx < w && state[yy,xx] = "#" do
+                d2 := d1.turn
+              else
+                if 0 <= yy < h && 0 <= xx < w && state[yy,xx] = "."
+                  state2[yy,xx] := "o"
+                d1
+      else
+        unit
+
+      res := LM.env.new 0
+      for cy in state.indices0 do
+        for cx in state.indices1 do
+          cstate := (mutate.array2 codepoint).type.new LM h w y,x->arr[y.as_i32][x.as_i32]
+          if state2[cy,cx] = "o" then
+            cvisited := (mutate.array2 i32).type.new LM h w y,x->0
+            for d := up, d3
+                y := starty.as_i64, y + d.dy
+                x := startx.as_i64, x + d.dx
+            while  0 <= y < h && 0 <= x < w do
+              d3 := for d1 := d, d2
+                        yy := y + d1.dy
+                        xx := x + d1.dx
+                    while 0 <= yy < h && 0 <= xx < w && (state[yy,xx] = "#" || (yy=cy && xx=cx)) do
+                      d2 := d1.turn
+                    else
+                      d1
+              lo0p := (cvisited[y,x] & d3.v) != 0
+              cvisited[y,x] := cvisited[y,x] | d3.v
+            until lo0p
+              res <- 1 + res
+            else
+              unit
+      else
+        res.get
+
+  say part1
+  say part2
