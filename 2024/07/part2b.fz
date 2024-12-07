@@ -5,7 +5,7 @@ total(s) => s.split ":" .first.val.parse_i64.val
 nums(s) => s.split " " .drop 1 .map (.parse_i64.val)
 
 test(ops, t, v, n) =>
-  match n.as_list
+  t >= v && match n.as_list
     nil    => t = v
     c Cons => ops ∃ (o -> test ops t (o v c.head) c.tail)
 
@@ -14,4 +14,4 @@ partn(ops Sequence (i64,i64)->i64) =>
        .map total |> sum
 
 say (partn [*, +])
-say (partn [*, +, a,b -> "$a$b".parse_i64.val])
+say (partn [*, +, (a,b)->"$a$b".parse_i64.val])
