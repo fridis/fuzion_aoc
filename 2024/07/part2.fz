@@ -1,0 +1,35 @@
+dec7_part1 =>
+
+  LM : mutate is
+  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
+
+  total(s) => s.split ":" .first.val.parse_i64.val
+  nums(s) => s.split " " .drop 1 .map (.parse_i64.val) .as_array
+
+  test1(t, v, n) =>
+    match n.as_list
+      nil    => t = v
+      c Cons => (test1 t v*c.head c.tail ||
+                 test1 t v+c.head c.tail    )
+
+  test2(t, v, n) =>
+    match n.as_list
+      nil    => t = v
+      c Cons => h := c.head
+                (v *!  h && v *  h <= t && test2 t (v *  h) c.tail ||
+                 v +!  h && v +  h <= t && test2 t (v +  h) c.tail ||
+                 v ++! h && v ++ h <= t && test2 t (v ++ h) c.tail )
+
+  integer.infix ++! (o integer.this) => "{integer.this}$o".parse_integer (integer.this.from_u32 10) .exists
+  integer.infix ++  (o integer.this) => "{integer.this}$o".parse_integer (integer.this.from_u32 10) .val
+
+  part1 =>
+    input.filter (s -> n := nums s; test1 (total s) n.first.val (n.drop 1))
+         .map total |> sum
+
+  part2 =>
+    input.filter (s -> yak "."; n := nums s; test2 (total s) n.first.val (n.drop 1))
+         .map total |> sum
+
+  say part1
+  say part2
