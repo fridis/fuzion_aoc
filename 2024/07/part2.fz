@@ -19,9 +19,9 @@ dec7_part2 =>
       nil    => t = v
       c Cons => (test2 t (v *  c.head) c.tail ||
                  test2 t (v +  c.head) c.tail ||
-                 test2 t (v ++ c.head) c.tail   )
+                 test2 t (v || c.head) c.tail   )
 
-  integer.infix ++ (o integer.this) =>
+  integer.infix || (o integer.this) =>
     "{integer.this}$o".parse_integer (integer.this.from_u32 10)
                       .val
 
