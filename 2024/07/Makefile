@@ -11,5 +11,8 @@ test1:
 part2:
 	$(FUZION)/bin/fz -modules=terminal part2.fz <input
 
+part2b:
+	$(FUZION)/bin/fz -modules=terminal part2b.fz <input
+
 test2:
 	$(FUZION)/bin/fz -modules=terminal part2.fz <test_input
