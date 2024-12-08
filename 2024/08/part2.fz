@@ -5,31 +5,27 @@ dec8_part1 =>
     arr := (io.stdin LM) ! ()->(io.buffered.read_lines LM)
              .filter !="" .map (.as_codepoints.as_array) .as_array
 
-    h := arr.length;    hl := h.as_i64
-    w := arr[0].length; wl := w.as_i64
+    h := arr.length   .as_i64
+    w := arr[0].length.as_i64
 
-    area := array2 w h x,y->arr[y][x].val.as_i32
-    dot := ".".val.as_i32
+    area := (mutate.array2 i64).type.new LM w h x,y->arr[y.as_i32][x.as_i32].val.as_i64
 
     part(n) =>
-      antennas := (mutate.array (list (i32,i32))).type.new LM 128 nil
-      antinodes := (mutate.array2 bool).type.new LM wl hl _,_->false
-      antinode(xi,yi) =>
-        x := xi.as_i64; y := yi.as_i64
-        if 0 <= x < wl && 0 <= y < hl && !antinodes[x,y] then
-          antinodes[x,y] := true
+      antennas  := (mutate.array (list (i64,i64))).type.new LM 128 nil
+      antinodes := (mutate.array2 bool).type.new LM w h _,_->false
       for xy in area.index_pairs do
         xy ||> x,y->
           v := area[x,y]
-          vl := v.as_i64
-          if v != dot then
-            a := antennas[vl]
+          if v != ".".val.as_i64
+            a := antennas[v]
             for axy in a do
-              axy ||> ax, ay ->
-                for i in (2-n) .. (n=1 ? 1 : max w h) do
-                  antinode  x+i*(x-ax)  y+i*(y-ay)
-                  antinode ax+i*(ax-x) ay+i*(ay-y)
-            antennas[vl] := (xy : a)
+              (ax, ay) := axy
+              m i64 := max w h
+              for i in n=1 ? ((i64 -1)..2:3) : (-m..m) do
+                (xx, yy) := (x+i*(ax-x), y+i*(ay-y))
+                if 0 <= xx < w && 0 <= yy < h then
+                  antinodes[xx,yy] := true
+            antennas[v] := xy : a
       antinodes.as_array.filter id .count
 
     say (part 1)
