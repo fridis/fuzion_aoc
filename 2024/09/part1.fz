@@ -1,0 +1,47 @@
+dec8_part2 =>
+
+  LM : mutate is
+  LM ! ()->
+    data := (io.stdin LM) ! ()->(io.buffered.read_lines LM)
+             .filter !="" .first.val.as_codepoints.map (.parse_i64.val) .as_array
+
+    Sequence.infix +++(a Sequence T) => Sequence.this.as_list.concat_eagerly a.as_list
+
+    part1 =>
+      say "start:"
+      disk := data.zip ((i64 0 ..).flat_map (n -> id (Sequence i64) [n,-1])) a,b->(a,b)
+                  .flat_map (||> n,id -> id (Sequence i64) ([id].cycle.take n.as_i32))
+      say "rev:"
+      rev Sequence i64 := disk.filter >=0 .reverse .as_array
+      say "red: {disk.count}"
+      compacted := disk.reduce (id (Sequence i64) [], rev, rev.count, 0) (rrv,id0 ->
+                         rrv ||||> res,rv,c,n ->
+                           if (n%%100) say n
+                           (id (Sequence i64,Sequence i64,i32,i32) (c = 0 ? (id (Sequence i64) (res+++[-1]),rv,c,n+1)
+                                                                          : id0 >= 0 ? (id (Sequence i64) (res+++[id0]),rv,c-1,n+1)
+                                                                                     : (rv.is_empty ? (id (Sequence i64) (res +++ [-1]),rv,c-1,n+1)
+                                                                                                    : (id (Sequence i64) (res +++ rv.take 1), id (Sequence i64) (rv.drop 1),c-1,n+1)))))
+      say "compacted!"
+      ca := compacted.0.as_array
+      say "compacted! got ca"
+      for s := i64 0, s + id*n
+          n in i64 0 .. ca.length.as_i64-1
+          id := max 0 ca[n.as_i32]
+      do
+        if (n%%100) say "$n $s"
+#        say "$id * $n + $s"
+      else
+        s
+/*
+      cb := ca.zip (i64 0).. a,b->(a,b)
+              .as_array
+      say "compacted! got cb"
+      cb.map (||> id,n -> (max 0 id)*n) |> sum
+      */
+      # ca.zip (i64 0).. a,b->(a,b) .map (||> id,n -> (max 0 id)*n) |> sum
+#      $compacted.0 + $compacted.1
+
+
+
+    part2 => "NYI"
+    say "$part1,$part2"
