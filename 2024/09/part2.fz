@@ -5,7 +5,7 @@ dec8_part2 =>
     data := (io.stdin LM) ! ()->(io.buffered.read_lines LM)
              .filter !="" .first.val.as_codepoints.map (.parse_i64.val) .as_array
     disk := data.zip ((i64 0 ..).flat_map (n -> id (Sequence i64) [n,-1])) a,b->(a,b)
-                .flat_map (||> n,id -> id (Sequence i64) ([id].cycle.take n.as_i32))
+                .flat_map (||> n,id_ -> id (Sequence i64) ([id_].cycle.take n.as_i32))
                 .as_array
 
     part1 =>
@@ -20,53 +20,46 @@ dec8_part2 =>
                            (id (Sequence i64) [h]++res, rr, n+1))
 
       ca := compacted.0.reverse
-      ca.zip (i64 0).. a,b->(a,b) .map (||> id,n -> (max 0 id)*n) |> sum
+      ca.zip (i64 0).. id,n->(max 0 id)*n |> sum
 
     part2 =>
       sz := disk.count
       rev Sequence i64 := disk.reverse.as_array
       mdisk := (mutate.array i64).type.new LM sz.as_i64 0
-      for i in disk.indices
-          j in mdisk.indices
-      do
-        mdisk[j] := disk[i]
-      free := (mutate.array i32).type.new LM sz.as_i64 0
+      for i in disk.indices do
+        mdisk[i.as_i64] := disk[i]
 
-      for p := i64 -1, disk[i]
-          f := 0, nf
+      # length of free/allocated ranges at each index
+      free := (mutate.array i32).type.new LM sz.as_i64 0
+      for p i64 := -1, disk[i]
+          pl := 0, l
           i in (sz-1)..0:(-1)
-          i2 := i.as_i64
-          nf := disk[i] = p ? f+1 : 1
+          l := disk[i] = p ? pl+1 : 1
       do
-        free[i2] := nf
+        free[i.as_i64] := l
 
       for
         l := 0, nl
         p := i64 -1, x
         x in rev
-        xi in 0..
-        i := rev.count-xi
+        i in rev.count..0:(-1)
+        i2 := i.as_i64
         nl := p = x ? l+1 : 1
       do
         if p != x && p != -1
-//          say "$p len $l "+(mdisk.as_array.reduce "" r,n->(n<0?"$r.":"$r$n"))+" "+free
-          for ii := 0, ii+fl
-              ii2 := ii.as_i64
-          while ii < i
-            fl := free[ii2]
-            done1 := mdisk[ii2]<0 && fl>=l
-            if done1
-              for j in 0..(l-1) do
-                mdisk[(ii+j).as_i64] := p
-                mdisk[(i+j).as_i64] := -1
-                free[(ii+j).as_i64] := l-j
-              #free[ii2] := fl-l
-          until done1
-            unit
+          for j := 0, j+fl
+              j2 := j.as_i64
+          while j < i
+            fl := free[j2]
+          until mdisk[j2]<0 && fl>=l
+            for k in 0..l-1 do
+              k2 := k.as_i64
+              mdisk[j2+k2] := p
+              mdisk[i2+k2] := -1
+              free[j2+k2] := l-k
           else
             unit
 
-//      say (mdisk.as_array.reduce "" r,n->(n<0?"$r.":"$r$n"))
-//      say "free: $free \n rev: $rev \n $disk"
-      mdisk.as_array.zip (i64 0).. a,b->(a,b) .map (||> id,n -> (max 0 id)*n) |> sum
+      mdisk.as_array.zip (i64 0).. id,n->(max 0 id)*n |> sum
+
     say "$part1,$part2"
