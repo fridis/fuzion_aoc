@@ -13,3 +13,6 @@ part2:
 
 test2:
 	$(FUZION)/bin/fz -modules=terminal part2.fz <test_input
+
+part2a:
+	$(FUZION)/bin/fz -modules=terminal part2a.fz <input
