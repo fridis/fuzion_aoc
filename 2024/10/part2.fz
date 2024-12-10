@@ -9,9 +9,9 @@ dec10_part2 =>
   w := arr[0].length + 2
   area  := array2 w+2 h+2 x,y->(1 <= x < w-1 && 1 <= y < h-1 ? arr[y-1][x-1] : 99)
 
-  join1(a,x,y) => (a[x-1,y] ++ (a[x+1,y] ++ (a[x,y-1] ++ a[x,y+1])))
-                     .reduce (container.set_of_ordered i32 []) (r,e -> r.add e)
-                     .as_array
+  join1(a,x,y) =>
+    container.set_of_ordered (a[x-1,y] ++ (a[x+1,y] ++ (a[x,y-1] ++ a[x,y+1])))
+             .as_array
   join2(a,x,y) => a[x-1,y] + a[x+1,y] + a[x,y-1] + a[x,y+1]
 
   f1(i,a) => i<0 ? a : f1 i-1 (array2 w h (x,y -> area[x,y] = i ? join1 a x y : []))
