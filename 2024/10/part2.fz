@@ -1,0 +1,41 @@
+dec10_part2 =>
+
+  LM : mutate is
+  LM ! ()->
+    arr := (io.stdin LM) ! ()->(io.buffered.read_lines LM)
+             .filter !="" .map (.as_codepoints.map (.parse_i32) .as_array) .as_array
+
+    h := arr.length;   # hl := h.as_i64
+    w := arr[0].length;# wl := w.as_i64
+
+    area0 := array2 w h x,y->arr[y][x]
+    area  := array2 w+2 h+2 x,y->(1 <= x <= w && 1 <= y <= h ? area0[x-1,y-1] : 100)
+
+    join(a,b,c,d Sequence i32) Sequence i32 =>
+      for res Sequence i32 := (Sequence i32).type.empty, res.contains x ? res : [x]++res
+          x in a ++ (b ++ (c ++ d))
+      else
+#        say "JOIN $a $b $c $d => $res"
+        res.as_array.sort
+
+    part1 =>
+      a9 := array2 (Sequence i32) w+2 h+2 (x,y -> area[x,y] = 9 ? [w*y+x] : (Sequence i32).type.empty)
+      for i := 9, i-1
+          a := a9, array2 (Sequence i32) w+2 h+2 (x,y -> area[x,y] = i ? join a[x-1,y] a[x+1,y] a[x,y-1] a[x,y+1] : (Sequence i32).type.empty)
+      while i>0
+#        say a
+      else
+#        say a.transpose
+        a.map (.count) |> sum
+
+    part2 =>
+      a9 := array2 w+2 h+2 (x,y -> area[x,y] = 9 ? 1 : 0)
+      for i := 9, i-1
+          a := a9, array2 w+2 h+2 (x,y -> area[x,y] = i ? a[x-1,y]+a[x+1,y]+a[x,y-1]+a[x,y+1] : 0)
+      while i>0
+#        say a
+      else
+#        say a.transpose
+        sum a
+
+    say "$part1,$part2"
