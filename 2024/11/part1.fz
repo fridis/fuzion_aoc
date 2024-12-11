@@ -1,0 +1,20 @@
+dec11 =>
+
+  LM : mutate is
+  data := LM ! ()->
+          (io.stdin LM) ! ()->(io.buffered.read_lines LM)
+             .first.val .split " " .map (.parse_i64.val)
+
+  f(n) Sequence i64 =>
+    l := ($n).byte_length.as_i64
+    if      n=0    then [i64 1]
+    else if l %% 2 then f := (i64 10)**(l/2); [n/f,n%f]
+    else                [n*2024]
+
+  apply(i,s) => i = 0 ? s : apply i-1 (s.flat_map f)
+
+  part1 => apply 25 data .count
+
+  part2 => "NYI"
+
+  say "$part1,$part2"
