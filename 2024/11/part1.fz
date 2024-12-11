@@ -1,9 +1,7 @@
 dec11 =>
 
-  LM : mutate is
-  data := LM ! ()->
-          (io.stdin LM) ! ()->(io.buffered.read_lines LM)
-             .first.val .split " " .map (.parse_i64.val)
+  input := io.stdin.read_string
+  data := input.trim.split " " .map (.parse_i64.val)
 
   f(n) Sequence i64 =>
     l := ($n).byte_length.as_i64
