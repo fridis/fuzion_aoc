@@ -5,9 +5,10 @@ dec12 =>
   h := input.count
   data := array2 w+2 h+2 x,y->(1<=x<=w && 1<=y<=h ? input[y-1][x-1] : "0")
 
-  part1 =>
-    lm : mutate is
-    lm ! ()->
+  lm : mutate is
+  lm ! ()->
+
+    part1 =>
       tot := lm.env.new 0
       done := (mutate.array2 bool).new lm (w+2).as_i64 (h+2).as_i64 false
       for xx in 1..w do
@@ -15,7 +16,7 @@ dec12 =>
           kind := data[xx,yy]
           (a,l) := fill xx yy
           fill(x,y) =>
-            if   kind != data[x,y]          then (0, 1)
+            if      kind != data[x,y]       then (0, 1)
             else if done[x.as_i64,y.as_i64] then (0, 0)
             else
               done[x.as_i64,y.as_i64] := true
@@ -27,45 +28,43 @@ dec12 =>
           tot <- a*l + tot
       tot.get
 
-  part2 =>
-    lm : mutate is
-    lm ! ()->
+    part2 =>
       tot := lm.env.new 0
       done := (mutate.array2 bool).new lm (w+2).as_i64 (h+2).as_i64 false
       for xx in 1..w do
         for yy in 1..h do
-            kind := data[xx,yy]
-            (a,s) := fill xx yy
-            tot <- a*s + tot
+          kind := data[xx,yy]
+          (a,s) := fill xx yy
+          tot <- a*s + tot
 
-            fill(x,y) =>
-              if kind != data[x,y] || done[x.as_i64,y.as_i64] then (0, 0)
-              else
-                done[x.as_i64,y.as_i64] := true
-                (a1,s1) := if kind = data[x,y] then fill x+1 y   else (0,1)
-                (a2,s2) := if kind = data[x,y] then fill x   y+1 else (0,1)
-                (a3,s3) := if kind = data[x,y] then fill x-1 y   else (0,1)
-                (a4,s4) := if kind = data[x,y] then fill x   y-1 else (0,1)
-                (1+a1+a2+a3+a4, s1+s2+s3+s4+ sides_started x y)
+          fill(x,y) =>
+            if kind != data[x,y] || done[x.as_i64,y.as_i64] then (0, 0)
+            else
+              done[x.as_i64,y.as_i64] := true
+              (a1,s1) := if kind = data[x,y] then fill x+1 y   else (0,1)
+              (a2,s2) := if kind = data[x,y] then fill x   y+1 else (0,1)
+              (a3,s3) := if kind = data[x,y] then fill x-1 y   else (0,1)
+              (a4,s4) := if kind = data[x,y] then fill x   y-1 else (0,1)
+              (1+a1+a2+a3+a4, s1+s2+s3+s4+ sides_started x y)
 
-            sides_started(x,y) =>
-              tl := data[x-1,y-1] = kind
-              ts := data[x  ,y-1] = kind
-              tr := data[x+1,y-1] = kind
-              sl := data[x-1,y  ] = kind
-              sr := data[x+1,y  ] = kind
-              bl := data[x-1,y+1] = kind
-              bs := data[x  ,y+1] = kind
-              [# a horizontal side starts in these configurations
-               #
-               #    x|. .   * . .
-               #     +===    +===
-               #    x X *   .|X *
-               #
-               tl && sl && !ts, !ts && !sl,
-               sl && bl && !bs, !sl && !bs,  # mirrored horizonally
-               tl && ts && !sl, !ts && !sl,  # vert: point-reflection
-               ts && tr && !sr, !ts && !sr].count id
+          sides_started(x,y) =>
+            tl := data[x-1,y-1] = kind
+            ts := data[x  ,y-1] = kind
+            tr := data[x+1,y-1] = kind
+            sl := data[x-1,y  ] = kind
+            sr := data[x+1,y  ] = kind
+            bl := data[x-1,y+1] = kind
+            bs := data[x  ,y+1] = kind
+            [# a horizontal side starts in these configurations
+             #
+             #    x|. .   * . .
+             #     +===    +===
+             #    x X *   .|X *
+             #
+             tl && sl && !ts, !ts && !sl,
+             sl && bl && !bs, !sl && !bs,  # mirrored horizonally
+             tl && ts && !sl, !ts && !sl,  # vert: point-reflection
+             ts && tr && !sr, !ts && !sr].count id
       tot.get
 
-  say "$part1,$part2"
+    say "$part1,$part2"
