@@ -12,74 +12,20 @@ dec12 =>
              .map (x -> claw x[0] x[1] x[2] x[3] x[4] x[5])
 
   claw(ax,ay,bx,by,px,py) is
-   redef as_string => "$ax $ay $bx $by $px $py"
-   starta := (py*bx - px*by) / (ay*bx - ax*by)
-   cost =>
-     a := (py*bx-px*bx) / (ay*bx-ax*by)
-     b := (py*ax-px*ay) / (by*ax-bx*ay)
-     say "$a $b {test a}"
-     a*3+b
+    cost =>
+      # since px = ax*a + bx*b, py = ay*a + by*b, we get
+      a := (py*bx - px*by) / (ay*bx - ax*by)
+      b := (px-ax*a)/bx
+      if ay*a+by*b = py
+        a*3+b
+      else
+        0
 
-
-   test(a) =>
-/*
-    px = ax*a + bx*b
-    py = ay*a + by*b
-
-    a = (px-bx*b)/ax
-    a = (py-by*b)/ay
-
-    (px-bx*b)/ax = (py-by*b)/ay
-
-    px*ay-bx*ay*b = py*ax-by*ax*b
-    (by*ax-bx*ay)*b = (py*ax-px*ay)
-    b = (py*ax-px*ay)/(by*ax-bx*ay)
-
-    b = (px-ax*a)/bx
-    b = (py-ay*a)/by
-
-    (px-ax*a)/bx = (py-ay*a)/by
-
-    px*by-ax*by*a = py*bx-ay*bx*a
-    (ay*bx-ax*by)*a = py*bx-px*by
-    a = (py*bx - px*by) / (ay*bx - ax*by)
-
-
-    (px-ax*a)/bx = (py-ay*a)/by
-    px*by-ax*a*by = py*bx-ay*a*bx
-    a*(ay*bx-ax*by) = py*bx-px*bx
-
-    c = 3*a + (px-ax*a)/bx
-    c = a*(3-ax/bx) + px/bx
-
-*/
-
-     say "test $a"
-     b := (px-ax*a)/bx
-     if b >= 0 /* && b <= 100 */ && ay*a+by*b = py
-       say "for $a b is $b: $a*$ax + $b*$bx = $px  starta $starta"
-       a*3+b
-     else
-       s := ax*a+by*b
-       say "for $a b is $b: $a*$ax + $b*$bx = $s != $px  starta $starta"
-       (i64 1 << 62)
-   mini(m i64, s Sequence i64) i64       =>
-     match s.as_list
-       nil => m
-       x Cons => min x.head (mini m x.tail)
-   min_tokens =>
-     ((i64 0)..100).map test
-             .filter !=0 |> mini 1000000 |> %1000000
-   min_tokens2 =>
-     (starta..(starta)).map test
-             .filter !=0 |> mini (i64 1 << 62) |> % (i64 1 << 62)
-
-  part1 =>
-#    input.map (.cost) |> sum
-    input.map (.min_tokens2) |> sum
+  part1 => input.map (.cost) |> sum
 
   part2 =>
-    input.map (c-> claw c.ax c.ay c.bx c.by c.px+10000000000000 c.py+10000000000000)
-         .map (.min_tokens2) |> sum
+    delta := i64 10000000000000
+    input.map (c -> claw c.ax c.ay c.bx c.by c.px+delta c.py+delta)
+         .map (.cost) |> sum
 
   say "$part1,$part2"
