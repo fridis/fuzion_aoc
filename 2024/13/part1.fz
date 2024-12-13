@@ -1,0 +1,38 @@
+dec12 =>
+
+  input := io.stdin
+             .read_string
+             .replace "Button A: X+" ""
+             .replace "Button B: X+" ""
+             .replace ", Y+" " "
+             .replace "Prize: X=" ""
+             .replace ", Y=" " "
+             .replace "\n" " "
+#             .split "  " .map (.split " " .map (x->">"+x+"<"))
+             .split "  " .map (.split " " .filter !="" .map (.parse_i32.val))
+             .map (x -> claw x[0] x[1] x[2] x[3] x[4] x[5])
+
+  claw(ax,ay,bx,by,px,py) is
+   redef as_string => "$ax $ay $bx $by $px $py"
+   test(a) =>
+     b := (px-ax*a)/bx
+     if b >= 0 && b <= 100 && ay*a+by*b = py
+       say "for $a b is $b: $a*$ax + $b*$bx = $px"
+       a*3+b
+     else
+       1000000
+   mini(m i32, s Sequence i32) i32 =>
+     match s.as_list
+       nil => m
+       x Cons => min x.head (mini m x.tail)
+   min_tokens =>
+     (0..100).map test
+             .filter !=0 |> mini 1000000 |> %1000000
+#             .first.or_else 0
+
+  part1 =>
+    input.map (.min_tokens) |> sum
+
+  part2 => "NYI"
+
+  say "$part1,$part2"
