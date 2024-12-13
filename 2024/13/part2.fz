@@ -1,14 +1,14 @@
 dec12 =>
 
   input := io.stdin
-             .read_string
+             .read_string.trim
              .replace "Button A: X+" ""
              .replace "Button B: X+" ""
              .replace ", Y+" " "
              .replace "Prize: X=" ""
              .replace ", Y=" " "
              .replace "\n" " "
-             .split "  " .map (.split " " .filter !="" .map (.parse_i64.val))
+             .split "  " .map (.split " " .map (.parse_i64.val))
              .map (x -> claw x[0] x[1] x[2] x[3] x[4] x[5])
 
   claw(ax,ay,bx,by,px,py) is
