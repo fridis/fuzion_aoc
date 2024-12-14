@@ -11,8 +11,6 @@ dec14 =>
   w := envir.args[1].parse_i32.val
   h := envir.args[2].parse_i32.val
 
-  product(l Sequence (T : numeric)) => l.fold T.product
-
   robot(x,y,vx,vy) is
     move(n) =>
       robot (x+vx*n+w*1000000)%w (y+vy*n+h*1000000)%h vx vy
@@ -39,10 +37,10 @@ dec14 =>
       say ""
 
   part1 =>
-    (1..4).map q->(input.map (.move 100) .filter r->r.quadrant=q .count) |> product
+    (1..4).map q->(input.map (.move 100) .filter r->r.quadrant=q .count) .fold i32.product
 
   part2 =>
-    for i in 0..
+    for i := 0, i+1
         a := input.as_array, array a.length (x->a[x].move 1)
 
         # xmas tree is boxed: find max num of robots aligned horizontall & vertically
@@ -53,7 +51,5 @@ dec14 =>
 
     until maxmaxxy   > 900
       i
-    else
-      -1
 
   say "$part1,$part2"
