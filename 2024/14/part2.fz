@@ -1,11 +1,9 @@
 dec14 =>
 
-  input0 := ((((io.stdin.read_string.trim.utf8.as_array |> (s->String.type.from_bytes s)) )))
-  input1 := ((input0
-             .replace "," " " |> (s->String.type.from_bytes s.utf8.as_array)))
-  input := (input1
-             .replace "\n" " " |> (s->String.type.from_bytes s.utf8.as_array))
-             .as_codepoints .as_array .filter (c -> "0" <= c <= "9" || c = " " || c = "-") .as_array .as_string ""
+  input := (io.stdin.read_string)
+             .replace "," " "
+             .replace "\n" " "
+             .as_codepoints .filter (c -> "0" <= c <= "9" || c = " " || c = "-") .as_string ""
              .split " " .as_array
              .map (.parse_i32.val)
              .as_4tuples.map ||||>robot
