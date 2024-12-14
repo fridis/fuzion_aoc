@@ -1,0 +1,103 @@
+dec14 =>
+
+  input0 := ((((io.stdin.read_string.trim.utf8.as_array |> (s->String.type.from_bytes s)) )))
+  say "0: "+input0.byte_length
+  input1 := (input0
+             .replace "," " " |> (s->String.type.from_bytes s.utf8.as_array))
+  say "1: "+input1.byte_length
+  input2 := (input1
+             .replace "\n" " " |> (s->String.type.from_bytes s.utf8.as_array))
+  say "2: "+input2.byte_length
+  input3 := (input2
+             .as_codepoints .as_array .filter (c -> { { if c = "p" then yak "." }; "0" <= c <= "9" || c = " " || c = "-"})) .as_array .as_string ""
+  say "3: "+input3.byte_length
+  input4  := input3
+             .split " " .as_array
+  say "4: "+input4.count
+  input5  := input4
+             .map (.parse_i64.val)
+  say "5: "+input5.count
+  input  := input5
+             .as_4tuples.map ||||>robot
+  say "6: "+input.count
+
+  w := envir.args[1].parse_i64.val
+  h := envir.args[2].parse_i64.val
+
+  product(T type : numeric, l Sequence T) => l.fold T.product
+
+  robot(x,y,vx,vy) is
+    redef as_string => "$x $y $vx $vy"
+#    say robot.this
+    move(n i64) =>
+      robot (x+vx*n+w*1000000)%w (y+vy*n+h*1000000)%h vx vy
+    quadrant =>
+      r := x >= (w+1)/2
+      b := y >= (h+1)/2
+      m := x=w/2 || y=h/2
+#      say "$x $y $r $b"
+      if   m then 0
+      else if r && b then 4
+      else if r      then 2
+      else if b      then 3
+      else             1
+
+  show(f Sequence robot) =>
+    for y in i64 0 .. (h-1) do
+      for x in i64 0 .. (w-1) do
+        for c := 0, c+n
+            r in f
+            n := x=r.x && y=r.y ? 1 : 0
+        else
+          yak (c=0?".":"M")
+
+        /*
+        for c := 1, c+n
+            r in f
+            n := x=r.x && y=r.y ? r.quadrant : 1
+        else
+#          yak (c=0?""+(robot x y 0 0).quadrant:"{c}")
+          yak (c=0?".":"$c")
+          */
+      else
+        say ""
+    else
+      say ""
+
+  part1 =>
+  /*
+    r := robot 2 4 2 -3
+    show [r]
+    show [r.move 1]
+    show [r.move 2]
+    show [r.move 3]
+    show [r.move 4]
+    show [r.move 5]
+    show (input.map (.move 100))
+
+*/
+    (1..4).map q->(input.map (.move 100) .filter (r->r.quadrant=q) .count) |> product
+    #.map (.as_f64) |> product
+
+  part2 =>
+    for i in 0..202500
+        a := input.as_array, array a.length (x->a[x].move 1)
+#        q := a.filter (r->r.quadrant >= 3) .count / a.filter (r->r.quadrant < 3) .count
+#        qm := q, max qm q
+        avex := (a.map (.x) |> x->(sum x))/a.length.as_i64
+        var² := ((a.map (r->(avex-r.x)*(avex-r.x)) ) |> (x->(sum x))) /a.length.as_i64
+        vmin := var², min vmin var²
+#        maxx := ((i64 0)..(h-1)).map y->(a.filter r->r.y=y .count) .foldf i64 max (i64 0)
+        maxx := ((i64 0)..(h-1)).map (y->(a.count r->r.y=y)) .foldf i32 aa,bb->((infix > i32 aa bb)?aa:bb) (0)
+        maxy := ((i64 0)..(w-1)).map (x->(a.count r->r.x=x)) .foldf i32 aa,bb->((infix > i32 aa bb)?aa:bb) (0)
+        maxxy := maxx * maxy
+        maxmaxxy := maxxy, max maxmaxxy maxxy
+    until maxmaxxy > 900
+#      if (var² = vmin)
+      say "$i seconds:"
+      show a
+      i
+    else
+      -1
+
+  say "$part1,$part2"
