@@ -1,0 +1,76 @@
+dec14 =>
+
+  input := io.stdin.read_string
+             .split "\n\n"
+  input1 := input[0].split "\n" .map (.as_codepoints)
+  input2 := input[1].replace "\n" ""
+  h := input1.count
+  w := input1[0].count
+  area := array2 String h w y,x->input1[y][x]
+
+  dir(s) =>
+    if      s = "^" then (i64  0, i64 -1)
+    else if s = "v" then (i64  0, i64  1)
+    else if s = "<" then (i64 -1, i64  0)
+    else if s = ">" then (i64  1, i64  0)
+    else panic "dir unknown $s"
+
+  part1 =>
+    lm : mutate is
+    lm ! ()->
+      a := (mutate.array2 String).type.new lm h.as_i64 w.as_i64 ""
+      rx := lm.env.new (i64 0)
+      ry := lm.env.new (i64 0)
+      move(xx, yy, d) option (i64,i64)=>
+        nx := xx + d.0
+        ny := yy + d.1
+        v := a[ny,nx]
+        if v = "#" then nil
+        else if v = "O" then
+          match move nx ny d
+            nil => nil
+            _ tuple =>
+              a[ny,nx] := a[yy,xx]
+              a[yy,xx] := "."
+              (nx,ny)
+        else if v = "." then
+          a[ny,nx] := a[yy,xx]
+          a[yy,xx] := "."
+          (nx,ny)
+        else
+          panic "found $v"
+
+      for yx in a.index_pairs do
+        (y,x) := yx
+        a[y,x] := area[y.as_i32,x.as_i32]
+
+      show =>
+          for syx in a.index_pairs do
+            yak (syx ||> sy,sx->a[sy,sx])
+            if syx.1.as_i32 = w-1 then say ""
+
+      for yx in a.index_pairs do
+      until yx ||> y,x->a[y,x] = "@"
+        rx <- yx.1
+        ry <- yx.0
+#        say "{yx.1},{yx.0}"
+        input2.as_codepoints.for_each s->
+          d := dir s
+          match move rx.get ry.get d
+            nil => unit
+            t tuple i64 i64 => rx <- t.0; ry <- t.1
+          say d
+#          show
+      else
+        panic "robot not found"
+
+      a.index_pairs
+       .map ||>y,x->a[y,x]="O"?y*100+x:0 |> sum
+
+
+
+
+
+  part2 => "NYI"
+
+  say "$part1,$part2"
