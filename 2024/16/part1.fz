@@ -1,0 +1,74 @@
+dec16 =>
+
+  input := io.stdin.read_string
+             .split "\n" .as_array
+             .filter !=""
+             .map (.as_codepoints)
+  h := input.count
+  w := input[0].count
+  area := array2 codepoint h w y,x->input[y][x]
+  point(y,x) is
+  #  say "$area"
+  e := area.index_pairs.filter (yx -> yx ||> y,x->area[y,x]="E") .first.or_else (panic "E not found") ||> point
+  s := area.index_pairs.filter (yx -> yx ||> y,x->area[y,x]="S") .first.or_else (panic "S not found") ||> point
+
+  lm : mutate is
+
+  part1 =>
+    lm ! ()->
+
+      say "starting..."
+      steps := lm.env.new 0
+      costs := array2 4 h s,y->
+        (mutate.array i32).type.new lm w.as_i64 i32.max
+
+#      (0..3).for_each (d -> a := costs[d,e.y]; a[e.x.as_i64] := 0 )
+
+      (0..3).for_each (d -> trace d e 0)
+
+      cur_cost(d,p) => costs[d,p.y][p.x.as_i64];
+      set_cost(d,p,cost) => costs[d,p.y][p.x.as_i64] := cost
+
+      move(d,p,cost) =>
+        p2 := if      d = 0 then point p.y+1 p.x   // up backwardds, i.e., down
+              else if d = 1 then point p.y   p.x+1 // left backwards, i.e., right
+              else if d = 2 then point p.y-1 p.x   // down backwards, i.e., up
+              else               point p.y   p.x-1 // right backwards, i.e. left
+        if (".S".contains area[p2.y,p2.x] &&
+            cost+1 < cur_cost d p2 &&
+            cost+1 < cur_cost 3 s)
+        then
+          trace d p2 cost+1
+
+      trace(d, p, cost) =>
+        if cost < cur_cost d p then
+          set_cost d p cost
+          if false then
+            st := steps.get + 1
+            steps <- st
+            if (st & (st-1))=0 then show
+          # try moving
+          move d p cost
+          # try turning
+          trace (d+1)%4 p cost+1000
+          trace (d+2)%4 p cost+2000
+          trace (d+3)%4 p cost+1000
+
+      show =>
+       for y in 0..(h-1) do
+        for x in 0..(w-1) do
+          p := point y x
+          c := min (min (min (cur_cost 0 p) (cur_cost 1 p)) (cur_cost 2 p)) (cur_cost 3 p)
+          if c < i32.max then
+            yak (((c > 10000000) ? "XX" : ((c > 99999) ? ("*"+(c/1000)+"*") : $c).pad_center 6))
+          else
+            yak area[y,x]*6
+        else
+          say ""
+
+      # "w $w h $h E {e.x} {e.y} S {s.x} {s.y}"
+      cur_cost 3 s
+
+  part2 => "NYI"
+
+  say "$part1,$part2"
