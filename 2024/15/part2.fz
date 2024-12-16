@@ -90,33 +90,27 @@ dec14 =>
         else
           panic "found $v"
 
+      move_ixs(xxs) => (0..2*w-1).filter nx->xxs[nx]
+      move_blks(xxs,ny) => move_ixs xxs .map nx->a[ny,nx.as_i64]
+      nxxs(ny, xxs) => array 2*w (nx -> (a[ny,nx.as_i64] = "[" && (xxs[nx  ] || xxs[nx+1]) ||
+                                         a[ny,nx.as_i64] = "]" && (xxs[nx-1] || xxs[nx  ])   ))
+
       can_moveV(xxs, yy, d) =>
         ny := yy + d
-        if      (0..2*w-1) ∃ nx ->  xxs[nx] && a[ny,nx.as_i64]="#" then false
-        else if (0..2*w-1) ∀ nx -> !xxs[nx] || a[ny,nx.as_i64]="." then true
-        else
-          nxxs := array 2*w (nx -> (a[ny,nx.as_i64] = "[" && (xxs[nx  ] || xxs[nx+1]) ||
-                                    a[ny,nx.as_i64] = "]" && (xxs[nx-1] || xxs[nx  ])   ))
-          can_moveV nxxs ny d
+        (!(move_blks xxs ny ∃ ="#") &&
+         ((move_blks xxs ny ∀ =".") ||
+          can_moveV (nxxs ny xxs) ny d))
 
       do_moveV(xxs, yy, d) =>
-          ny := yy + d
-          if (0..2*w-1) ∃ nx -> xxs[nx] && a[yy,nx.as_i64]!="." then
-            nxxs := array 2*w (nx -> (a[ny,nx.as_i64] = "[" && (xxs[nx  ] || xxs[nx+1]) ||
-                                      a[ny,nx.as_i64] = "]" && (xxs[nx-1] || xxs[nx  ])    ))
-            do_moveV nxxs ny d
-            (0..2*w-1).for_each (nx -> { if xxs[nx] then
-                                           a[ny,nx.as_i64] := a[yy,nx.as_i64]
-                                           a[yy,nx.as_i64] := "."})
+        if move_blks xxs yy ∃ !="." then
+          do_moveV (nxxs yy+d xxs) yy+d d
+          move_ixs xxs .for_each (nx -> a[yy+d,nx.as_i64] := a[yy,nx.as_i64]; a[yy,nx.as_i64] := ".")
 
-      moveV(d) =>
-        (yy,xx) := ryx.get
-        xxs := array 2*w =xx.as_i32
-        if can_moveV xxs yy d then
-          do_moveV xxs yy d
-          true
-        else
-          false
+      moveV(d) option (i64,i64) =>
+        xxs := array 2*w =ryx.get.1.as_i32
+        (y,x) := ryx.get
+        if can_moveV xxs y d then  do_moveV xxs y d; (y+d, x)
+        else                                         nil
 
       for yx in a.index_pairs do
         (y,x) := yx
@@ -129,15 +123,12 @@ dec14 =>
       for yx in a.index_pairs until yx ||> y,x->a[y,x] = "@"
         ryx <- yx
         input2.as_codepoints.for_each s->
-          nr option (tuple i64 i64) :=
-                if      s = "^" then if (moveV (i64 -1)) then (ryx.get.0-1, ryx.get.1) else nil
-                else if s = "v" then if (moveV (i64 +1)) then (ryx.get.0+1, ryx.get.1) else nil
-                else if s = "<" then moveH ryx.get (i64 -1)
-                else if s = ">" then moveH ryx.get (i64 +1)
-                else panic "dir unknown $s"
+          f => if      "^v".contains s then d := ("^-v".find s).val.as_i64-1; moveV d
+               else if "<>".contains s then d := ("<->".find s).val.as_i64-1; moveH ryx.get d
+               else panic "dir unknown $s"
 
-          match nr
-            nil => unit
+          match f
+            nil     =>
             t tuple => ryx <- t
       else
         panic "robot not found"
