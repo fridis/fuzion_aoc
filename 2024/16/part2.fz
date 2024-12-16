@@ -29,7 +29,7 @@ dec16 =>
         mcosts[d,p.y][p.x.as_i64] := cost
         # try to move
         p2 := p.mov (d+2)%4
-        if (".S".contains area[p2.y,p2.x] &&
+        if ("#" != area[p2.y,p2.x] &&
             cost+1 < mcosts[d,p2.y][p2.x.as_i64] &&
             cost+1 < mcosts[3,s .y][s .x.as_i64]   ) then
           trace d p2 cost+1
@@ -47,16 +47,18 @@ dec16 =>
   part1 => cost 3 s
   part2 =>
     lm ! ()->
-      best_paths := (mutate.array2 bool).type.new lm h.as_i64 w.as_i64 false
-      mark_best_paths(d, p) =>
-        if !best_paths[p.y.as_i64, p.x.as_i64] then
-          best_paths[  p.y.as_i64, p.x.as_i64] := true
+      paths := (mutate.array2 bool).type.new lm h.as_i64 w.as_i64 false
+      mark(d, p) =>
+        if !paths[p.y.as_i64, p.x.as_i64] then
+          paths[  p.y.as_i64, p.x.as_i64] := true
           if cost 0 p != 0
             min_cst(dd) => cost dd (p.mov dd) +^ cost_of_turns dd d
             cmin := (0..3).map min_cst
                           .reduce i32.max min
-            (0..3).for_each (dd -> if min_cst dd = cmin then mark_best_paths dd (p.mov dd))
-      mark_best_paths 3 s
-      best_paths.as_array.filter id .count
+            (0..3).for_each dd->
+              if min_cst dd = cmin then
+                mark dd (p.mov dd)
+      mark 3 s
+      paths.as_array.filter id .count
 
   say "$part1,$part2"
