@@ -12,4 +12,4 @@ part2:
 	$(FUZION)/bin/fz part2.fz <input
 
 test2:
-	$(FUZION)/bin/fz part2.fz <test_input
+	$(FUZION)/bin/fz part2.fz <test_input_part2
