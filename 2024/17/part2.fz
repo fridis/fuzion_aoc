@@ -8,14 +8,14 @@ dec17 =>
   code := get "Program: " .split "," .map (.parse_i32.val) .as_array
 
   regs(a,b,c,pc,out) is
-    redef as_string => "A:$a B:$b C:$c pc:$pc out:{out.as_string ","}"
 
-  part1raw(ia) =>
+  run(ia) =>
     for s := regs ia initial_B initial_C 0 (id (Sequence i32) []), new_regs
     while 0 <= s.pc < code.length do
       ins := code[s.pc]
-      op  := code[s.pc+1].as_i64
-      combo => if      op < 4 then op
+      op  := code[s.pc+1];
+      l   := op.as_i64
+      combo => if      op < 4 then l
                else if op = 4 then s.a
                else if op = 5 then s.b
                else if op = 6 then s.c
@@ -23,111 +23,36 @@ dec17 =>
       div => s.a >> combo
       new_regs :=
         if      ins = 0 then regs div s.b     s.c s.pc+2                s.out
-        else if ins = 1 then regs s.a s.b^op  s.c s.pc+2                s.out
+        else if ins = 1 then regs s.a s.b^l   s.c s.pc+2                s.out
         else if ins = 2 then regs s.a combo%8 s.c s.pc+2                s.out
-        else if ins = 3 then regs s.a s.b     s.c (s.a=0 ? s.pc+2 : op.as_i32) s.out
+        else if ins = 3 then regs s.a s.b     s.c (s.a=0 ? s.pc+2 : op) s.out
         else if ins = 4 then regs s.a s.b^s.c s.c s.pc+2                s.out
         else if ins = 5 then regs s.a s.b     s.c s.pc+2                s.out++[(combo%8).as_i32]
         else if ins = 6 then regs s.a div     s.c s.pc+2                s.out
         else if ins = 7 then regs s.a s.b     div s.pc+2                s.out
         else panic "unkown ins $ins"
-#      say ["adv","bxl","bst","jnz","bxc","out","bdv","cdv","777"][ins]+" "+new_regs
     else
       s.out
 
-  part1 => (part1raw initial_A).as_string ","
-
-  part2a =>
-    delta := mut (i64 1)
-    mask  := mut (i64 7)
-    min := mut (i64 0)
-    max_ok := mut 0
-    for initA := i64 0o000000000000000, initA + min.get + delta.get do
-      mask <- -1
-      min <- 0
-      done := for s := regs initA initial_B initial_C 0 (id (Sequence i32) []), new_regs
-              while 0 <= s.pc < code.length do
-                ins := code[s.pc]
-                op  := code[s.pc+1].as_i64
-                combo => if      op < 4 then op
-                         else if op = 4 then s.a
-                         else if op = 5 then s.b
-                         else if op = 6 then s.c
-                         else panic "reserved op $op"
-                div => s.a / (i64 2 ** combo)
-                new_regs :=
-                  if      ins = 0 then regs div s.b     s.c s.pc+2                s.out
-                  else if ins = 1 then regs s.a s.b^op  s.c s.pc+2                s.out
-                  else if ins = 2 then regs s.a combo%8 s.c s.pc+2                s.out
-                  else if ins = 3 then regs s.a s.b     s.c (s.a=0 ? s.pc+2 : op.as_i32) s.out
-                  else if ins = 4 then regs s.a s.b^s.c s.c s.pc+2                s.out
-                  else if ins = 5 then
-                    nout := s.out++[(combo % 8).as_i32]
-                    if code.starts_with nout
-                      if nout.count > max_ok.get
-                        max_ok <- nout.count
-                        delta <- max ((i64 8)**(nout.count.as_i64))/256 1
-                        say "{max_ok} for $initA 0o{initA.as_string 8} out is {s.out.as_string ","} $delta "
-                        min := - (delta.get * 1024)
-#                      delta <- max delta.get ((i64 8)**nout.count.as_i64)
-#                      mask <- delta.get-1
-                      regs s.a s.b     s.c s.pc+2                nout
-                    else
-                      regs s.a s.b     s.c i32.min               nout
-                  else if ins = 6 then regs s.a div     s.c s.pc+2                s.out
-                  else if ins = 7 then regs s.a s.b     div s.pc+2                s.out
-                  else panic "unkown ins $ins"
-#                say ["adv","bxl","bst","jnz","bxc","out","bdv","cdv","777"][ins]+" "+new_regs
-              else
-                if s.pc > i32.min && code = s.out
-                  say "for $initA 0o{initA.as_string 8} out is {s.out.as_string ","}"
-                s.pc > i32.min && code = s.out
-
-#      if (initA & (initA-1))=0 then say initA
-    until done
-      if true
-        initA
-      else
-        say "reduce from $initA"
-        for m := i64.max, min m (code.starts_with (part1raw initA-i) ? initA-i : i64.max)
-            i in (i64 0)..20000000
-        do #say "{initA-i}: $m"
-        else
-          m
+  part1 => (run initial_A).as_string ","
 
   part2 =>
     for i := 15, i-1
         delta := i64 0o1000000000000000, delta / 8
         highbits := i64 0, new_hi
     while delta > 0 do
-      say "delta: {delta.as_string 8} hibits {highbits.as_string 8}"
-
       new_hi :=
         for anyOK := false, anyOK || ok
-            # _ := say "start"
             res i64 := i64.max, ok ? initA : res
-#            j in (i64 7)..0:(-1)
-            j in (i64 0)..(i64 77)
+            j in (i64 0)..100  # why 100? why not 7?
             initA := highbits + j*delta # , initA + delta
-            _ := say "try: {initA.as_string 8}"
-            r := part1raw initA
-            _ := say "r: {r.as_string ","}"
-            _ := say "c: {code.as_string ","}"
-#            _ := say "try: {initA.as_string 8} done."
-#            ok := r.count > i && r[i] = code[i]
+            r := run initA
             ok := r.count = code.count && r.drop (i) = code.drop (i)
-#            _ := say "try: {initA.as_string 8} done. 2"
         until ok
-          say "done 3 $anyOK {res.as_string 8}"
           initA
         else
           panic "** never ok"
-      say "done 4"
-
-      # say ($i+": "+ $new_hi+" 0o{new_hi.as_string 8} "+(part1raw new_hi).as_string ",")
-      say ($i+": "+ $new_hi+" 0o{new_hi.as_string 8}")
     else
       highbits
-
 
   say "$part1:$part2"
