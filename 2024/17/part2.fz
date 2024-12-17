@@ -8,40 +8,38 @@ dec17 =>
   code := get "Program: " .split "," .map (.parse_i64.val) .as_array
 
   regs(a,b,c,pc,out) is
+    ins => code[pc].as_i32
+    op  => code[pc+1]
+    combo => if      op < 4 then op
+             else if op = 4 then a
+             else if op = 5 then b
+             else if op = 6 then c
+             else panic "reserved op $op"
+    div => a >> combo
 
-  run(ia) =>
-    for s := regs ia initial_B initial_C 0 (id (Sequence i64) []), new_regs
-    while 0 <= s.pc < code.length do
-      ins := code[s.pc]
-      op  := code[s.pc+1];
-      combo => if      op < 4 then op
-               else if op = 4 then s.a
-               else if op = 5 then s.b
-               else if op = 6 then s.c
-               else panic "reserved op $op"
-      div => s.a >> combo
-      new_regs :=
-        if      ins = 0 then regs div s.b     s.c       s.pc+2           s.out
-        else if ins = 1 then regs s.a s.b^op  s.c       s.pc+2           s.out
-        else if ins = 2 then regs s.a combo%8 s.c       s.pc+2           s.out
-        else if ins = 3 then regs s.a s.b     s.c s.a=0?s.pc+2:op.as_i32 s.out
-        else if ins = 4 then regs s.a s.b^s.c s.c       s.pc+2           s.out
-        else if ins = 5 then regs s.a s.b     s.c       s.pc+2           s.out++[combo%8]
-        else if ins = 6 then regs s.a div     s.c       s.pc+2           s.out
-        else if ins = 7 then regs s.a s.b     div       s.pc+2           s.out
-        else panic "unkown ins $ins"
-    else
-      s.out
+  exec array regs->regs :=
+    [s -> regs s.div s.b       s.c         s.pc+2             s.out             ,
+     s -> regs s.a   s.b^s.op  s.c         s.pc+2             s.out             ,
+     s -> regs s.a   s.combo%8 s.c         s.pc+2             s.out             ,
+     s -> regs s.a   s.b       s.c   s.a=0?s.pc+2:s.op.as_i32 s.out             ,
+     s -> regs s.a   s.b^s.c   s.c         s.pc+2             s.out             ,
+     s -> regs s.a   s.b       s.c         s.pc+2             s.out++[s.combo%8],
+     s -> regs s.a   s.div     s.c         s.pc+2             s.out             ,
+     s -> regs s.a   s.b       s.div       s.pc+2             s.out             ]
 
-  part1 => (run initial_A).as_string ","
+  run(s) =>
+    if 0 <= s.pc < code.length then run (exec[s.ins].call s)
+    else                            s.out
+  runa(a) => run (regs a initial_B initial_C 0 (id (Sequence i64) []))
 
+  part1 => (runa initial_A).as_string ","
   part2 =>
     for i := 15, i-1
         delta := i64 0o1000000000000000, delta / 8
         a := i64 0, new_a
     while delta > 0
       new_a := for na := a, na + delta
-               until (run na).drop i = code.drop i then na
+               until (runa na).drop i = code.drop i then na
     else
       a
 
