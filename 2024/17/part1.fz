@@ -1,0 +1,40 @@
+dec17 =>
+
+  input := io.stdin.read_lines
+  get(prefx) => input.filter (.starts_with prefx) .first.val.replace prefx ""
+  initial_A := get "Register A: " .parse_i32.val
+  initial_B := get "Register B: " .parse_i32.val
+  initial_C := get "Register C: " .parse_i32.val
+  code := get "Program: " .split "," .map (.parse_i32.val) .as_array
+
+  regs(a,b,c,pc,out) is
+    redef as_string => "A:$a B:$b C:$c pc:$pc out:{out.as_string ","}"
+
+  part1 =>
+    for s := regs initial_A initial_B initial_C 0 (id (Sequence i32) []), new_regs
+    while 0 <= s.pc < code.length do
+      ins := code[s.pc]
+      op  := code[s.pc+1]
+      combo => if      op < 4 then op
+               else if op = 4 then s.a
+               else if op = 5 then s.b
+               else if op = 6 then s.c
+               else panic "reserved op $op"
+      div => s.a / (2 ** combo)
+      new_regs :=
+        if      ins = 0 then regs div s.b     s.c s.pc+2                s.out
+        else if ins = 1 then regs s.a s.b^op  s.c s.pc+2                s.out
+        else if ins = 2 then regs s.a combo%8 s.c s.pc+2                s.out
+        else if ins = 3 then regs s.a s.b     s.c (s.a=0 ? s.pc+2 : op) s.out
+        else if ins = 4 then regs s.a s.b^s.c s.c s.pc+2                s.out
+        else if ins = 5 then regs s.a s.b     s.c s.pc+2                s.out++[combo%8]
+        else if ins = 6 then regs s.a div     s.c s.pc+2                s.out
+        else if ins = 7 then regs s.a s.b     div s.pc+2                s.out
+        else panic "unkown ins $ins"
+      say ["adv","bxl","bst","jnz","bxc","out","bdv","cdv","777"][ins]+" "+new_regs
+    else
+      s.out.as_string ","
+
+  part2 => "NYI"
+
+  say "$part1,$part2"
