@@ -38,11 +38,11 @@ dec17 =>
   part2 =>
     for i := 15, i-1
         delta := i64 0o1000000000000000, delta / 8
-        highbits := i64 0, new_hi
+        a := i64 0, new_a
     while delta > 0
-      new_hi := for a := highbits, a + delta
-                until (run a).drop i = code.drop i then a
+      new_a := for na := a, na + delta
+               until (run na).drop i = code.drop i then na
     else
-      highbits
+      a
 
   say "$part1:$part2"
