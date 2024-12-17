@@ -5,31 +5,30 @@ dec17 =>
   initial_A := get "Register A: " .parse_i64.val
   initial_B := get "Register B: " .parse_i64.val
   initial_C := get "Register C: " .parse_i64.val
-  code := get "Program: " .split "," .map (.parse_i32.val) .as_array
+  code := get "Program: " .split "," .map (.parse_i64.val) .as_array
 
   regs(a,b,c,pc,out) is
 
   run(ia) =>
-    for s := regs ia initial_B initial_C 0 (id (Sequence i32) []), new_regs
+    for s := regs ia initial_B initial_C 0 (id (Sequence i64) []), new_regs
     while 0 <= s.pc < code.length do
       ins := code[s.pc]
       op  := code[s.pc+1];
-      l   := op.as_i64
-      combo => if      op < 4 then l
+      combo => if      op < 4 then op
                else if op = 4 then s.a
                else if op = 5 then s.b
                else if op = 6 then s.c
                else panic "reserved op $op"
       div => s.a >> combo
       new_regs :=
-        if      ins = 0 then regs div s.b     s.c s.pc+2                s.out
-        else if ins = 1 then regs s.a s.b^l   s.c s.pc+2                s.out
-        else if ins = 2 then regs s.a combo%8 s.c s.pc+2                s.out
-        else if ins = 3 then regs s.a s.b     s.c (s.a=0 ? s.pc+2 : op) s.out
-        else if ins = 4 then regs s.a s.b^s.c s.c s.pc+2                s.out
-        else if ins = 5 then regs s.a s.b     s.c s.pc+2                s.out++[(combo%8).as_i32]
-        else if ins = 6 then regs s.a div     s.c s.pc+2                s.out
-        else if ins = 7 then regs s.a s.b     div s.pc+2                s.out
+        if      ins = 0 then regs div s.b     s.c       s.pc+2           s.out
+        else if ins = 1 then regs s.a s.b^op  s.c       s.pc+2           s.out
+        else if ins = 2 then regs s.a combo%8 s.c       s.pc+2           s.out
+        else if ins = 3 then regs s.a s.b     s.c s.a=0?s.pc+2:op.as_i32 s.out
+        else if ins = 4 then regs s.a s.b^s.c s.c       s.pc+2           s.out
+        else if ins = 5 then regs s.a s.b     s.c       s.pc+2           s.out++[combo%8]
+        else if ins = 6 then regs s.a div     s.c       s.pc+2           s.out
+        else if ins = 7 then regs s.a s.b     div       s.pc+2           s.out
         else panic "unkown ins $ins"
     else
       s.out
@@ -40,18 +39,9 @@ dec17 =>
     for i := 15, i-1
         delta := i64 0o1000000000000000, delta / 8
         highbits := i64 0, new_hi
-    while delta > 0 do
-      new_hi :=
-        for anyOK := false, anyOK || ok
-            res i64 := i64.max, ok ? initA : res
-            j in (i64 0)..100  # why 100? why not 7?
-            initA := highbits + j*delta # , initA + delta
-            r := run initA
-            ok := r.count = code.count && r.drop (i) = code.drop (i)
-        until ok
-          initA
-        else
-          panic "** never ok"
+    while delta > 0
+      new_hi := for a := highbits, a + delta
+                until (run a).drop i = code.drop i then a
     else
       highbits
 
