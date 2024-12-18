@@ -31,7 +31,7 @@ dec18 =>
         fill toprite x y (y=0 || x=w-1)
 
         get(a,xx,yy) => inside xx && inside yy && a[xx,yy]
-        get(a,xy) => xy ||> xx,yy -> get a xx yy
+        get(a,xy) => xy ||> get a
 
         box(xx,yy) => ((xx-1)..(xx+1)) .combine (yy-1)..(yy+1) x0,y0->(x0,y0)
 
