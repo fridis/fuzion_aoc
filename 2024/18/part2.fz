@@ -42,6 +42,6 @@ dec18 =>
             box xx yy .for_each (||> dx,dy -> fill a dx dy true)
 
       until leftbot[x,y] && toprite[x,y] then "$x,$y"
-      else  panic "never"
+      else  "never"
 
     say "$part1:$part2"
