@@ -1,100 +1,50 @@
 dec18 =>
 
-  w := envir.args[1].parse_i32.val
-  wl := w.as_i64
+  wi := envir.args[1].parse_i32.val
+  w := wi.as_i64
+  inside(x) => 0 <= x < w
   l := envir.args[2].parse_i32.val
-  input2 := io.stdin.read_lines.filter !="" .map (.split "," .map s->s.parse_i32.val) .map s->(s[0],s[1])
-  input1 := input2.take l
-
+  input2 := io.stdin.read_lines.filter !="" .map (.split "," .map s->s.parse_i64.val) .map s->(s[0],s[1])
+  input1 := input2.map (||>x,y->(x.as_i32,y.as_i32)) .take l
   lm : mutate is
-
-  part1 =>
-    area := array2 w w (x,y -> (input1 ∃ t -> t.0=x && t.1=y))
-    corrupt(x,y) => area[x.as_i32,y.as_i32]
-    lm ! ()->
-      mcosts := (mutate.array2 i32).type.new lm wl wl i32.max
-
+  lm ! ()->
+    part1 =>
+      area := array2 wi wi (x,y -> (input1 ∃ t -> t.0=x && t.1=y))
+      corrupt(x,y) => area[x.as_i32,y.as_i32]
+      mcost := (mutate.array2 i32).type.new lm w w i32.max
       trace(x,y i64, cost i32) =>
-        if (0 <= x < wl &&
-            0 <= y < wl &&
-            cost < mcosts[x, y] && !corrupt x y)
-          mcosts[x, y] := cost
-          if false
-            for yy in area.indices1 do
-              for xx in area.indices0 do
-                s := if (area[xx,yy]) then "xx" else $(min mcosts[xx.as_i64,yy.as_i64] 99)
-                yak (s.pad_center 6)
-              else
-                say ""
-            else
-              say ""
-
-          trace x+1 y   cost+1
-          trace x   y+1 cost+1
-          trace x-1 y   cost+1
-          trace x   y-1 cost+1
+        if inside x && inside y && cost < mcost[x, y] && !corrupt x y
+          mcost[x, y] := cost
+          trace x+1 y cost+1; trace x y+1 cost+1
+          trace x-1 y cost+1; trace x y-1 cost+1
       trace 0 0 0
-      mcosts[wl-1, wl-1]
+      mcost[w-1, w-1]
 
-
-  part2 =>
-    lm ! ()->
-      area   := (mutate.array2 bool).type.new lm wl wl false
-      arealb := (mutate.array2 bool).type.new lm wl wl false
-      areatr := (mutate.array2 bool).type.new lm wl wl false
-      for
-        i in 1..
-        cor in input2
-      do
-        x := cor.0.as_i64
-        y := cor.1.as_i64
+    part2 =>
+      area    := (mutate.array2 bool).type.new lm w w false
+      leftbot := (mutate.array2 bool).type.new lm w w false
+      toprite := (mutate.array2 bool).type.new lm w w false
+      for cor in input2 do
+        (x,y) := cor
         area[x,y] := true
+        fill leftbot x y (x=0 || y=w-1)
+        fill toprite x y (y=0 || x=w-1)
 
-        fill arealb x y (x=0 || y=wl-1)
-        fill areatr x y (y=0 || x=wl-1)
+        get(a,xx,yy) => inside xx && inside yy && a[xx,yy]
+        get(a,xy) => xy ||> xx,yy -> get a xx yy
 
-        if false
-          say "i = $i"
-          if i >= 2870 || arealb[x,y] && areatr[x,y]
-            for yy in area.indices1 do
-              for xx in area.indices0 do
-                s := if      (arealb[xx,yy] && areatr[xx,yy]) then "*"
-                     else if (arealb[xx,yy]) then "L"
-                     else if (areatr[xx,yy]) then "R"
-                     else if (area[xx,yy])   then "#" else "."
-
-                yak (s.pad_center 1)
-              else
-                say ""
-            else
-              say ""
-
-        get(a,xx,yy) =>
-          (0 <= xx < wl && 0 <= yy < wl && a[xx,yy])
+        box(xx,yy) => ((xx-1)..(xx+1)) .combine (yy-1)..(yy+1) x0,y0->(x0,y0)
 
         fill(a,xx,yy) =>
-          if !a[xx,yy]
+          if get area xx yy && !a[xx,yy]
             a[xx,yy] := true
-            for dx in [i64 -1,0,+1]  do
-              for dy in [i64 -1,0,+1] do
-                if get area xx+dx yy+dy
-                  fill a xx+dx yy+dy
+            box xx yy .for_each (||> dx,dy -> fill a dx dy)
 
         fill(a,xx,yy,touches) =>
-          if (touches       ||
-              get a x-1 y   ||
-              get a x   y-1 ||
-              get a x+1 y   ||
-              get a x   y+1 ||
-              get a x-1 y-1 ||
-              get a x+1 y-1 ||
-              get a x-1 y+1 ||
-              get a x+1 y+1   )
+          if touches || (box x y ∃ get a)
             fill a xx yy
 
-      until arealb[x,y] && areatr[x,y] then
-        "$x,$y"
-      else
-        panic "never"
+      until leftbot[x,y] && toprite[x,y] then "$x,$y"
+      else  panic "never"
 
-  say "$part1:$part2"
+    say "$part1:$part2"
