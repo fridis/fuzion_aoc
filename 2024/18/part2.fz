@@ -35,14 +35,11 @@ dec18 =>
 
         box(xx,yy) => ((xx-1)..(xx+1)) .combine (yy-1)..(yy+1) x0,y0->(x0,y0)
 
-        fill(a,xx,yy) =>
-          if get area xx yy && !a[xx,yy]
-            a[xx,yy] := true
-            box xx yy .for_each (||> dx,dy -> fill a dx dy)
-
         fill(a,xx,yy,touches) =>
-          if touches || (box x y ∃ get a)
-            fill a xx yy
+          if ((touches || (box x y ∃ get a)) &&
+              get area xx yy && !a[xx,yy])
+            a[xx,yy] := true
+            box xx yy .for_each (||> dx,dy -> fill a dx dy true)
 
       until leftbot[x,y] && toprite[x,y] then "$x,$y"
       else  panic "never"
