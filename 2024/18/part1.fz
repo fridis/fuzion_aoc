@@ -1,0 +1,42 @@
+dec18 =>
+
+  w := envir.args[1].parse_i32.val
+  wl := w.as_i64
+  l := envir.args[2].parse_i32.val
+  input := io.stdin.read_lines.filter !="" .map (.split "," .map s->s.parse_i32.val) .map s->(s[0],s[1])
+                .take l
+
+  lm : mutate is
+
+  part1 =>
+    area := array2 w w (x,y -> (input ∃ t -> t.0=x && t.1=y))
+    corrupt(x,y) => area[x.as_i32,y.as_i32]
+    lm ! ()->
+      mcosts := (mutate.array2 i32).type.new lm wl wl i32.max
+
+      trace(x,y i64, cost i32) =>
+        if (0 <= x < wl &&
+            0 <= y < wl &&
+            cost < mcosts[x, y] && !corrupt x y)
+          mcosts[x, y] := cost
+          if false
+            for yy in area.indices1 do
+              for xx in area.indices0 do
+                s := if (area[xx,yy]) then "xx" else $(min mcosts[xx.as_i64,yy.as_i64] 99)
+                yak (s.pad_center 6)
+              else
+                say ""
+            else
+              say ""
+
+          trace x+1 y   cost+1
+          trace x   y+1 cost+1
+          trace x-1 y   cost+1
+          trace x   y-1 cost+1
+      trace 0 0 0
+      mcosts[wl-1, wl-1]
+
+
+  part2 =>
+
+  say "$part1:$part2"
