@@ -15,9 +15,9 @@ dec19 =>
     possible(s) =>
       match cachePos.get s
         v bool => v
-        nil    => res := s="" || !sorted.filter p->
-                                           (s.starts_with p &&
-                                            possible (s.suffix p))
+        nil    => res := s="" || !sorted.filter s.starts_with
+                                        .map s.suffix
+                                        .filter possible
                                         .is_empty
                   cachePos.put s res
                   res
@@ -25,11 +25,9 @@ dec19 =>
     count(s) =>
       match cacheCnt.get s
         v i64 => v
-        nil   => res := if      s=""        then 1
-                        else if !possible s then 0
-                        else
-                          sorted.filter s.starts_with
-                                .map p->count(s.suffix p) |> sum
+        nil   => res := s="" ? 1 : sorted.filter s.starts_with
+                                         .map s.suffix
+                                         .map count |> sum
                  cacheCnt.put s res
                  res
 
