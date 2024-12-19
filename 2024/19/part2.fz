@@ -1,53 +1,39 @@
 dec19 =>
 
   input := io.stdin.read_lines
-  input1 := input[0].split ", " .map sarr .as_array
-  input2 := input.drop 2 .filter !="" .map sarr
-  sarr(s) => String.from_bytes s.utf8.as_array
+  input1 := input[0].split ", " .as_array
+  input2 := input.drop 2 .filter !=""
 
-  sorted := input1.sort_by a,b->a.byte_length<=b.byte_length
+  sorted := input1.sort_by a,b->a.byte_length>=b.byte_length
+  String.suffix(prfx) => substring prfx.byte_length
 
   M : mutate is
   M ! ()->
-    no_dups Sequence String := sorted.filter s->(!poss12 s sorted) .as_array
-    poss12(s, ts) =>
-      !ts.filter (p -> p!=s && s.starts_with p && poss10 (s.substring p.byte_length) ts)
-                     .is_empty
-    poss10(s, ts) =>
-      s="" || !ts.filter (p -> s.starts_with p && poss10 (s.substring p.byte_length) ts)
-                     .is_empty
-    poss1(s) => poss10 s no_dups
-
     cache := (container.mutable_tree_map M String bool).empty
     cacheCnt := (container.mutable_tree_map M String i64).empty
 
     possible(s) =>
       match cache.get s
         v bool => v
-        nil =>
-          res := s="" || !no_dups.filter (p -> s.starts_with p && possible (s.substring p.byte_length))
-                                 .is_empty
-          cache.put s res
-          res
-
-    sorted2 := sorted.reverse.as_array
+        nil    => res := s="" || !sorted.filter p->
+                                           (s.starts_with p &&
+                                            possible (s.suffix p))
+                                        .is_empty
+                  cache.put s res
+                  res
 
     possibleCnt(s) =>
       match cacheCnt.get s
         v i64 => v
-        nil =>
-          res := if s="" then 1
-                 else if possible s then
-                   sorted2.filter s.starts_with
-                          .map (p -> possibleCnt (s.substring p.byte_length)) |> sum
-                 else
-                   0
-          cacheCnt.put s res
-          res
+        nil   => res := if      s=""        then 1
+                        else if !possible s then 0
+                        else
+                          sorted.filter s.starts_with
+                                .map p->possibleCnt(s.suffix p) |> sum
+                 cacheCnt.put s res
+                 res
 
-    part1 => input2.filter poss1 .count
-
-    part2 => input2.filter possible
-                   .map possibleCnt |> sum
+    part1 => input2.filter possible .count
+    part2 => input2.map possibleCnt |> sum
 
     say "$part1:$part2"
