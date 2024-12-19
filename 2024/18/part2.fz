@@ -5,9 +5,10 @@ dec18 =>
   inside(x) => 0 <= x < w
   l := envir.args[2].parse_i32.val
   input2 := io.stdin.read_lines.filter !="" .map (.split "," .map s->s.parse_i64.val) .map s->(s[0],s[1])
-  input1 := input2.map (||>x,y->(x.as_i32,y.as_i32)) .take l
+  input1 := input2.map (||>x,y->(x.as_i32,y.as_i32)) .take l .as_array
   lm : mutate is
   lm ! ()->
+
     part1 =>
       area := array2 wi wi (x,y -> (input1 ∃ t -> t.0=x && t.1=y))
       corrupt(x,y) => area[x.as_i32,y.as_i32]
