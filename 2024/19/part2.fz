@@ -4,7 +4,6 @@ dec19 =>
   input1 := input[0].split ", " .as_array
   input2 := input.drop 2 .filter !=""
 
-  sorted := input1.sort_by a,b->a.byte_length>=b.byte_length
   String.suffix(prfx) => substring prfx.byte_length
 
   M : mutate is
@@ -15,7 +14,7 @@ dec19 =>
     possible(s) =>
       match cachePos.get s
         v bool => v
-        nil    => res := s="" || !sorted.filter s.starts_with
+        nil    => res := s="" || !input1.filter s.starts_with
                                         .map s.suffix
                                         .filter possible
                                         .is_empty
@@ -25,7 +24,7 @@ dec19 =>
     count(s) =>
       match cacheCnt.get s
         v i64 => v
-        nil   => res := s="" ? 1 : sorted.filter s.starts_with
+        nil   => res := s="" ? 1 : input1.filter s.starts_with
                                          .map s.suffix
                                          .map count |> sum
                  cacheCnt.put s res
