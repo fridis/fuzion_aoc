@@ -1,0 +1,89 @@
+dec19 =>
+
+  input := io.stdin.read_lines
+  input1 := input[0].split ", " .map sarr .as_array
+  input2 := input.drop 2 .filter !="" .map sarr
+  sarr(s) => String.from_bytes s.utf8.as_array
+
+  sorted := input1.sort_by a,b->a.byte_length<=b.byte_length
+
+  say "sorted: {sorted.as_string ", "}"
+
+  no_dups Sequence String := sorted.filter s->(!poss12 s sorted) .as_array
+
+  say "no_dups: {no_dups.as_string ", "}"
+
+  poss12(s, ts) =>
+    !ts.filter (p -> p!=s && s.starts_with p && poss10 (s.substring p.byte_length) ts)
+                   .is_empty
+
+  poss10(s, ts) =>
+    s="" || !ts.filter (p -> s.starts_with p && poss10 (s.substring p.byte_length) ts)
+                   .is_empty
+
+  poss1(s) => poss10 s no_dups
+
+  part1 =>
+    input2.map (x->{say x; x}) .filter poss1 .count
+
+
+  part2 =>
+    M : mutate is
+    M ! ()->
+      cache := (container.mutable_tree_map M String bool).empty
+      cacheCnt := (container.mutable_tree_map M String i64).empty
+
+      possible(s) =>
+        match cache.get s
+          v bool => v
+          nil =>
+            res := s="" || !no_dups.filter (p -> s.starts_with p && possible (s.substring p.byte_length))
+                                   .is_empty
+            cache.put s res
+            res
+
+      sorted2 := sorted.reverse.as_array
+
+      possibleCnt(s) =>
+        match cacheCnt.get s
+          v i64 => v
+          nil =>
+            res := if s="" then 1
+                   else if possible s then
+                     sorted2.filter s.starts_with
+                            .map (p -> possibleCnt (s.substring p.byte_length)) |> sum
+                   else
+                     0
+            cacheCnt.put s res
+            res
+
+      as_3bits(c) =>
+        if      c = "r" then 1
+        else if c = "g" then 2
+        else if c = "u" then 3
+        else if c = "w" then 4
+        else if c = "b" then 5
+        else panic "found unexpected $c"
+
+      as_int(s) =>
+        if s="" then (0,0)
+        else
+          f := s.substring 0 1
+          first := as_3bits f
+          (v,m) := as_int (s.substring 1)
+          (v << 3 | first, m << 3 | 7)
+
+      ts := no_dups.map as_int
+      ts.for_each (||>v,m->yak "({v.as_string 8},{m.as_string 8}) ")
+      say ""
+
+      input2.map (x->{say x; x}) .filter possible .map possibleCnt .map (x->{yak x; x}) |> sum
+
+  say "$part1:$part2"
+
+/*
+rwrrgguwuwrgbuubbgguuuwwuwwrgwurrugrbburgbwggbbwgrurbuwwbw
+012345678901234567890123456789012345678901234567890123456789
+
+60*3=180 64+64+64
+*/
