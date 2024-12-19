@@ -9,31 +9,31 @@ dec19 =>
 
   M : mutate is
   M ! ()->
-    cache := (container.mutable_tree_map M String bool).empty
-    cacheCnt := (container.mutable_tree_map M String i64).empty
+    cachePos := (container.mutable_tree_map M String bool).empty
+    cacheCnt := (container.mutable_tree_map M String i64 ).empty
 
     possible(s) =>
-      match cache.get s
+      match cachePos.get s
         v bool => v
         nil    => res := s="" || !sorted.filter p->
                                            (s.starts_with p &&
                                             possible (s.suffix p))
                                         .is_empty
-                  cache.put s res
+                  cachePos.put s res
                   res
 
-    possibleCnt(s) =>
+    count(s) =>
       match cacheCnt.get s
         v i64 => v
         nil   => res := if      s=""        then 1
                         else if !possible s then 0
                         else
                           sorted.filter s.starts_with
-                                .map p->possibleCnt(s.suffix p) |> sum
+                                .map p->count(s.suffix p) |> sum
                  cacheCnt.put s res
                  res
 
     part1 => input2.filter possible .count
-    part2 => input2.map possibleCnt |> sum
+    part2 => input2.map count |> sum
 
     say "$part1:$part2"
