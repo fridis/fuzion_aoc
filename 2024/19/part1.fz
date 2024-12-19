@@ -1,0 +1,32 @@
+dec19 =>
+
+  input := io.stdin.read_lines
+  input1 := input[0].split ", " .map sarr .as_array
+  input2 := input.drop 2 .filter !="" .map sarr
+  sarr(s) => String.from_bytes s.utf8.as_array
+
+  sorted := input1.sort_by a,b->a.byte_length<=b.byte_length
+
+  say "sorted: {sorted.as_string ", "}"
+
+  no_dups Sequence String := sorted.filter s->(!possible2 s sorted) .as_array
+
+  say "no_dups: {no_dups.as_string ", "}"
+
+  possible2(s, ts) =>
+    !ts.filter (p -> p!=s && s.starts_with p && possible0 (s.substring p.byte_length) ts)
+                   .is_empty
+
+  possible0(s, ts) =>
+    s="" || !ts.filter (p -> s.starts_with p && possible0 (s.substring p.byte_length) ts)
+                   .is_empty
+
+  possible(s) => possible0 s no_dups
+
+  part1 =>
+    input2.map (x->{say x; x}) .filter possible .count
+
+
+  part2 => input2.count
+
+  say "$part1:$part2"
