@@ -1,0 +1,57 @@
+dec20 =>
+
+  input := io.stdin.read_lines.filter !="" .map (.as_codepoints)
+  w := input[0].count
+  h := input.count
+  area := array2 w h x,y->input[y][x]
+  point(x,y) : property.equatable is
+    xl => x.as_i64
+    yl => y.as_i64
+    redef type.equality(a,b point.this) => a.x=b.x && a.y=b.y
+    neighbors => [point x+1 y, point x-1 y, point x y+1, point x y-1]
+      .filter (.valid)
+    valid => 0 <= x < w && 0 <= y < h
+    on_track => area[x,y] != "#"
+    inner_wall => 1 <= x < w-1 && 1 <= y < h-1 && area[x,y] = "#"
+
+  s := area.index_pairs.filter (||> y,x->area[y,x]="S") .first.val ||> point
+  e := area.index_pairs.filter (||> y,x->area[y,x]="E") .first.val ||> point
+
+  M : mutate is
+  M ! ()->
+    part1 =>
+      picos := (mutate.array2 i32).type.new M w.as_i64 h.as_i64 -1
+      for p := s, p.neighbors.filter (.on_track)
+                             .filter q->picos[q.xl,q.yl]<0
+                             .first.val
+          ps := 0, ps+1
+      do
+          picos[p.xl,p.yl] := ps
+#          say ps
+#          say (array2 w h (x,y->($picos[x.as_i64,y.as_i64]).pad_center 3)).transpose
+      until p=e
+        unit
+      saving(p) =>
+        t := picos[p.xl  ,p.yl-1]
+        b := picos[p.xl  ,p.yl+1]
+        l := picos[p.xl-1,p.yl  ]
+        r := picos[p.xl+1,p.yl  ]
+        if      t>=0 && b>=0 then (|(t-b)|)-2
+        else if l>=0 && r>=0 then (|(l-r)|)-2
+        else                      0
+      area.index_pairs.map (||> xx,yy -> point xx yy)
+          .filter (.inner_wall)
+          .map saving
+          .filter >=100 .count
+/*
+
+      picosa := array2 w h x,y->picos[x.as_i64,y.as_i64]
+      say picosa.transpose
+
+      say s.x
+      say s.y
+      say area.transpose
+*/
+    part2 =>
+
+    say "$part1:$part2"
