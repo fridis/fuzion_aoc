@@ -1,6 +1,6 @@
 dec20 =>
 
-  minsaving := envir.args[1].parse_i32.val
+  min_saving := envir.args[1].parse_i32.val
   input := io.stdin.read_lines.filter !="" .map (.as_codepoints)
   w := input[0].count
   h := input.count
@@ -46,7 +46,7 @@ dec20 =>
       area.index_pairs.map ||>point
           .filter (.inner_wall)
           .map saving
-          .filter >=minsaving
+          .filter >=min_saving
           .count
 
     part2 =>
@@ -57,7 +57,7 @@ dec20 =>
                .map    (pi+)
                .filter (.on_track)
                .map (pj -> picos pj - picos pi - (pj-pi).abs)
-               .filter >=minsaving
+               .filter >=min_saving
         .count
 
     say "$part1:$part2"
