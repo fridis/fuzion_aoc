@@ -45,18 +45,20 @@ dec20 =>
       area.index_pairs.map (||> xx,yy -> point xx yy)
           .filter (.inner_wall)
           .map saving
-          .filter >=minsaving .count
+          .filter >=minsaving
+          .count
 
     part2 =>
       cheatcnt := M.env.new 0
-      for i in track.indices do
+      track.indices.for_each i->
         pi := track[i]
-        for jx in -20 .. 20 do
-          for jy in -20+(|jx|) .. 20-(|jx|) do
-            pj := point pi.x+jx pi.y+jy
-            if pj.valid && pj.on_track then
-              saving := picos[pj.xl,pj.yl]-picos[pi.xl,pi.yl] - (|jx|) - (|jy|)
-              if saving >= minsaving then
+        (-20 .. 20).for_each jx->
+          (-20+(|jx|) .. 20-(|jx|)).map (jy -> point pi.x+jx pi.y+jy)
+            .filter (.valid)
+            .filter (.on_track)
+            .map (pj -> picos[pj.xl,pj.yl]-picos[pi.xl,pi.yl] - (|pi.x-pj.x|) - (|pi.y-pj.y|))
+            .filter >=minsaving
+            .for_each _->
                 cheatcnt <- 1+cheatcnt
       cheatcnt.get
 
