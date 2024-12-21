@@ -6,14 +6,13 @@ dec20 =>
   h := input.count
   area := array2 w h x,y->input[y][x]
 
-  point(x,y) : property.equatable is
+  point(x,y) is
     xl => x.as_i64
     yl => y.as_i64
-    redef type.equality(a,b point.this) => a.x=b.x && a.y=b.y
     neighbors   => [up, dw, le, ri].filter (.valid)
     valid       => 0 <= x < w && 0 <= y < h
-    on_track    => area[x,y] != "#"
-    inner_wall  => 1 <= x < w-1 && 1 <= y < h-1 && area[x,y] = "#"
+    on_track    => valid && area[x,y] != "#"
+    inner_wall  => 1 <= x < w-1 && 1 <= y < h-1 && !on_track
     abs         => (|x|) + (|y|)
     infix + (o) => point x+o.x y+o.y
     infix - (o) => point x-o.x y-o.y
@@ -56,7 +55,6 @@ dec20 =>
           range.combine range point
                .filter (p -> p.abs <= 20)
                .map    (pi+)
-               .filter (.valid)
                .filter (.on_track)
                .map (pj -> picos pj - picos pi - (pj-pi).abs)
                .filter >=minsaving
