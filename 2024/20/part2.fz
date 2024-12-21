@@ -1,28 +1,32 @@
 dec20 =>
 
+  minsaving := envir.args[1].parse_i32.val
   input := io.stdin.read_lines.filter !="" .map (.as_codepoints)
   w := input[0].count
   h := input.count
   area := array2 w h x,y->input[y][x]
+
   point(x,y) : property.equatable is
     xl => x.as_i64
     yl => y.as_i64
-    redef as_string => "$x,$y"
     redef type.equality(a,b point.this) => a.x=b.x && a.y=b.y
-    neighbors => [point x+1 y, point x-1 y, point x y+1, point x y-1]
-      .filter (.valid)
-    valid => 0 <= x < w && 0 <= y < h
-    on_track => area[x,y] != "#"
-    inner_wall => 1 <= x < w-1 && 1 <= y < h-1 && area[x,y] = "#"
+    neighbors   => [up, dw, le, ri].filter (.valid)
+    valid       => 0 <= x < w && 0 <= y < h
+    on_track    => area[x,y] != "#"
+    inner_wall  => 1 <= x < w-1 && 1 <= y < h-1 && area[x,y] = "#"
+    abs         => (|x|) + (|y|)
+    infix + (o) => point x+o.x y+o.y
+    infix - (o) => point x-o.x y-o.y
+    up => { point x y-1}; dw => { point x y+1 }
+    le => { point x-1 y}; ri => { point x+1 y }
 
   s := area.index_pairs.filter (||> y,x->area[y,x]="S") .first.val ||> point
-  e := area.index_pairs.filter (||> y,x->area[y,x]="E") .first.val ||> point
-  minsaving := envir.args[1].parse_i32.val
 
   M : mutate is
   M ! ()->
-    picos := (mutate.array2 i32).type.new M w.as_i64 h.as_i64 -1
     track := (mutate.array point).type.new M
+    picos := (mutate.array2 i32).type.new M w.as_i64 h.as_i64 -1
+    picos(p) => picos[p.xl,p.yl]
     for p := s, p.neighbors.filter (.on_track)
                            .filter q->picos[q.xl,q.yl]<0
                            .first.val
@@ -30,34 +34,32 @@ dec20 =>
     do
       picos[p.xl,p.yl] := ps
       track.add p
-    until p=e
+    until area[p.x,p.y] = "E"
       unit
 
     part1 =>
       saving(p) =>
-        t := picos[p.xl  ,p.yl-1]
-        b := picos[p.xl  ,p.yl+1]
-        l := picos[p.xl-1,p.yl  ]
-        r := picos[p.xl+1,p.yl  ]
+        t := picos p.up; b := picos p.dw
+        l := picos p.le; r := picos p.ri
         if      t>=0 && b>=0 then (|t-b|)-2
         else if l>=0 && r>=0 then (|l-r|)-2
         else                      0
-      area.index_pairs.map (||> xx,yy -> point xx yy)
+      area.index_pairs.map ||>point
           .filter (.inner_wall)
           .map saving
           .filter >=minsaving
           .count
 
     part2 =>
-      (track.as_array.map pi->
-        ((-20 .. 20).map jx->
-            (-20+(|jx|) .. 20-(|jx|))
-              .map (jy -> point pi.x+jx pi.y+jy)
-              .filter (.valid)
-              .filter (.on_track)
-              .map (pj -> picos[pj.xl,pj.yl]-picos[pi.xl,pi.yl] - (|pi.x-pj.x|) - (|pi.y-pj.y|))
-              .filter >=minsaving
-              .count) |> sum
-       ) |> sum
+      range := -20 .. 20
+      track.as_array.flat_map pi->
+          range.combine range point
+               .filter (p -> p.abs <= 20)
+               .map    (pi+)
+               .filter (.valid)
+               .filter (.on_track)
+               .map (pj -> picos pj - picos pi - (pj-pi).abs)
+               .filter >=minsaving
+        .count
 
     say "$part1:$part2"
