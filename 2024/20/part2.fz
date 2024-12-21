@@ -49,15 +49,15 @@ dec20 =>
           .count
 
     part2 =>
-      (track.indices.map i->
-        pi := track[i]
-        (-20 .. 20).map jx->
-          (-20+(|jx|) .. 20-(|jx|)).map (jy -> point pi.x+jx pi.y+jy)
-            .filter (.valid)
-            .filter (.on_track)
-            .map (pj -> picos[pj.xl,pj.yl]-picos[pi.xl,pi.yl] - (|pi.x-pj.x|) - (|pi.y-pj.y|))
-            .filter >=minsaving
-            .count |> sum
+      (track.as_array.map pi->
+        ((-20 .. 20).map jx->
+            (-20+(|jx|) .. 20-(|jx|))
+              .map (jy -> point pi.x+jx pi.y+jy)
+              .filter (.valid)
+              .filter (.on_track)
+              .map (pj -> picos[pj.xl,pj.yl]-picos[pi.xl,pi.yl] - (|pi.x-pj.x|) - (|pi.y-pj.y|))
+              .filter >=minsaving
+              .count) |> sum
        ) |> sum
 
     say "$part1:$part2"
