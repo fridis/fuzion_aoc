@@ -9,15 +9,14 @@ dec20 =>
   point(x,y) is
     xl => x.as_i64
     yl => y.as_i64
-    neighbors   => [up, dw, le, ri].filter (.valid)
+    neighbors   => [point x y-1, point x y+1,
+                    point x-1 y, point x+1 y].filter (.valid)
     valid       => 0 <= x < w && 0 <= y < h
     on_track    => valid && area[x,y] != "#"
     inner_wall  => 1 <= x < w-1 && 1 <= y < h-1 && !on_track
     abs         => (|x|) + (|y|)
     infix + (o) => point x+o.x y+o.y
     infix - (o) => point x-o.x y-o.y
-    up => { point x y-1}; dw => { point x y+1 }
-    le => { point x-1 y}; ri => { point x+1 y }
 
   s := area.index_pairs.filter (||> y,x->area[y,x]="S") .first.val ||> point
 
@@ -25,9 +24,9 @@ dec20 =>
   M ! ()->
     track := (mutate.array point).type.new M
     picos := (mutate.array2 i32).type.new M w.as_i64 h.as_i64 -1
-    picos(p) => picos[p.xl,p.yl]
+    pico(p) => picos[p.xl,p.yl]
     for p := s, p.neighbors.filter (.on_track)
-                           .filter q->picos[q.xl,q.yl]<0
+                           .filter (q -> pico q < 0)
                            .first.val
         ps := 0, ps+1
     do
@@ -38,8 +37,7 @@ dec20 =>
 
     part1 =>
       saving(p) =>
-        t := picos p.up; b := picos p.dw
-        l := picos p.le; r := picos p.ri
+        (t,b,l,r) := p.neighbors.map pico .as_4tuple
         if      t>=0 && b>=0 then (|t-b|)-2
         else if l>=0 && r>=0 then (|l-r|)-2
         else                      0
@@ -56,7 +54,7 @@ dec20 =>
                .filter (p -> p.abs <= 20)
                .map    (pi+)
                .filter (.on_track)
-               .map (pj -> picos pj - picos pi - (pj-pi).abs)
+               .map (pj -> pico pj - pico pi - (pj-pi).abs)
                .filter >=min_saving
         .count
 
