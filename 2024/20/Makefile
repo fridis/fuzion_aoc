@@ -9,7 +9,7 @@ test1:
 	$(FUZION)/bin/fz part1.fz <test_input
 
 part2:
-	$(FUZION)/bin/fz part2.fz <input
+	$(FUZION)/bin/fz part2.fz <input 100
 
 test2:
-	$(FUZION)/bin/fz part2.fz <test_input
+	$(FUZION)/bin/fz part2.fz <test_input 50

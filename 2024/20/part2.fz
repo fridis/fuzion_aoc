@@ -17,23 +17,23 @@ dec20 =>
 
   s := area.index_pairs.filter (||> y,x->area[y,x]="S") .first.val ||> point
   e := area.index_pairs.filter (||> y,x->area[y,x]="E") .first.val ||> point
+  minsaving := envir.args[1].parse_i32.val
 
   M : mutate is
   M ! ()->
+    picos := (mutate.array2 i32).type.new M w.as_i64 h.as_i64 -1
+    track := (mutate.array point).type.new M
+    for p := s, p.neighbors.filter (.on_track)
+                           .filter q->picos[q.xl,q.yl]<0
+                           .first.val
+        ps := 0, ps+1
+    do
+      picos[p.xl,p.yl] := ps
+      track.add p
+    until p=e
+      unit
+
     part1 =>
-      picos := (mutate.array2 i32).type.new M w.as_i64 h.as_i64 -1
-      track := (mutate.array point).type.new M
-      for p := s, p.neighbors.filter (.on_track)
-                             .filter q->picos[q.xl,q.yl]<0
-                             .first.val
-          ps := 0, ps+1
-      do
-          picos[p.xl,p.yl] := ps
-#          say ps
-#          say (array2 w h (x,y->($picos[x.as_i64,y.as_i64]).pad_center 3)).transpose
-      until p=e
-        unit
-      say track
       saving(p) =>
         t := picos[p.xl  ,p.yl-1]
         b := picos[p.xl  ,p.yl+1]
@@ -45,42 +45,10 @@ dec20 =>
       area.index_pairs.map (||> xx,yy -> point xx yy)
           .filter (.inner_wall)
           .map saving
-          .filter >=100 .count
-/*
+          .filter >=minsaving .count
 
-      picosa := array2 w h x,y->picos[x.as_i64,y.as_i64]
-      say picosa.transpose
-
-      say s.x
-      say s.y
-      say area.transpose
-*/
     part2 =>
-      picos := (mutate.array2 i32).type.new M w.as_i64 h.as_i64 -1
-      track := (mutate.array point).type.new M
-      for p := s, p.neighbors.filter (.on_track)
-                             .filter q->picos[q.xl,q.yl]<0
-                             .first.val
-          ps := 0, ps+1
-      do
-          picos[p.xl,p.yl] := ps
-          track.add p
-#          say ps
-#          say (array2 w h (x,y->($picos[x.as_i64,y.as_i64]).pad_center 3)).transpose
-      until p=e
-        say "total length: $ps"
-        unit
-      minsaving := envir.args[1].parse_i64.val
-      cnt := mut 0
-      for i in track.indices do
-        for j in i+minsaving+2 .. track.length-1 do
-          pi := track[i]
-          pj := track[j]
-          dist := (|pi.xl-pj.xl|) + (|pi.yl-pj.yl|)
-          if j-i-dist >= minsaving && dist<=20
-            cnt <- 1+cnt
-      cheatcnt := mut 0
-      say "number of pairs to check: $cnt"
+      cheatcnt := M.env.new 0
       for i in track.indices do
         pi := track[i]
         for jx in -20 .. 20 do
@@ -88,60 +56,8 @@ dec20 =>
             pj := point pi.x+jx pi.y+jy
             if pj.valid && pj.on_track then
               saving := picos[pj.xl,pj.yl]-picos[pi.xl,pi.yl] - (|jx|) - (|jy|)
-              if saving.as_i64 >= minsaving then
-#                say "cheat $saving $pi -> $pj"
-#                say "cheat $saving"
+              if saving >= minsaving then
                 cheatcnt <- 1+cheatcnt
-      say cheatcnt
       cheatcnt.get
-/*
-        visited := (mutate.array2 i32).type.new M 41 41 1000000
-        find_cheats track[i] 1
-        find_cheats(p, l) =>
-          p.neighbors.filter n->(!n.on_track)
-           .for_each q->
-            if visited[q.xl-pi.xl+20,q.yl-pi.yl+20] > l
-              #say "for $i visit $q"
-              visited[q.xl-pi.xl+20,q.yl-pi.yl+20] := l
-              q.neighbors.filter (.on_track)
-                         .for_each pj->
-#                            if visited[pj.xl-pi.xl+20,pj.yl-pi.yl+20] > 0
-#                               visited[pj.xl-pi.xl+20,pj.yl-pi.yl+20] := 0
-                               [pj].map n->picos[n.xl,n.yl]
-                                   .map -(i.as_i32+l+1)
-                                   .filter >=minsaving.as_i32
-                                   .for_each x->
-                                      if visited[pj.xl-pi.xl+20,pj.yl-pi.yl+20] % 10000 < x
-                                        visited[pj.xl-pi.xl+20,pj.yl-pi.yl+20] := x
-                                        if x=76 || x=74 then say "cheat $x $q from $pi -> $pj"
-                                        say "cheat $x"
-
-              if l<=21 then
-                find_cheats q l+1
-*/
-
-/*
-      saving(p) =>
-        t := picos[p.xl  ,p.yl-1]
-        b := picos[p.xl  ,p.yl+1]
-        l := picos[p.xl-1,p.yl  ]
-        r := picos[p.xl+1,p.yl  ]
-        if      t>=0 && b>=0 then (|(t-b)|)-2
-        else if l>=0 && r>=0 then (|(l-r)|)-2
-        else                      0
-      area.index_pairs.map (||> xx,yy -> point xx yy)
-          .filter (.inner_wall)
-          .map saving
-          .filter >=100 .count
-          */
-/*
-
-      picosa := array2 w h x,y->picos[x.as_i64,y.as_i64]
-      say picosa.transpose
-
-      say s.x
-      say s.y
-      say area.transpose
-*/
 
     say "$part1:$part2"

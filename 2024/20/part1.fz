@@ -36,8 +36,8 @@ dec20 =>
         b := picos[p.xl  ,p.yl+1]
         l := picos[p.xl-1,p.yl  ]
         r := picos[p.xl+1,p.yl  ]
-        if      t>=0 && b>=0 then (|(t-b)|)-2
-        else if l>=0 && r>=0 then (|(l-r)|)-2
+        if      t>=0 && b>=0 then (|t-b|)-2
+        else if l>=0 && r>=0 then (|l-r|)-2
         else                      0
       area.index_pairs.map (||> xx,yy -> point xx yy)
           .filter (.inner_wall)
