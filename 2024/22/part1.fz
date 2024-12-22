@@ -1,0 +1,24 @@
+dec22 is
+
+  input := io.stdin.read_lines.filter !="" .map (.parse_i64.val)
+
+  next(s0 i64) =>
+    s1 := s0 * 64
+    s2 := s0 ^ s1
+    s3 := s2 % 16777216
+    s4 := s3 / 32
+    s5 := s3 ^ s4
+    s6 := s5  % 16777216
+    s7 := s6 * 2048
+    s8 := s6 ^ s7
+    s8  % 16777216
+
+  secrets(x) => x :: next
+
+  say (secrets (i64 123))
+
+  part1 =>
+    input.map (seed -> secrets seed .drop 2000 .first.val) |> sum
+  part2 =>
+
+  say "$part1:$part2"
