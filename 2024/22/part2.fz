@@ -36,7 +36,7 @@ dec22 is
                range.flat_map i64 d->
                  p := (c_idx.indices.flat_map i64 i->
                              c_idx[i].filter j->cs[i][j+3]=d
-                                     .map (j -> (prices input[i]).drop j+4 .first.get 0) .first) |> sum
+                                     .flat_map (j -> (prices input[i]).drop j+4) .first) |> sum
                  [p]
          .fold1 max
 
