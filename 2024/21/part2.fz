@@ -4,41 +4,40 @@ dec21 is
 
   key(v codepoint) is
 
-    # overlapping two leyouts, put ` ` at (0,0)
     x => "741  <8520^v963AA>"  .find v .val / 6
     y => "789#456#123# 0^A<v>#".find v .val / 4 - 3
 
-    move_to(target key) =>
+    fixed move_to(target key) =>
       dx := target.x-x
       dy := target.y-y
-      ve := ["^"," ","v"][dy.sign+1] * (|dy|)
-      ho := ["<"," ",">"][dx.sign+1] * (|dx|)
+      ve := ["^"," ","v"][dy.sign+1] * (|dy|) + "A"
+      ho := ["<"," ",">"][dx.sign+1] * (|dx|) + "A"
 
-      # I did not believe both paths make a difference for small keypad,
-      # convinced by (or stole solution from) https://aoc.csokavar.hu/2024/21/
-      p1 := (target.y != 0 || x != 0).as_option String ve+ho+"A"
-      p2 := (target.x != 0 || y != 0).as_option String ho+ve+"A"
+      # I did not believe checking both paths would make a difference, convinced only
+      # by getting inspired by (or stole solution from)  https://aoc.csokavar.hu/2024/21/
+      p1 := if target.y != 0 || x != 0 then [ve + ho] else []
+      p2 := if target.x != 0 || y != 0 then [ho + ve] else []
       p1 ++ p2
 
-  shortest(d, l) i64 : memoize => keep "$d$l" _->
+  fixed shortest(d, l) i64 : memoize => keep "$d$l" _->
     if d < 0 then
       l.byte_length.as_i64
     else
-      for res := i64 0, res + s
-          prev := "A", cur
+      for prev := "A", cur
+          res := i64 0, res + s
           cur in l.as_codepoints
           s := key prev .move_to (key cur)
-                        .map (m -> shortest d-1 m)
+                        .map (shortest d-1)
                         .fold1 min
       else
         res
 
-  shortest(n) =>
-    lens := input.map (l -> shortest n l)
-    numparts := input.map (.as_codepoints.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
+  part(n) =>
+    lens := input.map (l -> shortest (n=2 ? 25 : 2) l)
+    numparts := input.map (l->l.as_codepoints .filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
     lens.zip numparts (*) |> sum
 
-  part1 => shortest 2
-  part2 => shortest 25
+  part1 => part 1
+  part2 => part 2
 
   say "$part1:$part2"
