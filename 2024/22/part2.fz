@@ -27,16 +27,20 @@ dec22 is
     range => i64 -9 .. 9
     N := input.count
     cs := array N (i -> changes input[i])
+
+    arr(o,off,v) => array N (i -> o[i].filter j->cs[i][j+off]=v .as_array)
+
+    oa := array N i->(cs[i] .indexed .filter (t -> t ||> j,v -> j<1997) .map (t -> t ||> j,v->j) .as_array)
     range.flat_map i64 a->
-        a_idx := array N i->(cs[i] .indexed .filter (t -> t ||> j,v -> v=a && j<1997) .map (t -> t ||> j,v->j) .as_array)
+        aa := arr oa 0 a
         range.flat_map i64 b->
-          b_idx := array N (i -> a_idx[i].filter j->cs[i][j+1]=b .as_array)
+          ba := arr aa 1 b
           range.flat_map i64 c->
-            c_idx := array N (i -> b_idx[i].filter j->cs[i][j+2]=c .as_array)
+            ca := arr ba 2 c
             range.map i64 d->
-              (c_idx.indices.flat_map i64 i->
-                 c_idx[i].filter j->cs[i][j+3]=d
-                        .flat_map (j -> (prices input[i]).drop j+4) .first) |> sum
+              (ca.indices.flat_map i64 i->
+                 ca[i].filter j->cs[i][j+3]=d
+                      .flat_map (j -> (prices input[i]).drop j+4) .first) |> sum
       .fold1 max
 
   say "$part1:$part2"
