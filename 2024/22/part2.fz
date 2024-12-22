@@ -24,26 +24,20 @@ dec22 is
     input.map (seed -> secrets seed .drop 2000 .first.val) |> sum
 
   part2 =>
-    mx := mut (i64 0)
-    at := mut "--"
     range => i64 -9 .. 9
     N := input.count
     cs := array N (i -> changes input[i])
-    for a in range do
-      a_idx := array N i->(cs[i] .indexed .filter (t -> t ||> j,v -> v=a && j<1997) .map (t -> t ||> j,v->j) .as_array)
-      for b in range do
-        b_idx := array N (i -> a_idx[i].filter j->cs[i][j+1]=b .as_array)
-        for c in range do
-          c_idx := array N (i -> b_idx[i].filter j->cs[i][j+2]=c .as_array)
-          for d in range do
-            p := (c_idx.indices.flat_map i64 i->
-                        c_idx[i].filter j->cs[i][j+3]=d
-                                .map (j -> (prices input[i]).drop j+4 .first.get 0) .first) |> sum
-
-            if p > mx.get then
-              mx <- p
-              at <- "$a $b $c $d"
-    mx.get
-
+    range.flat_map i64 a->
+           a_idx := array N i->(cs[i] .indexed .filter (t -> t ||> j,v -> v=a && j<1997) .map (t -> t ||> j,v->j) .as_array)
+           range.flat_map i64 b->
+             b_idx := array N (i -> a_idx[i].filter j->cs[i][j+1]=b .as_array)
+             range.flat_map i64 c->
+               c_idx := array N (i -> b_idx[i].filter j->cs[i][j+2]=c .as_array)
+               range.flat_map i64 d->
+                 p := (c_idx.indices.flat_map i64 i->
+                             c_idx[i].filter j->cs[i][j+3]=d
+                                     .map (j -> (prices input[i]).drop j+4 .first.get 0) .first) |> sum
+                 [p]
+         .fold1 max
 
   say "$part1:$part2"
