@@ -2,11 +2,11 @@ dec22 is
 
   input := io.stdin.read_lines.filter !="" .map (.parse_i64.val) .as_array
 
+  i64.mixAndPrune(f i64->i64) => (val ^ f val) % 16777216
   next(s0 i64) =>
-    s2 := s0 ^ (s0 * 64)
-    s3 := s2 % 16777216
-    s6 := (s3 ^ (s3 / 32)) % 16777216
-    (s6 ^ (s6 * 2048)) % 16777216
+    s0.mixAndPrune (*64)
+      .mixAndPrune (/32)
+      .mixAndPrune (*2048)
 
   secrets(x) => x :: next
 
