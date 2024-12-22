@@ -1,0 +1,297 @@
+dec21 is
+
+  input := io.stdin.read_lines.filter !="" .map (.as_codepoints)
+
+  a := i32 10
+  fixed key(v i32)
+    pre
+      debug: 0 <= v <= 9 || v = a
+  is
+    x => if      v=a then 2
+         else if v=0 then 1
+         else             (v-1) % 3
+    y => v = a || v = 0 ? 3 : (2 - (v-1)/3)
+    fixed move_to(target key) =>
+      dx := target.x-x
+      dy := target.y-y
+   #   say "move $v ($x,$y) -> {target.v} ({target.x},{target.y}) $dx $dy"
+      dx1 := y=3 && dx < 0 ? min dx -y+1 : dx;
+      dx2 := dx - dx1;
+      ((dx > 0 ? ">" * dx  : "") +
+       (dx1 < 0 ? "<" *(-dx1): "") +
+       (dy < 0 ? "^"*(-dy) : "") +
+       (dx2 < 0 ? "<"*(-dx2) : "") +
+       (dy > 0 ? "v"*  dy  : "")   )
+    fixed move_to_all(target key) Sequence String =>
+      dx := target.x-x
+      dy := target.y-y
+      if dx = 0 && dy = 0 then
+        [""]
+      else
+        lr := if dx > 0         then (ri.move_to_all target).map ">"+ else []
+        ld := if dy > 0 && v!=1 then (dw.move_to_all target).map "v"+ else []
+        ll := if dx < 0 && v!=0 then (le.move_to_all target).map "<"+ else []
+        lu := if dy < 0         then (up.move_to_all target).map "^"+ else []
+        lr++ld++ll++lu
+    up => if      v=0 then key 2
+          else if v=a then key 3
+          else             key v+3
+    dw => if      v=2 then key 0
+          else if v=3 then key a
+          else             key v-3
+    le => if      v=a then key 0
+          else             key v-1
+    ri => if      v=0 then key a
+          else             key v+1
+
+  key2(v codepoint)
+    pre
+      debug: v = "<" || v = ">" || v = "^" || v = "v" || v = "A"
+  is
+    ix => if      v = "A" then 0
+          else if v = "^" then 1
+          else if v = "<" then 2
+          else if v = "v" then 3
+          else if v = ">" then 4
+          else panic "unexpected $v"
+    x => if      v="A" || v = ">" then 2
+         else if v="^" || v = "v" then 1
+         else if v="<"            then 0
+         else panic "unexpeced key2 $v"
+    y => if      v = "^" || v = "A" then 0
+         else if v = "<" || v = "v" || v = ">" then 1
+         else panic "unexpeced key2 $v"
+    fixed move_to(target key2) =>
+      dx := target.x-x
+      dy := target.y-y
+  #    say "move $v ($x,$y) -> {target.v} ({target.x},{target.y}) $dx $dy"
+      ((dy < 0 ? "^"*(-dy) : "") +
+       (dx > 0 ? ">" * dx  : "") +
+       (dy > 0 ? "v"*  dy  : "") +
+       (dx < 0 ? "<"*(-dx) : "") +
+       "")
+
+
+  fixed codepoint.as_key =>
+    if codepoint.ascii_digit.contains val then dec21.key parse_i32.val
+    else if "A" = codepoint.this then dec21.key dec21.a
+    else panic "as_key for {codepoint.this}"
+
+  fixed codepoint.as_key2 =>
+    dec21.key2 codepoint.this
+
+  fixed part1 =>
+    lens := input.map (l -> shortest1 l (key a))
+
+    numparts := input.map (l->l.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i32.val)
+    say "$lens \n $numparts"
+    lens.zip numparts (*) |> sum
+
+  fixed shortest1(l, k) =>
+    match l.as_list
+      nil => 0
+      c Cons =>
+        k2 := c.head.as_key
+        s := k.move_to_all k2
+              .map (m -> shortest2 m+"A")
+              .fold1 min
+        s + shortest1 c.tail k2
+
+  fixed shortest2(l) =>
+    l.as_codepoints
+#        .reduce (key, String) (key a, "") (s,c)->
+#             k2:= c.as_key
+#             (k1,str) := s
+#             (k2,str + k1.move_to k2 + "A")
+#        .values.1.as_codepoints
+        .reduce (key2, String) (key2 "A", "") (s,c)->
+             k2:= c.as_key2
+             (k1,str) := s
+             (k2,str + k1.move_to k2 + "A")
+        .values.1.as_codepoints.reduce (key2, String) (key2 "A", "") (s,c)->
+             k2:= c.as_key2
+             (k1,str) := s
+             (k2,str + k1.move_to k2 + "A")
+        .values.1.byte_length
+
+  fixed shortest1b(l, k) =>
+    match l.as_list
+      nil => 0
+      c Cons =>
+        k2 := c.head.as_key
+        s := k.move_to_all k2
+              .map (m -> shortest2b 25 m+"A")
+              .fold1 min
+        s + shortest1b c.tail k2
+
+
+  key2s := [key2 "A", key2 "^", key2 "<", key2 "v", key2 ">"]
+
+  ignore (mut 0)
+
+  countMoves(l) =>
+    res := (mutate.array i64).new mutate 25 0
+    for last := key2 "A", cur
+        curcp in l.as_codepoints
+        cur := key2 curcp
+    do
+      i := last.ix * 5 + cur.ix
+      res[i.as_i64] := res[i.as_i64]+1
+    else
+      say "for $l moves {res.as_array}"
+      res.as_array
+
+  fixed shortest2c(d, arr) =>
+    say "FOR d=$d: $arr"
+    if d = 0 then
+      arr |> sum
+    else
+      res := (mutate.array i64).new mutate 25 0
+      for i in 0..4 do
+        for j in 0..4 do
+          f := arr[i*5+j]
+          l := (key2s[i].move_to key2s[j])+"A"
+          for last := key2 "A", cur
+              curcp in l.as_codepoints
+              cur := key2 curcp
+          do
+            jx := last.ix * 5 + cur.ix
+            res[jx.as_i64] := res[jx.as_i64]+f
+      shortest2c d-1 res.as_array
+
+  fixed shortest2b(d, l) : memoize => keep "$d$l" _->
+    if d = 0 then
+      l.byte_length.as_i64
+    else
+      arr := countMoves l
+      shortest2c(d, arr)
+
+      /*
+      0   A -> A  ==> A      => 1xC0
+      1   A -> ^  ==> <A     => 1xC2+1xC10
+      2   A -> <  ==> v<<A
+      3   A -> v  ==> v<A
+      4   A -> >  ==> <A
+      5   ^ -> A  ==> >A
+      6   ^ -> ^  ==> A
+      7   ^ -> <  ==> v<A
+      8   ^ -> v  ==> vA
+      9   ^ -> >  ==> v>A
+     10   < -> A  ==> >>^A
+     11   < -> ^  ==> >^A
+     12   < -> <  ==> A
+     13   < -> v  ==> >A
+     14   < -> >  ==> >>A
+     15   v -> A  ==> >^A
+     16   v -> ^  ==> ^A
+     17   v -> <  ==> <A
+     18   v -> v  ==> A
+     19   v -> >  ==> >A
+     20   > -> A  ==> ^A
+     21   > -> ^  ==> <^A
+     22   > -> <  ==> <<A
+     23   > -> v  ==> <A
+     24   > -> >  ==> A
+      */
+
+/*
+   else
+      shortest2b d-1 (
+       l.as_codepoints
+        .reduce (key2, String) (key2 "A", "") (s,c)->
+             k2:= c.as_key2
+             (k1,str) := s
+             (k2,str + k1.move_to k2 + "A")
+        .values.1)
+  else if false
+     shortest2b(d,
+                l.as_codepoints.filter ="A" .count,
+                l.as_codepoints.filter ="^" .count,
+                l.as_codepoints.filter ="<" .count,
+                l.as_codepoints.filter ="v" .count,
+                l.as_codepoints.filter =">" .count);
+  else
+     shortest2c(d, l)
+
+*/
+
+
+  fixed shortest2b(depth, a0, u, l, d, r) =>
+    if depth = 0
+      a0+u+l+d+r
+    else
+      shortest2b depth-1 a0+u+l+d+r l+d+r 2*l+u+d l+d+r 2*l+u+d
+
+  fixed part2 =>
+    lens := input.map (l -> shortest1b l (key a))
+
+    numparts := input.map (l->l.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
+    say "$lens \n $numparts"
+    lens.zip numparts (*) |> sum
+
+say "{"dec21.part1"}:{dec21.part2}"
+
+/*
+      v<<A>>^AvA^Av<<A>>^AAv<A<A>>^AAvAA<^A>Av<A>^AA<A>Av<A<A>>^AAAvA<^A>A   68
+         <   A > A   <   AA  v <   AA >>  ^ A  v  AA ^ A  v <   AAA >  ^ A   28
+             ^   A       ^^        <<       A     >>   A        vvv      A   14
+
+have: v<<A>>^AvA^Av<<A>>^AAv< A<A>>^A  AvAA<^A>Av<A>^AA<A>Av<A<A>>^AAAvA<^A>A
+
+379A: <v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A    64
+379A: <v<A>>^AvA^A<v A<  AA>>^A Av  A<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A
+         <   A > A   v   <<   A A   >  ^ AA > A  v  AA ^ A   < v  AAA >  ^ A  28
+             ^   A            < <        ^^   A     >>   A        vvv      A  14
+                 3                            7          9                 A
+
+
+      v<<A>>^AvA^Av<<A>>^AAv< A<A>>^A  AvAA<^A>Av<A>^AA<A>Av<A<A>>^AAAvA<^A>A   68 me
+379A: <v<A>>^AvA^A<v A<  AA>>^A Av  A<^A>AAv A^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A    64 ok
+                  +   ++   -   + ++  --    +
+
+
+         <   A > A   <   AA   v <   A  A >>  ^ A  v  AA ^ A  v <   AAA >  ^ A  28 me
+         <   A > A   v   <<   A A   >  ^ AA  > A  v  AA ^ A   < v  AAA >  ^ A  28 ok
+
+
+             ^   A       ^^         <  <       A     >>   A        vvv      A
+             ^   A            < <        ^^    A     >>   A        vvv      A
+
+                 3                             7          9                 A
+
+
+---------------------------------------
+
+                 Av<<A>>^AAv< A<A>>^A  AvAA<^A>A  28 me
+379A:            A<v A<  AA>>^A Av  A<^A>AAv A^A  24 ok
+                 |+   ++   -   + ++  --    +   |
+                 |                             |
+                 |                             |
+         <   A > A   <   AA   v <   A  A >>  ^ A  v  AA ^ A  v <   AAA >  ^ A  28 me
+         <   A > A   v   <<   A A   >  ^ AA  > A  v  AA ^ A   < v  AAA >  ^ A  28 ok
+                 |                             |
+                 |                             |
+             ^   A       ^^         <  <       A     >>   A        vvv      A
+             ^   A            < <        ^^    A     >>   A        vvv      A
+                 |                             |
+                 3                             7          9                 A
+
+---------------------------------------
+
+                 Av<<A>>^Av< A<A>>^A  AvA<^A>A  28 me
+379A:            A<v A<  A>>^A Av  A<^A>Av A^A  24 ok
+                 |+   ++  -   + ++  --   +   |
+                 |                           |
+                 |                           |
+         <   A > A   <   A   v <   A  A >  ^ A  v  AA ^ A  v <   AAA >  ^ A  28 me
+         <   A > A   v   <<  A A   >  ^ A  > A  v  AA ^ A   < v  AAA >  ^ A  28 ok
+                 |                           |
+                 |                           |
+             ^   A       ^         <  <      A     >>   A        vvv      A
+             ^   A           < <        ^    A     >>   A        vvv      A
+                 |                           |
+                 3                           5          9                 A
+
+
+
+*/
