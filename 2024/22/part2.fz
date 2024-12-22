@@ -30,7 +30,7 @@ dec22 is
     #
     arr(o,off,v) => array n (i -> o[i].filter j->cs[i][j+off]=v .as_array)
 
-    oa := array n i->(cs[i] .indexed .filter (t -> t ||> j,v -> j<1997) .map (t -> t ||> j,v->j) .as_array)
+    oa := array n _->(0..1996).as_array
     (range      .map (a -> arr oa 0 a) .flat_map aa->
        range    .map (b -> arr aa 1 b) .flat_map ba->
          range  .map (c -> arr ba 2 c) .flat_map ca->
