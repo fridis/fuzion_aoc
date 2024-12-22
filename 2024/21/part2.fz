@@ -20,7 +20,7 @@ dec21 is
       p2 := (target.x != 0 || y != 0).as_option String ho+ve+"A"
       p1 ++ p2
 
-  shortest(d, l) i64 : memoize => keep "$d$l" _->
+  find_shortest(d, l) i64 : memoize => keep "$d$l" _->
     if d < 0 then
       l.byte_length.as_i64
     else
@@ -28,13 +28,13 @@ dec21 is
           prev := "A", cur
           cur in l.as_codepoints
           s := key prev .move_to (key cur)
-                        .map (m -> shortest d-1 m)
+                        .map (find_shortest d-1)
                         .fold1 min
       else
         res
 
   shortest(n) =>
-    lens := input.map (l -> shortest n l)
+    lens := input.map (find_shortest n)
     numparts := input.map (.as_codepoints.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
     lens.zip numparts (*) |> sum
 
