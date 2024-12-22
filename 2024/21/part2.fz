@@ -1,280 +1,43 @@
 dec21 is
 
-  input := io.stdin.read_lines.filter !="" .map (.as_codepoints)
+  input := io.stdin.read_lines.filter !=""
 
-  a := i32 10
-  fixed key(v i32)
-    pre
-      debug: 0 <= v <= 9 || v = a
-  is
-    x => if      v=a then 2
-         else if v=0 then 1
-         else             (v-1) % 3
-    y => v = a || v = 0 ? 3 : (2 - (v-1)/3)
+  key(v codepoint) is
+
+    x => "741  <8520^v963AA>"  .find v .val / 6
+    y => "789#456#123# 0^A<v>#".find v .val / 4 - 3
+
     fixed move_to(target key) =>
       dx := target.x-x
       dy := target.y-y
-   #   say "move $v ($x,$y) -> {target.v} ({target.x},{target.y}) $dx $dy"
-      dx1 := y=3 && dx < 0 ? min dx -y+1 : dx;
-      dx2 := dx - dx1;
-      ((dx > 0 ? ">" * dx  : "") +
-       (dx1 < 0 ? "<" *(-dx1): "") +
-       (dy < 0 ? "^"*(-dy) : "") +
-       (dx2 < 0 ? "<"*(-dx2) : "") +
-       (dy > 0 ? "v"*  dy  : "")   )
-    fixed move_to_all(target key) Sequence String =>
-      dx := target.x-x
-      dy := target.y-y
-      if dx = 0 && dy = 0 then
-        [""]
-      else
-        lr := if dx > 0         then (ri.move_to_all target).map ">"+ else []
-        ld := if dy > 0 && v!=1 then (dw.move_to_all target).map "v"+ else []
-        ll := if dx < 0 && v!=0 then (le.move_to_all target).map "<"+ else []
-        lu := if dy < 0         then (up.move_to_all target).map "^"+ else []
-        lr++ld++ll++lu
-    up => if      v=0 then key 2
-          else if v=a then key 3
-          else             key v+3
-    dw => if      v=2 then key 0
-          else if v=3 then key a
-          else             key v-3
-    le => if      v=a then key 0
-          else             key v-1
-    ri => if      v=0 then key a
-          else             key v+1
+      ve := ["^"," ","v"][dy.sign+1] * (|dy|) + "A"
+      ho := ["<"," ",">"][dx.sign+1] * (|dx|) + "A"
 
-  key2(v codepoint)
-    pre
-      debug: v = "<" || v = ">" || v = "^" || v = "v" || v = "A"
-  is
-    ix => if      v = "A" then 0
-          else if v = "^" then 1
-          else if v = "<" then 2
-          else if v = "v" then 3
-          else if v = ">" then 4
-          else panic "unexpected $v"
-    x => if      v="A" || v = ">" then 2
-         else if v="^" || v = "v" then 1
-         else if v="<"            then 0
-         else panic "unexpeced key2 $v"
-    y => if      v = "^" || v = "A" then 0
-         else if v = "<" || v = "v" || v = ">" then 1
-         else panic "unexpeced key2 $v"
-    fixed move_to(target key2) =>
-      dx := target.x-x
-      dy := target.y-y
-  #    say "move $v ($x,$y) -> {target.v} ({target.x},{target.y}) $dx $dy"
-      if target.x = 0 && y = 0 then  # idea stolen from https://aoc.csokavar.hu/2024/21/
-        ((dy < 0 ? "^"*(-dy) : "") +
-         (dy > 0 ? "v"*  dy  : "") +
-         (dx > 0 ? ">" * dx  : "") +
-         (dx < 0 ? "<"*(-dx) : "") +
-         "")
-      else
-        ((dx > 0 ? ">" * dx  : "") +
-         (dx < 0 ? "<"*(-dx) : "") +
-         (dy < 0 ? "^"*(-dy) : "") +
-         (dy > 0 ? "v"*  dy  : "") +
-         "")
-    fixed move_to_all(target key2) =>
-      dx := target.x-x
-      dy := target.y-y
-  #    say "move $v ($x,$y) -> {target.v} ({target.x},{target.y}) $dx $dy"
-      # idea stolen from https://aoc.csokavar.hu/2024/21/
-      p1 :=
-        if target.y != 0 || x != 0 then
-          [(dy < 0 ? "^"*(-dy) : "") +
-           (dy > 0 ? "v"*  dy  : "") +
-           (dx > 0 ? ">" * dx  : "") +
-           (dx < 0 ? "<"*(-dx) : "") +
-           ""]
-        else []
-      p2 :=
-        if target.x != 0 || y != 0 then
-          [(dx > 0 ? ">" * dx  : "") +
-           (dx < 0 ? "<"*(-dx) : "") +
-           (dy < 0 ? "^"*(-dy) : "") +
-           (dy > 0 ? "v"*  dy  : "") +
-           ""]
-        else []
-      if (p1 ++ p2).is_empty then say "from $x,$y to {target.x},{target.y} $v {target.v}"
-      check !(p1 ++ p2).is_empty
+      # I did not believe checking both paths would make a difference, convinced only
+      # by getting inspired by (or stole solution from)  https://aoc.csokavar.hu/2024/21/
+      p1 := if target.y != 0 || x != 0 then [ve + ho] else []
+      p2 := if target.x != 0 || y != 0 then [ho + ve] else []
       p1 ++ p2
 
-
-  fixed codepoint.as_key =>
-    if codepoint.ascii_digit.contains val then dec21.key parse_i32.val
-    else if "A" = codepoint.this then dec21.key dec21.a
-    else panic "as_key for {codepoint.this}"
-
-  fixed codepoint.as_key2 =>
-    dec21.key2 codepoint.this
-
-  fixed part1 =>
-    lens := input.map (l -> shortest1 l (key a))
-
-    numparts := input.map (l->l.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i32.val)
-    say "$lens \n $numparts"
-    lens.zip numparts (*) |> sum
-
-  fixed shortest1(l, k) =>
-    match l.as_list
-      nil => 0
-      c Cons =>
-        k2 := c.head.as_key
-        s := k.move_to_all k2
-              .map (m -> shortest2 m+"A")
-              .fold1 min
-        s + shortest1 c.tail k2
-
-  fixed shortest2(l) =>
-    l.as_codepoints
-        .reduce (key2, String) (key2 "A", "") (s,c)->
-             k2:= c.as_key2
-             (k1,str) := s
-             (k2,str + k1.move_to k2 + "A")
-        .values.1.as_codepoints.reduce (key2, String) (key2 "A", "") (s,c)->
-             k2:= c.as_key2
-             (k1,str) := s
-             (k2,str + k1.move_to k2 + "A")
-        .values.1.byte_length
-
-  depth => envir.args.count > 1 ? envir.args[1].parse_i32.val : 25
-
-  fixed shortest1b(l, k) =>
-    match l.as_list
-      nil => 0
-      c Cons =>
-        k2 := c.head.as_key
-        s := k.move_to_all k2
-              .map (m -> shortest2b depth        m+"A")
-              .fold1 min
-        s + shortest1b c.tail k2
-
-/*
-  EncodeKey(currentKey, nextKey, d) : memoize =>
-       keep "$currentKey$nextKey$d _->
-           dy := nextKey.y - currentKey.y
-           vert := (dy < 0 ? "v" : "^") * (|dy|)
-           dx := nextKey.x - currentKey.x
-           horiz := (dx < 0 ? "<" : ">") * (|dx|)
-
-           /*
-           var keypad = keypads[0];
-
-           var currentPos = keypad.Single(kvp => kvp.Value == currentKey).Key;
-           var nextPos = keypad.Single(kvp => kvp.Value == nextKey).Key;
-
-           var dy = nextPos.y - currentPos.y;
-           var vert = new string(dy < 0 ? 'v' : '^', Math.Abs(dy));
-
-           var dx = nextPos.x - currentPos.x;
-           var horiz = new string(dx < 0 ? '<' : '>', Math.Abs(dx));
-
-           var cost = long.MaxValue;
-           // we can usually go vertical first then horizontal or vica versa,
-           // but we should check for the extra condition and don't position
-           // the robot over the ' ' key:
-           if (keypad[new Vec2(currentPos.x, nextPos.y)] != ' ') {
-               cost = Math.Min(cost, EncodeKeys($"{vert}{horiz}A", keypads[1..], cache));
-           }
-
-           if (keypad[new Vec2(nextPos.x, currentPos.y)] != ' ') {
-               cost = Math.Min(cost, EncodeKeys($"{horiz}{vert}A", keypads[1..], cache));
-           }
-           */
-           return cost;
-       });
-
-*/
-
-  fixed shortest2b(d, l) i64 : memoize => keep "$d$l" _->
-    if d = 0 then
+  fixed shortest(d, l) i64 : memoize => keep "$d$l" _->
+    if d < 0 then
       l.byte_length.as_i64
     else
-      for res := i64 0, res+sl
-          prev := "A", cur
+      for prev := "A", cur
+          res := i64 0, res + s
           cur in l.as_codepoints
-          sl i64 := key2 prev
-                 .move_to_all (key2 cur)
-                 .map (m -> shortest2b d-1 m+"A")
-                 .fold1 min
+          s := key prev .move_to (key cur)
+                        .map (shortest d-1)
+                        .fold1 min
       else
-        say "$res for $d$l"
         res
 
-  fixed part2 =>
-    lens := if envir.args.count = 1 then input.map (l -> shortest1b l (key a))
-                                    else input.map (l -> shortest2b depth (l.as_string ""))
-
-    numparts := input.map (l->l.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.get 1)
-    say "$lens \n $numparts"
+  part(n) =>
+    lens := input.map (l -> shortest (n=2 ? 25 : 2) l)
+    numparts := input.map (l->l.as_codepoints .filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
     lens.zip numparts (*) |> sum
 
-say "{"dec21.part1"}:{dec21.part2}"
+  part1 => part 1
+  part2 => part 2
 
-/*
-      v<<A>>^AvA^Av<<A>>^AAv<A<A>>^AAvAA<^A>Av<A>^AA<A>Av<A<A>>^AAAvA<^A>A   68
-         <   A > A   <   AA  v <   AA >>  ^ A  v  AA ^ A  v <   AAA >  ^ A   28
-             ^   A       ^^        <<       A     >>   A        vvv      A   14
-
-have: v<<A>>^AvA^Av<<A>>^AAv< A<A>>^A  AvAA<^A>Av<A>^AA<A>Av<A<A>>^AAAvA<^A>A
-
-379A: <v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A    64
-379A: <v<A>>^AvA^A<v A<  AA>>^A Av  A<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A
-         <   A > A   v   <<   A A   >  ^ AA > A  v  AA ^ A   < v  AAA >  ^ A  28
-             ^   A            < <        ^^   A     >>   A        vvv      A  14
-                 3                            7          9                 A
-
-
-      v<<A>>^AvA^Av<<A>>^AAv< A<A>>^A  AvAA<^A>Av<A>^AA<A>Av<A<A>>^AAAvA<^A>A   68 me
-379A: <v<A>>^AvA^A<v A<  AA>>^A Av  A<^A>AAv A^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A    64 ok
-                  +   ++   -   + ++  --    +
-
-
-         <   A > A   <   AA   v <   A  A >>  ^ A  v  AA ^ A  v <   AAA >  ^ A  28 me
-         <   A > A   v   <<   A A   >  ^ AA  > A  v  AA ^ A   < v  AAA >  ^ A  28 ok
-
-
-             ^   A       ^^         <  <       A     >>   A        vvv      A
-             ^   A            < <        ^^    A     >>   A        vvv      A
-
-                 3                             7          9                 A
-
-
----------------------------------------
-
-                 Av<<A>>^AAv< A<A>>^A  AvAA<^A>A  28 me
-379A:            A<v A<  AA>>^A Av  A<^A>AAv A^A  24 ok
-                 |+   ++   -   + ++  --    +   |
-                 |                             |
-                 |                             |
-         <   A > A   <   AA   v <   A  A >>  ^ A  v  AA ^ A  v <   AAA >  ^ A  28 me
-         <   A > A   v   <<   A A   >  ^ AA  > A  v  AA ^ A   < v  AAA >  ^ A  28 ok
-                 |                             |
-                 |                             |
-             ^   A       ^^         <  <       A     >>   A        vvv      A
-             ^   A            < <        ^^    A     >>   A        vvv      A
-                 |                             |
-                 3                             7          9                 A
-
----------------------------------------
-
-                 Av<<A>>^Av< A<A>>^A  AvA<^A>A  28 me
-379A:            A<v A<  A>>^A Av  A<^A>Av A^A  24 ok
-                 |+   ++  -   + ++  --   +   |
-                 |                           |
-                 |                           |
-         <   A > A   <   A   v <   A  A >  ^ A  v  AA ^ A  v <   AAA >  ^ A  28 me
-         <   A > A   v   <<  A A   >  ^ A  > A  v  AA ^ A   < v  AAA >  ^ A  28 ok
-                 |                           |
-                 |                           |
-             ^   A       ^         <  <      A     >>   A        vvv      A
-             ^   A           < <        ^    A     >>   A        vvv      A
-                 |                           |
-                 3                           5          9                 A
-
-
-
-*/
+  say "$part1:$part2"
