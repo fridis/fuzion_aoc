@@ -3,15 +3,10 @@ dec22 is
   input := io.stdin.read_lines.filter !="" .map (.parse_i64.val) .as_array
 
   next(s0 i64) =>
-    s1 := s0 * 64
-    s2 := s0 ^ s1
+    s2 := s0 ^ (s0 * 64)
     s3 := s2 % 16777216
-    s4 := s3 / 32
-    s5 := s3 ^ s4
-    s6 := s5 % 16777216
-    s7 := s6 * 2048
-    s8 := s6 ^ s7
-    s8  % 16777216
+    s6 := (s3 ^ (s3 / 32)) % 16777216
+    (s6 ^ (s6 * 2048)) % 16777216
 
   secrets(x) => x :: next
 
@@ -25,21 +20,22 @@ dec22 is
 
   part2 =>
     range => i64 -9 .. 9
-    N := input.count
-    Ns := 0..(N-1)
-    cs := array N (i -> changes input[i])
+    n := input.count
+    ns := 0..(n-1)
+    cs := array n (i -> changes input[i])
 
-    arr(o,off,v) => array N (i -> o[i].filter j->cs[i][j+off]=v .as_array)
+    arr(o,off,v) => array n (i -> o[i].filter j->cs[i][j+off]=v .as_array)
 
-    oa := array N i->(cs[i] .indexed .filter (t -> t ||> j,v -> j<1997) .map (t -> t ||> j,v->j) .as_array)
+    oa := array n i->(cs[i] .indexed .filter (t -> t ||> j,v -> j<1997) .map (t -> t ||> j,v->j) .as_array)
     (range      .map (a -> arr oa 0 a) .flat_map aa->
        range    .map (b -> arr aa 1 b) .flat_map ba->
          range  .map (c -> arr ba 2 c) .flat_map ca->
            range.map d->
-             (Ns.flat_map i64 i->
+             (ns.flat_map i64 i->
                ca[i].filter   (j -> cs[i][j+3]=d)
                     .flat_map (j -> (prices input[i]).drop j+4)
-                    .first                                      ) |> sum)
-      .fold1 max
+                    .first
+             ) |> sum
+    ).fold1 max
 
   say "$part1:$part2"
