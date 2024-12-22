@@ -2,41 +2,38 @@ dec21 is
 
   input := io.stdin.read_lines.filter !=""
 
-  key(v codepoint) is
+  # overlapping both layouts, put ` ` at (0,0)
+  x(key) => "741  <8520^v963AA>"  .find key .val / 6
+  y(key) => "789#456#123# 0^A<v>#".find key .val / 4 - 3
 
-    # overlapping two layouts, put ` ` at (0,0)
-    x => "741  <8520^v963AA>"  .find v .val / 6
-    y => "789#456#123# 0^A<v>#".find v .val / 4 - 3
+  move(cur, next) =>
+    dx := x next - x cur
+    dy := y next - y cur
+    ve := ["^"," ","v"][dy.sign+1] * (|dy|)
+    ho := ["<"," ",">"][dx.sign+1] * (|dx|)
 
-    move_to(target key) =>
-      dx := target.x-x
-      dy := target.y-y
-      ve := ["^"," ","v"][dy.sign+1] * (|dy|)
-      ho := ["<"," ",">"][dx.sign+1] * (|dx|)
-
-      # I did not believe both paths make a difference for small keypad,
-      # convinced by (or stole solution from) https://aoc.csokavar.hu/2024/21/
-      p1 := (target.y != 0 || x != 0).as_option String ve+ho+"A"
-      p2 := (target.x != 0 || y != 0).as_option String ho+ve+"A"
-      p1 ++ p2
+    # I did not believe both paths make a difference for small keypad,
+    # convinced by (or stole solution from) https://aoc.csokavar.hu/2024/21/
+    p1 := (y next != 0 || x cur != 0).as_option String ve+ho+"A"
+    p2 := (x next != 0 || y cur != 0).as_option String ho+ve+"A"
+    p1 ++ p2
 
   find_shortest(d, l) i64 : memoize => keep "$d$l" _->
     if d < 0 then
       l.byte_length.as_i64
     else
       for res := i64 0, res + s
-          prev := "A", cur
-          cur in l.as_codepoints
-          s := key prev .move_to (key cur)
-                        .map (find_shortest d-1)
-                        .fold1 min
+          cur := "A", next
+          next in l.as_codepoints
+          s := move cur next .map (find_shortest d-1)
+                             .fold1 min
       else
         res
 
   shortest(n) =>
-    lens := input.map (find_shortest n)
-    numparts := input.map (.as_codepoints.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
-    lens.zip numparts (*) |> sum
+    lengths := input.map (find_shortest n)
+    numeric := input.map (.as_codepoints.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
+    lengths.zip numeric (*) |> sum
 
   part1 => shortest 2
   part2 => shortest 25
