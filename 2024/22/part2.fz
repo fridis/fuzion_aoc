@@ -20,49 +20,29 @@ dec22 is
   changes(seed) : memoize => keep seed _->
     prices seed .map (-) .map_pairs (-) .as_array
 
-  say (secrets (i64 123))
-
   part1 =>
     input.map (seed -> secrets seed .drop 2000 .first.val) |> sum
 
   part2 =>
-  /*
-    say "CHANGES 123: {changes 123 .take 10}"
-    seq := [i64 -2,1,-1,3]
-    res1 := input.map s->
-        changes s .find seq .map (n -> (prices s).drop n+4 .first.val) |> sum
-      .fold1 (+)
-    input.for_each s->
-        say "Found at "+(changes s .find seq )
-    say res1
-*/
-/*
-    input
-      .map s->
-        cs := changes s
-      .fold1 (+)
-*/
-
     mx := mut (i64 0)
     at := mut "--"
     range => i64 -9 .. 9
     N := input.count
     cs := array N (i -> changes input[i])
     for a in range do
-      say a
       a_idx := array N i->(cs[i] .indexed .filter (t -> t ||> j,v -> v=a && j<1997) .map (t -> t ||> j,v->j) .as_array)
       for b in range do
         b_idx := array N (i -> a_idx[i].filter j->cs[i][j+1]=b .as_array)
         for c in range do
           c_idx := array N (i -> b_idx[i].filter j->cs[i][j+2]=c .as_array)
           for d in range do
-            d_idx := array N (i -> c_idx[i].filter j->cs[i][j+3]=d .as_array)
-            mp := (array i64 N (i -> d_idx[i].first.map (n -> (prices input[i]).drop n+4 .first.val) .first.get 0))
-            p := (array i64 N (i -> d_idx[i].first.map (n -> (prices input[i]).drop n+4 .first.val) .first.get 0)) |> sum
+            p := (c_idx.indices.flat_map i64 i->
+                        c_idx[i].filter j->cs[i][j+3]=d
+                                .map (j -> (prices input[i]).drop j+4 .first.get 0) .first) |> sum
+
             if p > mx.get then
               mx <- p
               at <- "$a $b $c $d"
-    say ""+mx.get+" "+at
     mx.get
 
 
