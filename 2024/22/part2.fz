@@ -24,6 +24,10 @@ dec22 is
     ns := 0..(n-1)
     cs := array n (i -> changes input[i])
 
+    # create array of array of indices of sequences that match currently
+    # tested sequence up to index off. o is the previous array, v is the
+    # value expected at current offset.
+    #
     arr(o,off,v) => array n (i -> o[i].filter j->cs[i][j+off]=v .as_array)
 
     oa := array n i->(cs[i] .indexed .filter (t -> t ||> j,v -> j<1997) .map (t -> t ||> j,v->j) .as_array)
