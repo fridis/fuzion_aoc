@@ -32,8 +32,8 @@ dec22 is
          range  .map (c -> arr ba 2 c) .flat_map ca->
            range.map d->
              (ns.flat_map i64 i->
-               ca[i].filter   (j -> cs[i][j+3]=d)
-                    .flat_map (j -> (prices input[i]).drop j+4)
+               ca[i].filter   (j -> cs[i][j+3] = d)
+                    .flat_map (j -> prices input[i] .drop j+4)
                     .first
              ) |> sum
     ).fold1 max
