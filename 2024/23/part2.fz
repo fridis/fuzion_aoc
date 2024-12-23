@@ -1,8 +1,14 @@
 dec23 is
 
+  # missing fuzion base lib functions:
+  redef property.orderable.type.equality(a,b property.orderable.this) =>
+    a <= b <= a
+
+  unique(sq Sequence (T : property.orderable)) =>
+    sq.reduce (id (container.Set T) (container.ps_set T).empty) (s,v -> s.add v)
+
   vertex(s) ref : property.orderable is
     fixed redef type.lteq(    a,b dec23.vertex) => a.s <= b.s
-    fixed redef type.equality(a,b dec23.vertex) => a.s =  b.s
     edges := lm.env.new (container.Set vertex) (container.ps_set vertex).empty
 
   edge(v,w) : property.orderable is
@@ -18,9 +24,6 @@ dec23 is
 
   get_vertex(s) : memoize => keep s _->
     vertex s
-
-  unique(sq Sequence (T : property.orderable)) =>
-    sq.reduce (id (container.Set T) (container.ps_set T).empty) (s,v -> s.add v)
 
   lm : mutate is
   lm ! ()->
