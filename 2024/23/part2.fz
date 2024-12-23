@@ -1,0 +1,99 @@
+dec23 is
+
+  vertex_count := mut 0
+
+  vertex(s) ref : property.orderable is
+      _id := vertex_count.get
+      vertex_count <- vertex_count.get + 1
+      fixed redef type.lteq(a,b dec23.vertex) => a._id <= b._id
+      fixed redef type.equality(a,b dec23.vertex) => a._id = b._id
+      redef as_string => "$_id[$s]"
+      edges_to := lm.env.new (container.Set vertex) (container.ps_set vertex).empty
+      ignore edges_to
+
+  get_edge(v,w) : memoize => keep (v._id << 16 | w._id) _->
+    if v < w then edge v w
+    else          edge w v
+  edge(v,w) : property.orderable is
+    _id := v._id << 16 | w._id
+    v.edges_to <- v.edges_to.get.add w
+    w.edges_to <- w.edges_to.get.add v
+    fixed redef type.lteq(a,b dec23.edge) => a._id <= b._id
+    redef as_string => "$v-$w"
+  get_vertex(s) : memoize =>
+#    say "{vertex_count}: $s"
+    keep s (_ -> vertex s)
+
+
+  clique(vs) : property.orderable is
+    fixed redef type.lteq(a,b dec23.clique) => a.as_string <= b.as_string
+    fixed redef type.equality(a,b dec23.clique) => a.as_string = b.as_string
+
+
+  lm : mutate is
+  lm ! ()->
+
+    input := io.stdin.read_lines.filter !=""
+                     .map s->(get_edge (get_vertex (s.substring 0 2))
+                                       (get_vertex (s.substring 3 5)))
+
+    edges := input.reduce (container.Set edge) (container.ps_set edge).empty (s,e -> s.add e)
+    part1 : memoize =>
+      res := lm.env.new 0
+      cliques := lm.env.new 0
+      for e in edges.as_array do
+#        say "edge: $e"
+#        say "{e.v} as edges to {e.v.edges_to}"
+        v := e.v; w := e.w
+        for x in v.edges_to.get.as_array do
+          if x > w && x != w && w.edges_to.get.contains x then
+            s := "{v.s} {w.s} {x.s} {v._id} {w._id} {x._id}"
+            cliques <- 1 + cliques
+            if v.s.starts_with "t" || w.s.starts_with "t" || x.s.starts_with "t" then
+              if !false
+                keep s _->
+                  say s
+              res <- 1 + res
+#      if edges.contains edge
+      say edges.count
+#    input.for_each say
+#    say input
+      say "{vertex_count} vertices"
+      say "{input.count} edges"
+      say "$cliques 3-cliques, $res 3-cliques with t"
+      res
+
+    add_one(c Sequence vertex) Sequence (Sequence vertex) =>
+      c.flat_map (e -> id (Sequence vertex) e.edges_to.get.as_array)
+       .filter (v -> !c.contains v)
+       .reduce (container.Set vertex) (container.ps_set vertex).empty (s,v -> s.add v)
+       .as_array
+       .filter (v -> c ∀ (.edges_to.get.contains v))
+       .map v->[v]++c
+       .as_array
+
+    add_ones(c array (Sequence vertex)) array (Sequence vertex) =>
+      c.flat_map add_one
+       .map (.sort)
+       .map clique
+       .reduce (container.Set clique) (container.ps_set clique).empty (s,v -> s.add v)
+       .map (cl -> id (Sequence vertex) cl.vs)
+       .as_array
+
+    part2 =>
+      two_cliques := edges.as_array.map e->(id (Sequence vertex) [e.v,e.w]) .as_array
+      for
+        n in 2..
+        c := two_cliques, next
+      do
+        say n
+        // c.for_each (s -> say "$n: {s.map (.s) .sort .as_array.as_string ","}")
+        next array (Sequence vertex) := add_ones c
+      until next.count = 0
+        c.first.val.map (.s) .sort.as_string ","
+      else
+        "fail"
+
+
+
+    say "$part1:$part2"
