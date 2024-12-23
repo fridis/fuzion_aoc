@@ -5,19 +5,19 @@ dec23 is
     fixed redef type.equality(a,b dec23.vertex) => a.s =  b.s
     edges := lm.env.new (container.Set vertex) (container.ps_set vertex).empty
 
-  get_edge(v,w) =>
-    if v < w then edge v w
-    else          edge w v
   edge(v,w) : property.orderable is
     v.edges <- v.edges.get.add w
     w.edges <- w.edges.get.add v
     fixed redef type.lteq(a,b dec23.edge) => !(b.v <= a.v) || a.v = b.v && a.w <= b.w
+
+  clique(vs Sequence vertex) : property.orderable is
+    fixed redef type.lteq(a,b dec23.clique) => a.as_string <= b.as_string
+
+  get_edge(v,w) => if v < w then edge v w
+                   else          edge w v
+
   get_vertex(s) : memoize => keep s _->
     vertex s
-
-  clique(vs) : property.orderable is
-    fixed redef type.lteq(a,b dec23.clique) => a.as_string <= b.as_string
-    fixed redef type.equality(a,b dec23.clique) => a.as_string = b.as_string
 
   unique(sq Sequence (T : property.orderable)) =>
     sq.reduce (id (container.Set T) (container.ps_set T).empty) (s,v -> s.add v)
@@ -29,6 +29,21 @@ dec23 is
                                        (get_vertex (s.substring 3 5)))
     edges := input |> unique
 
+    add_one(clique) =>
+      clique.vs.flat_map (e -> id (Sequence vertex) e.edges.get)
+       .filter (v -> !clique.vs.contains v) |> sq->(unique sq)
+       .filter (v -> clique.vs ∀ (.edges.get.contains v))
+       .map (v -> clique ([v] ++ clique.vs))
+
+    add_ones(cliques) =>
+      cliques.flat_map add_one
+       .map (.vs.sort)
+       .map clique |> unique
+
+    largest(cliques) =>
+      n := add_ones cliques
+      if n.is_empty then cliques else largest n
+
     part1 =>
       edges.map e->
           e.v.edges.get.filter x->
@@ -39,25 +54,9 @@ dec23 is
            .count
         .fold1 (+)
 
-    add_one(c) =>
-      c.flat_map (e -> id (Sequence vertex) e.edges.get)
-       .filter (v -> !c.contains v) |> sq->(unique sq)
-       .filter (v -> c ∀ (.edges.get.contains v))
-       .map v->[v]++c
-
-    add_ones(c) =>
-      c.flat_map add_one
-       .map (.sort)
-       .map clique |> sq->(unique sq)
-       .map (cl -> id (Sequence vertex) cl.vs)
-
-    largest(s) =>
-      n := add_ones s
-      if n.is_empty then s else largest n
-
     part2 =>
-      two_cliques := edges.map e->(id (Sequence vertex) [e.v,e.w])
+      two_cliques := edges.map (e -> clique [e.v,e.w])
       largest two_cliques
-        .first.val.map (.s) .sort.as_string ","
+        .first.val.vs.map (.s) .sort.as_string ","
 
     say "$part1:$part2"
