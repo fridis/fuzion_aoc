@@ -1,14 +1,9 @@
 dec23 is
 
-  vertex_count := mut 0
-
   vertex(s) ref : property.orderable is
-      _id := vertex_count.get
-      vertex_count <- vertex_count.get + 1
-      fixed redef type.lteq(a,b dec23.vertex) => a._id <= b._id
-      fixed redef type.equality(a,b dec23.vertex) => a._id = b._id
-      edges_to := lm.env.new (container.Set vertex) (container.ps_set vertex).empty
-      ignore edges_to
+    fixed redef type.lteq(    a,b dec23.vertex) => a.s <= b.s
+    fixed redef type.equality(a,b dec23.vertex) => a.s =  b.s
+    edges_to := lm.env.new (container.Set vertex) (container.ps_set vertex).empty
 
   get_edge(v,w) =>
     if v < w then edge v w
@@ -41,31 +36,27 @@ dec23 is
          .count
        ) |> sum
 
-    add_one(c Sequence vertex) Sequence (Sequence vertex) =>
-      c.flat_map (e -> id (Sequence vertex) e.edges_to.get.as_array)
+    add_one(c) =>
+      c.flat_map (e -> id (Sequence vertex) e.edges_to.get)
        .filter (v -> !c.contains v)
        .reduce (container.Set vertex) (container.ps_set vertex).empty (s,v -> s.add v)
-       .as_array
        .filter (v -> c ∀ (.edges_to.get.contains v))
        .map v->[v]++c
 
-    add_ones(c) Sequence (Sequence vertex) =>
+    add_ones(c) =>
       c.flat_map add_one
        .map (.sort)
        .map clique
        .reduce (container.Set clique) (container.ps_set clique).empty (s,v -> s.add v)
        .map (cl -> id (Sequence vertex) cl.vs)
 
+    largest(s) =>
+      n := add_ones s
+      if n.is_empty then s else largest n
+
     part2 =>
-      two_cliques := edges.as_array.map e->(id (Sequence vertex) [e.v,e.w]) #.as_array
-      for
-        n in 2..
-        c := two_cliques, next
-      do
-        next := add_ones c
-      until next.count = 0
-        c.first.val.map (.s) .sort.as_string ","
-      else
-        "fail"
+      two_cliques := edges.as_array.map e->(id (Sequence vertex) [e.v,e.w])
+      largest two_cliques
+        .first.val.map (.s) .sort.as_string ","
 
     say "$part1:$part2"
