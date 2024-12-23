@@ -3,19 +3,19 @@ dec21 is
   input := io.stdin.read_lines.filter !=""
 
   # overlapping both layouts, put ` ` at (0,0)
-  x(key) => "741  <8520^v963AA>"  .find key .val / 6
-  y(key) => "789#456#123# 0^A<v>#".find key .val / 4 - 3
+  codepoint.x => "741  <8520^v963AA>"  .find codepoint.this .val / 6
+  codepoint.y => "789#456#123# 0^A<v>#".find codepoint.this .val / 4 - 3
 
   move(cur, next) =>
-    dx := x next - x cur
-    dy := y next - y cur
+    dx := next.x - cur.x
+    dy := next.y - cur.y
     ve := ["^"," ","v"][dy.sign+1] * (|dy|)
     ho := ["<"," ",">"][dx.sign+1] * (|dx|)
 
     # I did not believe both paths make a difference for small keypad,
     # convinced by (or stole solution from) https://aoc.csokavar.hu/2024/21/
-    p1 := (y next != 0 || x cur != 0).as_option String ve+ho+"A"
-    p2 := (x next != 0 || y cur != 0).as_option String ho+ve+"A"
+    p1 := (next.y != 0 || cur.x != 0).as_option String ve+ho+"A"
+    p2 := (next.x != 0 || cur.y != 0).as_option String ho+ve+"A"
     p1 ++ p2
 
   find_shortest(d, l) i64 : memoize => keep "$d$l" _->
