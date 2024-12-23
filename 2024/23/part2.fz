@@ -3,14 +3,14 @@ dec23 is
   vertex(s) ref : property.orderable is
     fixed redef type.lteq(    a,b dec23.vertex) => a.s <= b.s
     fixed redef type.equality(a,b dec23.vertex) => a.s =  b.s
-    edges_to := lm.env.new (container.Set vertex) (container.ps_set vertex).empty
+    edges := lm.env.new (container.Set vertex) (container.ps_set vertex).empty
 
   get_edge(v,w) =>
     if v < w then edge v w
     else          edge w v
   edge(v,w) : property.orderable is
-    v.edges_to <- v.edges_to.get.add w
-    w.edges_to <- w.edges_to.get.add v
+    v.edges <- v.edges.get.add w
+    w.edges <- w.edges.get.add v
     fixed redef type.lteq(a,b dec23.edge) => !(b.v <= a.v) || a.v = b.v && a.w <= b.w
   get_vertex(s) : memoize => keep s _->
     vertex s
@@ -19,35 +19,36 @@ dec23 is
     fixed redef type.lteq(a,b dec23.clique) => a.as_string <= b.as_string
     fixed redef type.equality(a,b dec23.clique) => a.as_string = b.as_string
 
+  unique(sq Sequence (T : property.orderable)) =>
+    sq.reduce (id (container.Set T) (container.ps_set T).empty) (s,v -> s.add v)
+
   lm : mutate is
   lm ! ()->
     input := io.stdin.read_lines.filter !=""
                      .map s->(get_edge (get_vertex (s.substring 0 2))
                                        (get_vertex (s.substring 3 5)))
+    edges := input |> unique
 
-    edges := input.reduce (container.Set edge) (container.ps_set edge).empty (s,e -> s.add e)
-    part1 : memoize =>
-      (edges.map e->
-        e.v.edges_to.get.filter x->
-          (x > e.w && e.w.edges_to.get.contains x &&
-           (e.v.s.starts_with "t" ||
-            e.w.s.starts_with "t" ||
-            x  .s.starts_with "t"   ))
-         .count
-       ) |> sum
+    part1 =>
+      edges.map e->
+          e.v.edges.get.filter x->
+            (x > e.w && e.w.edges.get.contains x &&
+             (e.v.s.starts_with "t" ||
+              e.w.s.starts_with "t" ||
+              x  .s.starts_with "t"   ))
+           .count
+        .fold1 (+)
 
     add_one(c) =>
-      c.flat_map (e -> id (Sequence vertex) e.edges_to.get)
-       .filter (v -> !c.contains v)
-       .reduce (container.Set vertex) (container.ps_set vertex).empty (s,v -> s.add v)
-       .filter (v -> c ∀ (.edges_to.get.contains v))
+      c.flat_map (e -> id (Sequence vertex) e.edges.get)
+       .filter (v -> !c.contains v) |> sq->(unique sq)
+       .filter (v -> c ∀ (.edges.get.contains v))
        .map v->[v]++c
 
     add_ones(c) =>
       c.flat_map add_one
        .map (.sort)
-       .map clique
-       .reduce (container.Set clique) (container.ps_set clique).empty (s,v -> s.add v)
+       .map clique |> sq->(unique sq)
        .map (cl -> id (Sequence vertex) cl.vs)
 
     largest(s) =>
@@ -55,7 +56,7 @@ dec23 is
       if n.is_empty then s else largest n
 
     part2 =>
-      two_cliques := edges.as_array.map e->(id (Sequence vertex) [e.v,e.w])
+      two_cliques := edges.map e->(id (Sequence vertex) [e.v,e.w])
       largest two_cliques
         .first.val.map (.s) .sort.as_string ","
 
