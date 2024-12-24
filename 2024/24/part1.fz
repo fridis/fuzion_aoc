@@ -1,0 +1,44 @@
+dec24 is
+
+  input := io.stdin.read_string.split "\n\n"
+  in_wires := input[0].split "\n" .filter !=""
+  in_gates := input[1].split "\n" .filter !=""
+
+  Wire(name String) ref is
+    state(get String->bool) bool => abstract
+
+  input_wire(redef name String, state0 bool) : Wire name is
+    redef as_string => "$name: $state0"
+    redef state(get String->bool) bool => state0
+
+  input_gate(in1 String, op String, in2 String, redef name String) : Wire name is
+    redef as_string => "$in1 $op $in2 -> $name"
+    redef state(get String->bool) bool =>
+      a := get in1
+      b := get in2
+      if op = "AND" then a && b
+      else if op = "OR" then a || b
+      else if op = "XOR" then a ^ b
+      else panic "unkown $op"
+
+  part1 =>
+    iws := in_wires.map (s -> s.split ": " |> (iw -> input_wire iw[0] iw[1]="1"))
+    igs := in_gates.map (s -> s.split " "  |> (ig -> input_gate ig[0] ig[1] ig[2] ig[4]))
+    ignore iws
+    bits := igs.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i32.val) .fold1 max
+    ignore bits
+    wires := iws.map (w -> id Wire w) ++ igs.map (w -> id Wire w)
+    names := wires.map (.name)
+    all_wires := (container.ps_map String Wire).new names wires
+
+    get_state(name) =>
+      all_wires[name].val.state get_state
+    say bits
+    for r := i64 0, r | ((get_state "z"+(i.as_string 2 10) ? i64 1 : 0) << i.as_i64)
+        i in 0..bits
+    else
+      r
+
+  part2 =>
+
+  say "$part1:$part2"
