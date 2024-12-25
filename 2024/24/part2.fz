@@ -99,7 +99,6 @@ dec24 =>
                                              else                   nil
                   until r?? then r else nil
         until r0?? then r0 else nil
-    rs := find_repl 0 []
-    rs.first.val.flat_map (t -> id (Sequence String) [t.0,t.1]) .sort .as_string ","
+    find_repl 0 [] .first.val.flat_map (t -> [t.0,t.1]) .sort .as_string ","
 
   say "$part1:$part2"
