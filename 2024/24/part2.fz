@@ -29,8 +29,7 @@ dec24 =>
   # a logic gate
   gate(in1 String, op String, in2 String, redef name String) : Wire name is
     redef state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool =>
-      if d > 200 then
-        nil
+      if d > 100 then nil // we got into a cycle
       else
         get d+1 x y in1 >>= a->
           get d+1 x y in2 >>= b->
