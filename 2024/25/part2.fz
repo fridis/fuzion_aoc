@@ -1,7 +1,7 @@
 dec25 =>
 
   input := io.stdin.read_string.split "\n\n" .map (.split "\n" .filter !="")
-  counts(x) => (0..4).map (i -> x.filter (s -> s.substring i i+1 = "#") .count-1)
+  counts(x) => (0..4).map (i -> x.filter (s -> s.as_codepoints[i]="#") .count-1)
   locks := input.filter (x -> x[0].starts_with "#") .map counts
   keys  := input.filter (x -> x[0].starts_with ".") .map counts
 
