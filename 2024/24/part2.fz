@@ -3,14 +3,19 @@ dec24 =>
   input := io.stdin.read_string.split "\n\n"
   in_wires := input[0].split "\n" .filter !=""
   in_gates := input[1].split "\n" .filter !=""
+  iws := in_wires.map (s -> s.split ": " |> (iw -> inpt iw[0] iw[1]="1"))
+  igs := in_gates.map (s -> s.split " "  |> (ig -> gate ig[0] ig[1] ig[2] ig[4]))
+  bits := igs.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i64.val) .fold1 max
+  wires := iws.map (w -> id Wire w) ++ igs.map (w -> id Wire w)
+  all_wires := container.ps_map String Wire .new (wires.map (.name)) wires
 
   Wire(name String) ref is
     state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool => abstract
     fix := mut 0
-    fix(n i32, get String->Wire) => fix <- n+fix
-    get_unmarked(get String->Wire) Sequence Wire => []
+    fix(n i32) => fix <- n+fix
+    unfixed Sequence Wire => []
 
-  input_wire(redef name String, state0 bool) : Wire name is
+  inpt(redef name String, state0 bool) : Wire name is
     fix <- 1
     redef state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool =>
       if x < 0 then
@@ -22,7 +27,7 @@ dec24 =>
              else panic "x y expected $name"
         ((v >> b) & 1) != 0
 
-  input_gate(in1 String, op String, in2 String, redef name String) : Wire name is
+  gate(in1 String, op String, in2 String, redef name String) : Wire name is
     redef state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool =>
       if d > 200 then
         nil
@@ -34,27 +39,22 @@ dec24 =>
             else if op = "XOR" then a ^  b
             else panic "unkown $op"
 
-    redef fix(n i32, get String->Wire) =>
+    redef fix(n i32) =>
       fix <- n+fix
-      (get in1).fix n get
-      (get in2).fix n get
+      wire in1 .fix n
+      wire in2 .fix n
 
-    redef get_unmarked(get String->Wire) Sequence Wire =>
+    redef unfixed Sequence Wire =>
       if fix.get > 0 then
         []
       else
-        ((get in1).get_unmarked get ++
-         (get in2).get_unmarked get ++
-         [input_gate.this])
+        (wire in1 .unfixed ++
+         wire in2 .unfixed ++
+         [gate.this])
 
   i64.z => "z"+(val.as_string 2 10)
+  wire(name) => all_wires[name].val
 
-  iws := in_wires.map (s -> s.split ": " |> (iw -> input_wire iw[0] iw[1]="1"))
-  igs := in_gates.map (s -> s.split " "  |> (ig -> input_gate ig[0] ig[1] ig[2] ig[4]))
-  bits := igs.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i64.val) .fold1 max
-  wires := iws.map (w -> id Wire w) ++ igs.map (w -> id Wire w)
-  all_wires := container.ps_map String Wire .new (wires.map (.name)) wires
-  get_wire(name) => all_wires[name].val
   get_state(repl Sequence (String,String),d,x,y i64,name) =>
     for n := name, nn
         t in repl
@@ -62,8 +62,34 @@ dec24 =>
               else if t.1 = n then t.0
               else n
     else
-      get_wire n .state d x y (get_state repl)
+      wire n .state d x y (get_state repl)
 
+  check_bit(repl Sequence (String, String), b i64) =>
+    base_cases := [(0,0),(1,0),(0,1),(1,1)].map t->(t.0.as_i64 << b,t.1.as_i64 << b)
+    carry_cases := base_cases.map (||> x,y -> (x + (i64 1 << b)-1, y + (i64 1 << b)-1))
+    for ok := true, (ro >>= (= ((c.0 + c.1 & (i64 1 << b)) != 0))) .or_else false
+        c in base_cases ++ carry_cases
+        ro := get_state repl 0 c.0 c.1 b.z
+    while ok else ok
+
+  find_repl(b i64, repl Sequence (String,String)) option (Sequence (String,String)) =>
+    if b >= bits then
+      repl
+    else if check_bit repl b then
+      wire b.z .fix +1
+      res := find_repl b+1 repl
+      wire b.z .fix -1
+      res
+    else if repl.count = 4
+      nil
+    else
+      for cd in wire b.z .unfixed do
+          r0 := for w in all_wires.values
+                    rr := repl++[(cd.name, w.name)]
+                    r := if check_bit rr b then find_repl b+1 rr
+                                           else                   nil
+                until r?? then r else nil
+      until r0?? then r0 else nil
 
   part1 =>
     for r := i64 0, r | (get_state [] 0 -1 -1 i.z .val ? i64 1 : 0) << i
@@ -72,34 +98,6 @@ dec24 =>
       $r
 
   part2 =>
-    check_bit(repl Sequence (String, String), b i64) =>
-      base_cases := [(0,0),(1,0),(0,1),(1,1)].map t->(t.0.as_i64 << b,t.1.as_i64 << b)
-      carry_cases := base_cases.map (||> x,y -> (x + (i64 1 << b)-1, y + (i64 1 << b)-1))
-      for ok := true, (ro >>= (= ((c.0 + c.1 & (i64 1 << b)) != 0))) .or_else false
-          c in base_cases ++ carry_cases
-          ro := get_state repl 0 c.0 c.1 b.z
-      while ok else
-        ok
-
-    find_repl(b i64, repl Sequence (String,String)) option (Sequence (String,String)) =>
-      if b >= bits then
-        repl
-      else if check_bit repl b then
-        all_wires[b.z].val.fix +1 get_wire
-        res := find_repl b+1 repl
-        all_wires[b.z].val.fix -1 get_wire
-        res
-      else if repl.count = 4
-        nil
-      else
-        for cd in all_wires[b.z].val.get_unmarked get_wire do
-            r0 := for w in all_wires.values
-                      rr := repl++[(cd.name, w.name)]
-                      r := if check_bit rr b then find_repl b+1 rr
-                                             else                   nil
-                  until r?? then r else nil
-        until r0?? then r0 else nil
-
     find_repl 0 [] .first.val.flat_map (t -> id (Sequence String) [t.0,t.1]) .sort .as_string ","
 
   say "$part1:$part2"
