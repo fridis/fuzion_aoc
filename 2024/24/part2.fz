@@ -53,73 +53,64 @@ dec24 =>
 
   i32.z => "z"+(val.as_string 2 10)
 
-  part(n) =>
-    iws := in_wires.map (s -> s.split ": " |> (iw -> input_wire iw[0] iw[1]="1"))
-    igs := in_gates.map (s -> s.split " "  |> (ig -> input_gate ig[0] ig[1] ig[2] ig[4]))
-    bits := igs.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i32.val) .fold1 max
-    wires := iws.map (w -> id Wire w) ++ igs.map (w -> id Wire w)
-    all_wires := (container.ps_map String Wire).new (wires.map (.name)) wires
-    get_wire(name) => all_wires[name].val
-    get_state(repl Sequence (String,String),x,y i64,name) =>
-      for n := name, nn
-          t in repl
-          nn := if      t.0 = n then  t.1
-                else if t.1 = n then t.0
-                else n
-      else
-        get_wire n .state x y (get_state repl)
-    if n=1
-      for r := i64 0, r | ((get_state [] -1 -1 i.z .val ? i64 1 : 0) << i.as_i64)
-          i in 0..bits
-      else
-        $r
+  iws := in_wires.map (s -> s.split ": " |> (iw -> input_wire iw[0] iw[1]="1"))
+  igs := in_gates.map (s -> s.split " "  |> (ig -> input_gate ig[0] ig[1] ig[2] ig[4]))
+  bits := igs.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i32.val) .fold1 max
+  wires := iws.map (w -> id Wire w) ++ igs.map (w -> id Wire w)
+  all_wires := container.ps_map String Wire .new (wires.map (.name)) wires
+  get_wire(name) => all_wires[name].val
+  get_state(repl Sequence (String,String),x,y i64,name) =>
+    for n := name, nn
+        t in repl
+        nn := if      t.0 = n then t.1
+              else if t.1 = n then t.0
+              else n
     else
-      check_bit(repl Sequence (String, String), b i32) =>
-        bl := b.as_i64
-        base_cases := [(i64 0 << bl, i64 0 << bl),   # hhh0lll + hhh0lll
-                       (i64 1 << bl, i64 0 << bl),   # hhh1lll + hhh0lll
-                       (i64 0 << bl, i64 1 << bl),   # hhh0lll + hhh1lll
-                       (i64 1 << bl, i64 1 << bl)]   # hhh1lll + hhh1lll
-        lo := (i64 1 << (bl))-1                      # 0000111
-        carry_cases := base_cases.map (||> x,y -> (x+lo,y+lo))
-        for c in (base_cases ++ carry_cases)
-            ro := get_state repl c.0 c.1 b.z
-        until match ro
-                r bool => r != ((c.0 + c.1 & ((i64 1 << bl))) != 0)
-                nil => true
-                      then
-          false
-        else
-          true
+      get_wire n .state x y (get_state repl)
 
-      find_repl(b0, b i32, repl Sequence (String,String)) option (Sequence (String,String)) =>
-            if b >= bits then
-              repl
-            else if check_bit repl b then
-              all_wires[b.z].val.fix +1 get_wire
-              res := find_repl (max b0 b) b+1 repl
-              all_wires[b.z].val.fix -1 get_wire
-              res
-            else if repl.count = 4
-              nil
-            else
-              candidates := all_wires[b.z].val.get_unmarked get_wire
-              for cd in candidates do
-                  r0:= for w in all_wires.values
-                           rr := repl++[(cd.name, w.name)]
-                           r := if check_bit rr b then
-                                  find_repl b0+1 b+1 rr
-                                else
-                                  nil
-                       until r?? then
-                         r
-                       else
-                         nil
-              until r0??  then r0 else nil
-      rs := find_repl -1 0 []
-      rs.first.val.flat_map (t -> id (Sequence String) [t.0,t.1]) .sort .as_string ","
 
-  part1 => part 1
-  part2 => part 2
+  part1 =>
+    for r := i64 0, r | (get_state [] -1 -1 i.z .val ? i64 1 : 0) << i.as_i64
+        i in 0..bits
+    else
+      $r
+
+  part2 =>
+    check_bit(repl Sequence (String, String), b i32) =>
+      bl := b.as_i64
+      base_cases := [(i64 0 << bl, i64 0 << bl),   # 0000lll + 0000lll
+                     (i64 1 << bl, i64 0 << bl),   # 0001lll + 0000lll
+                     (i64 0 << bl, i64 1 << bl),   # 0000lll + 0001lll
+                     (i64 1 << bl, i64 1 << bl)]   # 0001lll + 0001lll
+      lo := (i64 1 << (bl))-1                      # 0000111
+      carry_cases := base_cases.map (||> x,y -> (x+lo,y+lo))
+      for ok := true, (ro >>= (= ((c.0 + c.1 & ((i64 1 << bl))) != 0))) .or_else false
+          c in base_cases ++ carry_cases
+          ro := get_state repl c.0 c.1 b.z
+      while ok else
+        ok
+
+    find_repl(b0, b i32, repl Sequence (String,String)) option (Sequence (String,String)) =>
+      if b >= bits then
+        repl
+      else if check_bit repl b then
+        all_wires[b.z].val.fix +1 get_wire
+        res := find_repl (max b0 b) b+1 repl
+        all_wires[b.z].val.fix -1 get_wire
+        res
+      else if repl.count = 4
+        nil
+      else
+        candidates := all_wires[b.z].val.get_unmarked get_wire
+        for cd in candidates do
+            r0:= for w in all_wires.values
+                     rr := repl++[(cd.name, w.name)]
+                     r := if check_bit rr b then find_repl b0+1 b+1 rr
+                          else                   nil
+                 until r?? then r
+                 else           nil
+        until r0??  then r0 else nil
+    rs := find_repl -1 0 []
+    rs.first.val.flat_map (t -> id (Sequence String) [t.0,t.1]) .sort .as_string ","
 
   say "$part1:$part2"
