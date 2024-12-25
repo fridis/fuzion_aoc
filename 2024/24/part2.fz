@@ -9,17 +9,19 @@ dec24 =>
   wires := iws.map (w -> id Wire w) ++ igs.map (w -> id Wire w)
   all_wires := container.ps_map String Wire .new (wires.map (.name)) wires
 
+  # any wire coming from input or gate
   Wire(name String) ref is
     state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool => abstract
     fix := mut 0
     fix(n i32) => fix <- n+fix
     unfixed Sequence Wire => []
 
-  inpt(redef name String, state0 bool) : Wire name is
+  # input wire with given initial state
+  inpt(redef name String, state bool) : Wire name is
     fix <- 1
     redef state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool =>
       if x < 0 then
-        state0
+        state
       else
         b := name.substring 1 .parse_i64.val
         v := if      name.starts_with "x" then x
@@ -27,6 +29,7 @@ dec24 =>
              else panic "x y expected $name"
         ((v >> b) & 1) != 0
 
+  # a logic gate
   gate(in1 String, op String, in2 String, redef name String) : Wire name is
     redef state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool =>
       if d > 200 then
@@ -55,49 +58,57 @@ dec24 =>
   i64.z => "z"+(val.as_string 2 10)
   wire(name) => all_wires[name].val
 
-  get_state(repl Sequence (String,String),d,x,y i64,name) =>
-    for n := name, nn
-        t in repl
-        nn := if      t.0 = n then t.1
-              else if t.1 = n then t.0
-              else n
+  # check if state of wire `name` is defined.
+  # swap gives wires to swap,
+  # d is recursion depth for poor man's endless recursion detection,
+  # x and y are the input vectors or -1 for defaults.
+  #
+  try_state(swap Sequence (String,String),d,x,y i64,name) =>
+    for n := name, if      t.0 = n then t.1
+                   else if t.1 = n then t.0
+                   else n
+        t in swap
     else
-      wire n .state d x y (get_state repl)
+      wire n .state d x y (try_state swap)
 
-  check_bit(repl Sequence (String, String), b i64) =>
+  check_bit(swap Sequence (String, String), b) =>
     base_cases := [(0,0),(1,0),(0,1),(1,1)].map t->(t.0.as_i64 << b,t.1.as_i64 << b)
     carry_cases := base_cases.map (||> x,y -> (x + (i64 1 << b)-1, y + (i64 1 << b)-1))
     for ok := true, (ro >>= (= ((c.0 + c.1 & (i64 1 << b)) != 0))) .or_else false
         c in base_cases ++ carry_cases
-        ro := get_state repl 0 c.0 c.1 b.z
+        ro := try_state swap 0 c.0 c.1 b.z
     while ok else ok
 
-  find_repl(b i64, repl Sequence (String,String)) option (Sequence (String,String)) =>
+  find_swap(b i64, swap Sequence (String,String)) option (Sequence (String,String)) =>
     if b >= bits then
-      repl
-    else if check_bit repl b then
+      swap
+    else if check_bit swap b then
       wire b.z .fix +1
-      res := find_repl b+1 repl
+      res := find_swap b+1 swap
       wire b.z .fix -1
       res
-    else if repl.count = 4
+    else if swap.count = 4
       nil
     else
       for cd in wire b.z .unfixed do
           r0 := for w in all_wires.values
-                    rr := repl++[(cd.name, w.name)]
-                    r := if check_bit rr b then find_repl b+1 rr
+                    rr := swap++[(cd.name, w.name)]
+                    r := if check_bit rr b then find_swap b+1 rr
                                            else                   nil
                 until r?? then r else nil
       until r0?? then r0 else nil
 
   part1 =>
-    for r := i64 0, r | (get_state [] 0 -1 -1 i.z .val ? i64 1 : 0) << i
+    for r := i64 0, r | (try_state [] 0 -1 -1 i.z .val ? i64 1 : 0) << i
         i in (i64 0)..bits
     else
       $r
 
   part2 =>
-    find_repl 0 [] .first.val.flat_map (t -> id (Sequence String) [t.0,t.1]) .sort .as_string ","
+    find_swap 0 []
+      .first.val
+      .flat_map (t -> id (Sequence String) [t.0,t.1])
+      .sort
+      .as_string ","
 
   say "$part1:$part2"
