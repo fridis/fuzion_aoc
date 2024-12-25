@@ -1,11 +1,4 @@
-dec24
-
-cycle_err(h unit->void) : eff.fallible unit h is
-  public fixed redef type.new(h unit->void) => cycle_err h
-
 dec24 =>
-
-  dbg := mut false
 
   input := io.stdin.read_string.split "\n\n"
   in_wires := input[0].split "\n" .filter !=""
@@ -45,7 +38,6 @@ dec24 =>
     redef state(x,y i64, get (i64,i64,String)->option bool) option bool =>
       if cycle.get then
         nil
-#        cycle_err.env.cause unit
       else
         cycle <- true
         a := get x y in1
@@ -105,80 +97,39 @@ dec24 =>
                 else n
       do # yak "[$name>$nn,{t.0}/{t.1}]"
       else
-#        if name != n then yak "-$name-*$n*"
-        res := all_wires[n].val.state x y (get_state repl)
-        if dbg.get then say "get_state $name -> $n is $res"
-#        if name="z00" then
-#          say "##### z00 is "+res+" $name -> $n"
-        res
+        all_wires[n].val.state x y (get_state repl)
     get_wire(name) => all_wires[name].val
 
-/*
-    get_z(repl Sequence (String,String), x,y) option i64 =>
-      for r := i64 0, r | ((s .val ? i64 1 : 0) << i.as_i64)
-          i in 0..bits
-          s := get_state repl x y "z"+(i.as_string 2 10)
-      until s!!
-        id (option i64) nil
-      else
-        r
-*/
     get_zb(b i32, repl Sequence (String,String), x,y) =>
       get_state repl x y "z"+(b.as_string 2 10)
 
-/*
-    get_z0(repl Sequence (String,String), x,y) option i64 =>
-      for r := i64 0, r | ((s .val ? i64 1 : 0) << i.as_i64)
-          i in 0..2
-          s := get_state repl x y "z"+(i.as_string 2 10)
-          _ := say "bit $i of result is $s"
-      until s!!
-        id (option i64) nil
-      else
-        r
-*/
     check_bit(repl Sequence (String, String), b i32) =>
       bl := b.as_i64
       base_cases := [(i64 0 << bl, i64 0 << bl),   # hhh0lll + hhh0lll
                      (i64 1 << bl, i64 0 << bl),   # hhh1lll + hhh0lll
                      (i64 0 << bl, i64 1 << bl),   # hhh0lll + hhh1lll
                      (i64 1 << bl, i64 1 << bl)]   # hhh1lll + hhh1lll
-#      say "bases $b $base_cases"
       lo := (i64 1 << (bl))-1                      # 0000111
       hi := (i64 1 << bits.as_i64) - (i64 1 << bl) # 1110000
       carry_cases := base_cases.map (||> x,y -> (x+lo,y+lo))
       leading1_casesa := base_cases.map (||> x,y -> (x+hi,y))
       leading1_casesb := base_cases.map (||> x,y -> (x,y+hi))
       leading1_cases := leading1_casesa ++ leading1_casesb
-      /*
-      leading1_cases := (base_cases.map (||> x,y -> (x+hi,y)) ++
-                         base_cases.map (||> x,y -> (x,y+hi)))
-                         */
       for c in (base_cases ++ carry_cases ++ leading1_cases)
           ro := get_zb b repl c.0 c.1
-      do
-#        say "check bit $b: {c.0.as_string 2} + {c.1.as_string 2} = {r.bin} not {(c.0+c.1).bin}"
       until match ro
               r bool => r != ((c.0 + c.1 & ((i64 1 << bl))) != 0)
               nil => true
                     then
-        #dbg <- true
-        #_ := get_z0 repl c.0 c.1
-        #dbg <- false
-        # say "problem for bit $b: {c.0.as_string 2} + {c.1.as_string 2} = {ro} not {(c.0+c.1).bin}"
         false
       else
         true
 
     find_repl(b0, b i32, repl Sequence (String,String)) option (Sequence (String,String)) =>
-#      for b in 0..bits-1 do
-#          say "------ bit $b -------"
-#        nrepl :=
           if b >= bits then
             repl
           else if check_bit repl b then
             all_wires["z"+(b.as_string 2 10)].val.mark_ok get_wire
-            if b > b0 then    say "------ bit $b -------"
             res := find_repl (max b0 b) b+1 repl
             all_wires["z"+(b.as_string 2 10)].val.unmark_ok get_wire
             res
@@ -186,16 +137,11 @@ dec24 =>
             nil
           else
             candidates := all_wires["z"+(b.as_string 2 10)].val.get_unmarked get_wire
-            say "failed at $b CANDIDATES: "+candidates
             for cd in candidates do
                 r0:= for w in all_wires.values
                          rr := repl++[(cd.name, w.name)]
                          r := if check_bit rr b then
-                                say "trying {cd.name} -> {w.name}"
-                                cycle_err.try ()->
-                                           find_repl b0+1 b+1 rr
-                                         .catch _->
-                                           nil
+                                find_repl b0+1 b+1 rr
                               else
                                 nil
                      until r?? then
@@ -203,14 +149,7 @@ dec24 =>
                      else
                        nil
             until r0??  then r0 else nil
-#              if !w.ok.get then
-#              say "try replace "+candidates.first.val+" with "+w+"!"
-#                if check_bit [(candidates.first.val.name, w.name)] b then say "** SUCCESS "+candidates.first.val+" with "+w+"! ***"
-#            repl
-    rs := cycle_err.try ()->
-                    find_repl -1 0 []
-                  .catch e->
-                    panic "cycle err!"
+    rs := find_repl -1 0 []
     rs.map (.flat_map (t -> id (Sequence String) [t.0,t.1]) .sort .as_string ",")
 
   say "$part1:$part2"
