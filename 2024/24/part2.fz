@@ -4,7 +4,7 @@ dec24 =>
   wires := (input[0].map (s -> s.split ": " |> (iw -> inpt iw[0] iw[1]="1"))         .map Wire id ++
             input[1].map (s -> s.split " "  |> (ig -> gate ig[0] ig[1] ig[2] ig[4])) .map Wire id   )
   bits := wires.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i64.val) .fold1 max
-  all_wires := container.ps_map String Wire .new (wires.map (.name)) wires
+  device := container.ps_map .new (wires.map (.name)) wires
 
   # any wire coming from input or gate
   Wire(name String) ref is
@@ -53,7 +53,7 @@ dec24 =>
          [gate.this])
 
   i64.z => "z"+(val.as_string 2 10)
-  wire(name) => all_wires[name].val
+  wire(name) => device[name].val
 
   # check if state of wire `name` is defined.
   # swap gives wires to swap,
@@ -88,7 +88,7 @@ dec24 =>
       nil
     else
       for cd in wire b.z .unfixed do
-          r0 := for w in all_wires.values
+          r0 := for w in device.values
                     rr := swap++[(cd.name, w.name)]
                     r := if check_bit rr b then find_swap b+1 rr
                                            else                   nil
