@@ -1,11 +1,11 @@
 dec25 =>
 
   input := io.stdin.read_string.split "\n\n" .map (.split "\n" .filter !="")
-  counts(x) => (0..4).map (i -> x.filter (s -> s.as_codepoints[i]="#") .count-1)
+  counts(x) => (0..4).map (i -> x.map (.utf8[i]) .filter (="#".utf8[0]) .count)
   locks := input.filter (x -> x[0].starts_with "#") .map counts
   keys  := input.filter (x -> x[0].starts_with ".") .map counts
 
-  fits(l,k) => l.zip k (a,b -> a+b<=5) ∀ id
+  fits(l,k) => l.zip k (a,b -> a+b <= 6) ∀ id
 
   part1 => locks.combine keys fits
                 .count id
