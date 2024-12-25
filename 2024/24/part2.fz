@@ -5,14 +5,14 @@ dec24 =>
   in_gates := input[1].split "\n" .filter !=""
 
   Wire(name String) ref is
-    state(x,y i64, get (i64,i64,String)->option bool) option bool => abstract
+    state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool => abstract
     fix := mut 0
     fix(n i32, get String->Wire) => fix <- n+fix
     get_unmarked(get String->Wire) Sequence Wire => []
 
   input_wire(redef name String, state0 bool) : Wire name is
     fix <- 1
-    redef state(x,y i64, get (i64,i64,String)->option bool) option bool =>
+    redef state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool =>
       if x < 0 then
         state0
       else
@@ -23,26 +23,22 @@ dec24 =>
         ((v >> b) & 1) != 0
 
   input_gate(in1 String, op String, in2 String, redef name String) : Wire name is
-    cycle := mut false
-    redef state(x,y i64, get (i64,i64,String)->option bool) option bool =>
-      if cycle.get then
+    redef state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool =>
+      if d > 200 then
         nil
       else
-        cycle <- true
-        a := get x y in1
-        b := get x y in2
-        res := a >>= aa->
-                 b >>= bb->
-                   if      op = "AND" then aa && bb
-                   else if op = "OR"  then aa || bb
-                   else if op = "XOR" then aa ^  bb
-                   else panic "unkown $op"
-        cycle <- false
-        res
+        get d+1 x y in1 >>= a->
+          get d+1 x y in2 >>= b->
+            if      op = "AND" then a && b
+            else if op = "OR"  then a || b
+            else if op = "XOR" then a ^  b
+            else panic "unkown $op"
+
     redef fix(n i32, get String->Wire) =>
       fix <- n+fix
       (get in1).fix n get
       (get in2).fix n get
+
     redef get_unmarked(get String->Wire) Sequence Wire =>
       if fix.get > 0 then
         []
@@ -59,18 +55,18 @@ dec24 =>
   wires := iws.map (w -> id Wire w) ++ igs.map (w -> id Wire w)
   all_wires := container.ps_map String Wire .new (wires.map (.name)) wires
   get_wire(name) => all_wires[name].val
-  get_state(repl Sequence (String,String),x,y i64,name) =>
+  get_state(repl Sequence (String,String),d,x,y i64,name) =>
     for n := name, nn
         t in repl
         nn := if      t.0 = n then t.1
               else if t.1 = n then t.0
               else n
     else
-      get_wire n .state x y (get_state repl)
+      get_wire n .state d x y (get_state repl)
 
 
   part1 =>
-    for r := i64 0, r | (get_state [] -1 -1 i.z .val ? i64 1 : 0) << i
+    for r := i64 0, r | (get_state [] 0 -1 -1 i.z .val ? i64 1 : 0) << i
         i in (i64 0)..bits
     else
       $r
@@ -78,11 +74,10 @@ dec24 =>
   part2 =>
     check_bit(repl Sequence (String, String), b i64) =>
       base_cases := [(0,0),(1,0),(0,1),(1,1)].map t->(t.0.as_i64 << b,t.1.as_i64 << b)
-      lo := (i64 1 << b)-1
-      carry_cases := base_cases.map (||> x,y -> (x+lo,y+lo))
+      carry_cases := base_cases.map (||> x,y -> (x + (i64 1 << b)-1, y + (i64 1 << b)-1))
       for ok := true, (ro >>= (= ((c.0 + c.1 & (i64 1 << b)) != 0))) .or_else false
           c in base_cases ++ carry_cases
-          ro := get_state repl c.0 c.1 b.z
+          ro := get_state repl 0 c.0 c.1 b.z
       while ok else
         ok
 
