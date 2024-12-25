@@ -17,13 +17,15 @@ dec24 =>
   input_wire(redef name String, state0 bool) : Wire name is
     ok <- 1
     redef as_string => "$name: $state0"
-    redef state(get String->bool) bool => state0
     redef state(x,y i64, get (i64,i64,String)->option bool) option bool =>
-      b := name.substring 1 .parse_i64.val
-      v := name.starts_with "x" ? true_  => x
-                                | false_ => (name.starts_with "y" ? true_  => y
-                                                                  | false_ => panic "x y expected $name")
-      ((v >> b) & 1) != 0
+      if x < 0 then
+        state0
+      else
+        b := name.substring 1 .parse_i64.val
+        v := if      name.starts_with "x" then x
+             else if name.starts_with "y" then y
+             else panic "x y expected $name"
+        ((v >> b) & 1) != 0
 
   input_gate(in1 String, op String, in2 String, redef name String) : Wire name is
     cycle := mut false
@@ -59,11 +61,12 @@ dec24 =>
       (get in1).mark_ok get
       (get in2).mark_ok get
     redef get_unmarked(get String->Wire) Sequence Wire =>
-      r1 := (get in1).get_unmarked get
-      r2 := (get in2).get_unmarked get
-      r := r1 ++ r2
-      if ok.get > 0 then r++[]
-      else               r++[input_gate.this]
+      if ok.get > 0 then
+        []
+      else
+        ((get in1).get_unmarked get ++
+         (get in2).get_unmarked get ++
+         [input_gate.this])
 
   part1 =>
     iws := in_wires.map (s -> s.split ": " |> (iw -> input_wire iw[0] iw[1]="1"))
@@ -73,9 +76,9 @@ dec24 =>
     names := wires.map (.name)
     all_wires := (container.ps_map String Wire).new names wires
 
-    get_state(name) => all_wires[name].val.state get_state
+    get_state(x,y i64, name) => all_wires[name].val.state -1 -1 get_state
 
-    for r := i64 0, r | ((get_state "z"+(i.as_string 2 10) ? i64 1 : 0) << i.as_i64)
+    for r := i64 0, r | ((get_state -1 -1 "z"+(i.as_string 2 10) .val ? i64 1 : 0) << i.as_i64)
         i in 0..bits
     else
       r
@@ -89,7 +92,6 @@ dec24 =>
     all_wires := (container.ps_map String Wire).new names wires
 
     get_state(repl,x,y,name) =>
-#      yak repl.count
       for n := name, nn
           t in repl
           nn := if      t.0 = n then  t.1
