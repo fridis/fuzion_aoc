@@ -1,12 +1,9 @@
 dec24 =>
 
-  input := io.stdin.read_string.split "\n\n"
-  in_wires := input[0].split "\n" .filter !=""
-  in_gates := input[1].split "\n" .filter !=""
-  iws := in_wires.map (s -> s.split ": " |> (iw -> inpt iw[0] iw[1]="1"))
-  igs := in_gates.map (s -> s.split " "  |> (ig -> gate ig[0] ig[1] ig[2] ig[4]))
-  bits := igs.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i64.val) .fold1 max
-  wires := iws.map (w -> id Wire w) ++ igs.map (w -> id Wire w)
+  input := io.stdin.read_string.split "\n\n" .map (.split "\n" .filter !="")
+  wires := (input[0].map (s -> s.split ": " |> (iw -> inpt iw[0] iw[1]="1"))         .map Wire id ++
+            input[1].map (s -> s.split " "  |> (ig -> gate ig[0] ig[1] ig[2] ig[4])) .map Wire id   )
+  bits := wires.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i64.val) .fold1 max
   all_wires := container.ps_map String Wire .new (wires.map (.name)) wires
 
   # any wire coming from input or gate
