@@ -1,11 +1,10 @@
 dec25 =>
 
   input := io.stdin.read_string.split "\n\n" .map (.split "\n" .filter !="")
-  counts(x) => (0..4).map (i -> x.map (.utf8[i]) .filter (="#".utf8[0]) .count)
-  locks := input.filter (x -> x[0].starts_with "#") .map counts
-  keys  := input.filter (x -> x[0].starts_with ".") .map counts
+  (locks,keys) := [0,6].map (c -> input.filter (m -> m[c] = "#####")
+     .map (m -> (0..4).map (x -> m.count y->y.utf8[x]="#".utf8[0]))) .as_tuple
 
-  fits(l,k) => l.zip k (a,b -> a+b <= 6) ∀ id
+  fits(lock,key) => lock.zip key (l,k -> l+k <= 6) ∀ id
 
   part1 => locks.combine keys fits
                 .count id
