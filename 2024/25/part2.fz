@@ -4,7 +4,7 @@ dec25 =>
   (locks,keys) := [0,6].map (c -> input.filter (m -> m[c] = "#####")
      .map (m -> (0..4).map (x -> m.count y->y.utf8[x]="#".utf8[0]))) .as_tuple
 
-  fits(lock,key) => lock.zip key (l,k -> l+k <= 6) ∀ id
+  fits(lock,key) => lock.zip key (+) ∀ (<=6)
 
   part1 => locks.combine keys fits
                 .count id
