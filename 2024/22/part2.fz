@@ -21,7 +21,6 @@ dec22 is
   part2 =>
     range => i64 -9 .. 9
     n := input.count
-    ns := 0..(n-1)
     cs := array n (i -> changes input[i])
 
     # create array of array of indices of sequences that match currently
@@ -30,15 +29,15 @@ dec22 is
     #
     arr(o,off,v) => array n (i -> o[i].filter j->cs[i][j+off]=v .as_array)
 
-    oa := array n _->(0..1996).as_array
-    (range      .map (a -> arr oa 0 a) .flat_map aa->
-       range    .map (b -> arr aa 1 b) .flat_map ba->
-         range  .map (c -> arr ba 2 c) .flat_map ca->
+    r := array n _->(0..1996).as_array
+    (range      .map (arr r 0) .flat_map a->
+       range    .map (arr a 1) .flat_map b->
+         range  .map (arr b 2) .flat_map c->
            range.map d->
-             (ns.flat_map i64 i->
-               ca[i].filter   (j -> cs[i][j+3] = d)
-                    .flat_map (j -> prices input[i] .drop j+4)
-                    .first
+             ((0..(n-1)).flat_map i64 i->
+               c[i].filter   (j -> cs[i][j+3] = d)
+                   .flat_map (j -> prices input[i] .drop j+4)
+                   .first
              ) |> sum
     ).fold1 max
 
