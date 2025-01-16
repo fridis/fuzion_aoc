@@ -5,7 +5,7 @@ dec23 is
     a <= b <= a
 
   unique(sq Sequence (T : property.orderable)) =>
-    sq.reduce (id (container.Set T) (container.ps_set T).empty) (s,v -> s.add v)
+    sq.reduce (container.Set T) (container.ps_set T).empty (s,v -> s.add v)
 
   vertex(s) ref : property.orderable is
     fixed redef type.lteq(    a,b dec23.vertex) => a.s <= b.s
@@ -33,10 +33,9 @@ dec23 is
     edges := input |> unique
 
     add_one(clique) =>
-      clique.vs.flat_map (e -> id (Sequence vertex) e.edges.get)
-       .filter (v -> !clique.vs.contains v)
-       .filter (v -> clique.vs ∀ (.edges.get.contains v))
-       .map (v -> clique ([v] ++ clique.vs).sort)
+      clique.vs.flat_map vertex (.edges.get)
+       .filter (v -> !clique.vs.contains v && (clique.vs ∀ .edges.get.contains v))
+       .map    (v -> clique ([v] ++ clique.vs).sort)
 
     add_ones(cliques) =>
       cliques.flat_map add_one |> unique
