@@ -15,35 +15,31 @@ dec22 is
 
   # NYI: workaround, because `Sequence i64` is not `property.orderable`
   #      which is required by `mutable_tree_map` used in `group_map_reduce`
-  seq4 (a, b, c, d i64) ref : property.orderable is
+  seq4(a, b, c, d) ref : property.orderable is
     public fixed redef type.lteq(x, y seq4.this) bool =>
-      ( (x.a < y.a) ||
-       ((x.a = y.a) && (x.b < y.b)) ||
-       ((x.a = y.a) && (x.b = y.b)  && (x.c < y.c)) ||
-       ((x.a = y.a) && (x.b = y.b)  && (x.c = y.c)  && (x.d <= y.d)))
+      ( x.a <= y.a && (x.a < y.a ||
+                       x.b <= y.b && (x.b < y.b ||
+                                      x.c <= y.c && (x.c < y.c ||
+                                                     x.d <= y.d))))
 
-  to_seq4 (l Sequence i64) seq4 =>
-    if l.count = 4
-      seq4 (l.nth 0 .val) (l.nth 1 .val) (l.nth 2 .val) (l.nth 3 .val)
-    else
-      panic "you messed up, list does not have 4 elements"
+  to_seq4(l) => l.as_4tuple ||||> seq4
 
   # Part 2 is based on a solution in Scala by Karl Bielefeldt (@kbielefe)
   # https://github.com/kbielefe/advent-of-code/blob/c49990a39a76f8b7c60594e1a9ee20d097815e37/2024/src/main/scala/22%20Monkey%20Market.scala
   part2 =>
     input
       .flat_map (tuple seq4 i64) sequences
-      .group_map_reduce seq4 i64 (.values.0) x->x.1 (x,y)->x+y
+      .group_map_reduce (.values.0) x->x.1 (+)
       .values
       .max
       .val
 
-  sequences (secret i64) =>
+  sequences (secret) =>
     secrets secret
         .take 2001
         .map %10
         .sliding 5
-        .group_map_reduce seq4 i64 (x->to_seq4((x.sliding 2).map(l->l.first.val - (l.drop 1).first.val))) (.last.val) (x,y)->x
+        .group_map_reduce seq4 i64 (x -> to_seq4 (x.sliding 2 .map (l -> l.first.val - (l.drop 1).first.val))) (.last.val) (x,_)->x
         .items
 
   say "$part1:$part2"
