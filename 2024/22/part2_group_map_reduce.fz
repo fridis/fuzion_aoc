@@ -1,0 +1,45 @@
+dec22 is
+
+  input := io.stdin.read_lines.filter !="" .map (.parse_i64.val) .as_array
+
+  i64.mixAndPrune(f i64->i64) => (val ^ f val) % 16777216
+  next(s0 i64) =>
+    s0.mixAndPrune (*64)
+      .mixAndPrune (/32)
+      .mixAndPrune (*2048)
+
+  secrets(x) => x :: next
+
+  part1 =>
+    input.map (seed -> secrets seed .drop 2000 .first.val) |> sum
+
+  # NYI: workaround, because `Sequence i64` is not `property.orderable`
+  #      which is required by `mutable_tree_map` used in `group_map_reduce`
+  seq4(a, b, c, d) ref : property.orderable is
+    public fixed redef type.lteq(x, y seq4.this) bool =>
+      ( x.a <= y.a && (x.a < y.a ||
+                       x.b <= y.b && (x.b < y.b ||
+                                      x.c <= y.c && (x.c < y.c ||
+                                                     x.d <= y.d))))
+
+  to_seq4(l) => l.as_4tuple ||||> seq4
+
+  # Part 2 is based on a solution in Scala by Karl Bielefeldt (@kbielefe)
+  # https://github.com/kbielefe/advent-of-code/blob/c49990a39a76f8b7c60594e1a9ee20d097815e37/2024/src/main/scala/22%20Monkey%20Market.scala
+  part2 =>
+    input
+      .flat_map (tuple seq4 i64) sequences
+      .group_map_reduce (.values.0) x->x.1 (+)
+      .values
+      .max
+      .val
+
+  sequences (secret) =>
+    secrets secret
+        .take 2001
+        .map %10
+        .sliding 5
+        .group_map_reduce seq4 i64 (x -> to_seq4 (x.sliding 2 .map (l -> l.first.val - (l.drop 1).first.val))) (.last.val) (x,_)->x
+        .items
+
+  say "$part1:$part2"
