@@ -3,7 +3,7 @@ dec22 is
   input := io.stdin.read_lines.filter !="" .map (.parse_i64.val) .as_array
 
   i64.mixAndPrune(f i64->i64) => (val ^ f val) % 16777216
-  i64.secrets => val :: (.mixAndPrune *64 .mixAndPrune /32 .mixAndPrune *2048)
+  i64.secrets => val :: .mixAndPrune *64 .mixAndPrune /32 .mixAndPrune *2048
 
   part1 =>
     input.map (.secrets.drop 2000 .first.val) |> sum
