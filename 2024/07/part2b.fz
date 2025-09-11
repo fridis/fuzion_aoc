@@ -11,7 +11,8 @@ test(ops, t, v, n) =>
 
 partn(ops Sequence (i64,i64)->i64) =>
   input.filter (s -> test ops (total s) (nums s)[0] (nums s .drop 1))
-       .map total |> .sum
+       .map total
+       .sum
 
 say (partn [*, +])
 say (partn [*, +, (a,b)->"$a$b".parse_i64.val])

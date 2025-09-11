@@ -11,8 +11,8 @@ dec1_part2 is
   l := data.map x->x.0
   r := data.map x->x.1
 
-  part1 => l.sort.zip r.sort a,b->(|a-b|) |> .sum
-  part2 => l.map (n -> n * (r.filter =n).count) |> .sum
+  part1 => l.sort.zip r.sort a,b->(|a-b|) .sum
+  part2 => l.map (n -> n * (r.filter =n).count) .sum
 
   say part1
   say part2
