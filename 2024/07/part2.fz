@@ -1,7 +1,7 @@
 dec7_part2 =>
 
   LM : mutate is
-  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
+  input := LM ! ()->(io.stdin.reader LM) ! ()->(io.buffered LM .read_lines).filter !=""
 
   total(s) => s.split ":" .first.val.parse_i64.val
   nums(s) => s.split " " .drop 1 .map (.parse_i64.val)
@@ -26,9 +26,11 @@ dec7_part2 =>
                       .val
 
   part1 => input.filter (s -> test1 (total s) (num0 s) (numr s))
-                .map total |> sum
+                .map total
+                .sum
   part2 => input.filter (s -> test2 (total s) (num0 s) (numr s))
-                .map total |> sum
+                .map total
+                .sum
 
   say part1
   say part2
