@@ -6,7 +6,8 @@ dec22 is
   i64.secrets => val :: .mixAndPrune *64 .mixAndPrune /32 .mixAndPrune *2048
 
   part1 =>
-    input.map (.secrets.drop 2000 .first.val) |> sum
+    input.map (.secrets.drop 2000 .first.val)
+         .sum
 
   # Part 2 is based on a solution in Scala by Karl Bielefeldt (@kbielefe)
   # https://github.com/kbielefe/advent-of-code/blob/c49990a39a76f8b7c60594e1a9ee20d097815e37/2024/src/main/scala/22%20Monkey%20Market.scala

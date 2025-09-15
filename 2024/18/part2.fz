@@ -26,7 +26,7 @@ dec18 =>
       leftbot := (mutate.array2 bool).type.new lm w w false
       toprite := (mutate.array2 bool).type.new lm w w false
       for cor in input2 do
-        (x,y) := cor
+        x,y := cor
         area[x,y] := true
         fill leftbot x y (x=0 || y=w-1)
         fill toprite x y (y=0 || x=w-1)

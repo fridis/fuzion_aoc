@@ -37,7 +37,7 @@ dec20 =>
 
     part1 =>
       saving(p) =>
-        (t,b,l,r) := p.neighbors.map pico .as_4tuple
+        t,b,l,r := p.neighbors.map pico .as_4tuple
         if      t>=0 && b>=0 then (|t-b|)-2
         else if l>=0 && r>=0 then (|l-r|)-2
         else                      0

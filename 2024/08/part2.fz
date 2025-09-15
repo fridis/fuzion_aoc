@@ -2,11 +2,15 @@ dec8_part2 =>
 
   LM : mutate is
   LM ! ()->
-    arr := (io.stdin LM) ! ()->(io.buffered.read_lines LM)
+    arr := (io.stdin.reader LM) ! ()->(io.buffered LM .read_lines)
              .filter !="" .map (.as_codepoints.as_array) .as_array
     h := arr.length   .as_i64
     w := arr[0].length.as_i64
-    area := (mutate.array2 i64).type.new LM w h x,y->arr[y.as_i32][x.as_i32].val.as_i64
+    area := (mutate.array2 i64).type.new LM w h 0
+
+    for x in area.indices0 do
+      for y in area.indices1 do
+        area[x,y] := arr[y.as_i32][x.as_i32].val.as_i64
 
     location_count(antinode_pos Sequence i64) =>
 
@@ -14,7 +18,7 @@ dec8_part2 =>
       antennas  := (mutate.array (list (i64,i64))).type.new LM 128 nil
 
       # for each position: has an antinode been found here?
-      antinodes := (mutate.array2 bool).type.new LM w h _,_->false
+      antinodes := (mutate.array2 bool).type.new LM w h false
 
       area.indices0.for_each x->
         area.indices1.for_each y->
@@ -23,7 +27,7 @@ dec8_part2 =>
             a := antennas[v]
             a.for_each xy->
               antinode_pos.for_each i->
-                (xx, yy) := (x+i*(xy.0-x), y+i*(xy.1-y))
+                xx, yy := (x+i*(xy.0-x), y+i*(xy.1-y))
                 if (0 <= xx < w &&
                     0 <= yy < h    )
                   antinodes[xx,yy] := true

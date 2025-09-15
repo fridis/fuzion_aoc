@@ -21,7 +21,8 @@ dec11 =>
                  res
           r i64 => r
 
-      data.map (count b) |> sum
+      data.map (count b)
+          .sum
 
   part1 => blink 25
   part2 => blink 75

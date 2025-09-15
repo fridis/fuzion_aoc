@@ -1,7 +1,7 @@
 dec4_part1 =>
 
   LM : mutate is
-  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
+  input := LM ! ()->(io.stdin.reader LM) ! ()->(io.buffered LM .read_lines).filter !=""
                                                                      .map (.as_codepoints)
 
   area := array2 String input.count input[0].count i,j->input[i][j]
@@ -19,9 +19,9 @@ dec4_part1 =>
     dirs => [-1, 0, +1].pairs [-1, 0, +1]
     (area.index_pairs.pairs dirs)
       .filter v->
-        (yx, dd) := v
-        (yy, xx) := yx
-        (dy, dx) := dd
+        yx, dd := v
+        yy, xx := yx
+        dy, dx := dd
         is_string yy xx dy dx "XMAS".as_codepoints
       .count
 

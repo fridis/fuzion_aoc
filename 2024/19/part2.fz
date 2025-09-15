@@ -21,16 +21,18 @@ dec19 =>
                   cachePos.put s res
                   res
 
-    count(s) =>
+    count(s String) =>
       match cacheCnt.get s
         v i64 => v
-        nil   => res := s="" ? 1 : towels.filter s.starts_with
-                                         .map s.suffix
-                                         .map count |> sum
+        nil   => res := s="" ? (i64 1) : towels.filter s.starts_with # NYI: CLEANUP: explicit type should not be necessary when type inference improves, see #5866
+                                               .map s.suffix
+                                               .map count
+                                               .sum
                  cacheCnt.put s res
                  res
 
     part1 => designs.filter possible .count
-    part2 => designs.map count |> sum
+    part2 => designs.map count
+                    .sum
 
     say "$part1:$part2"
