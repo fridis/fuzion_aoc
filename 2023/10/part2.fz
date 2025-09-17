@@ -1,6 +1,10 @@
 dec10_part2 is
 
-  cp := ((io.stdin.with ()->io.buffered.read_lines).val.filter !="").map s->s.as_codepoints
+  LM : mutate is
+  cp := LM ! ()->((io.stdin.reader LM ! ()->
+          io.buffered LM .read_lines)
+          .filter !="")
+          .map s->s.as_codepoints
 
   # our map
   map := array2 cp.count cp[0].count i,j->cp[i][j]
@@ -14,7 +18,7 @@ dec10_part2 is
       cur  String)  # possible current tiles
   is
     # get next direction using given tile, nil if that tile is not connected
-    next(i,j i32) => (next.find (at i j)).map ix->dirs[ix]
+    next(i,j i32) => (next.find (at i j)) .bind dir ix->dirs[ix]
 
     # move one step from i,j and check if that tile connects to i,j
     connects(i,j) => (next i+di j+dj).exists
@@ -28,7 +32,7 @@ dec10_part2 is
   # find the start tile coordinates
   start =>
     for ij in map.index_pairs do
-      (i,j) := ij
+      i,j := ij
     until map[i,j] = "S"
       ij
     else
@@ -36,20 +40,20 @@ dec10_part2 is
 
   # find the loop:
   loup =>
-    lm : mutate.
-    lm.go (array2 String) ()->
-      lp := array map.length0 i->((lm.array String).type.new lm map.length1 ".")
+    lm : mutate is
+    lm ! ()->
+      lp := array map.length0 i->((lm.array String).type.new lm map.length1.as_i64 ".")
 
-      (i,j) := start
+      i,j := start
       for first := true, !first && !d.connects i j
           d in dirs
       do
         if d.connects i j
           if first
             go d i j
-            lp[i][j] := d.cur                          # set start to possible tiles
+            lp[i][j.as_i64] := d.cur                          # set start to possible tiles
           else
-            lp[i][j] := lp[i][j].as_codepoints         # find correct start tile
+            lp[i][j.as_i64] := lp[i][j.as_i64].as_codepoints         # find correct start tile
                                 .filter c->(d.cur.contains c)
                                 .as_string ""
 
@@ -57,13 +61,13 @@ dec10_part2 is
       go(d dir, i0, j0 i32) =>
         ii := i0 + d.di
         jj := j0 + d.dj
-        lp[ii][jj] := at ii jj                # record path
+        lp[ii][jj.as_i64] := at ii jj                # record path
         match d.next ii jj
-          d dir => go d ii jj
+          d2 dir => go d2 ii jj
           nil   =>
 
       # collect the resulting path as an array
-      array2 map.length0 map.length1 i,j->lp[i][j]
+      array2 map.length0 map.length1 i2,j2->lp[i2][j2.as_i64]
 
   part1 => loup.filter !="."     # count the tiles in the loop and divide by 2
                .count / 2

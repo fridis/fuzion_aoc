@@ -15,24 +15,25 @@ dec1 is
   text_to_digit(s String) =>
     if s != ""
       f := for m in numbers do
-             (t,d) := m
-           until s.starts_with t then d
+             t0,d := m
+           until s.starts_with t0 then d
            else  s
-      t := s.substring 1  # this should IMHO be s.substring to avoid counting overlaps twice as in "fiveight", but ok.
-      f + text_to_digit t
+      t1 := s.substring 1  # this should IMHO be s.substring to avoid counting overlaps twice as in "fiveight", but ok.
+      f + text_to_digit t1
     else
       s
 
-  r := io.stdin.with ()->
+  LM : mutate is
+  r := LM ! ()->(io.stdin.reader LM) ! ()->
     for
       sum := 0, sum + 10 * first + last
-      l := io.buffered.read_line
+      l := io.buffered LM .read_line ? s String => s | * => ""
     while l != "" do
       d := text_to_digit l
       digits := d.as_codepoints
-                 .filter x->(codepoint.type.ascii_digit.contains x.val)
-      first := digits.first.parse_i32.val
-      last  := digits.last .parse_i32.val
+                .filter x->(codepoint.type.ascii_digit.contains x.val)
+      first := digits.first.val.parse_i32.val
+      last  := digits.last .val.parse_i32.val
     else
       sum
 

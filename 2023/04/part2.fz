@@ -1,13 +1,14 @@
 dec4_part2 is
 
   lines =>
-    o := io.stdin.with ()->
+    LM : mutate is
+    o := LM ! ()->(io.stdin.reader LM) ! ()->
       for
-        li list String := nil, li ++ [l]
-        l := io.buffered.read_line
+        li Sequence String := [], li ++ [l]
+        l := io.buffered LM .read_line ? str String => str | * => ""
       while l != ""  else
         li
-    o.val.as_array
+    o.as_array
 
   card(s String) is
     wy(i) => ((s.split ":")[1].split "|")[i].split.map (.parse_i32.val)
@@ -21,13 +22,13 @@ dec4_part2 is
   part1 := cards.map (.winning)
                 .fold i32.type.sum
 
-  lm : mutate.
-  part2 := lm.go ()->
-    a := (lm.array i32).type.new lm cards.count 1
+  lm : mutate is
+  part2 := lm ! ()->
+    a := (lm.array i32).type.new lm cards.count.as_i64 1
     for i in cards.indices do
       m := cards[i].matches
       for j in i+1..i+m do
-        a[j] := a[j] + a[i]
-    a.fold i32.type.sum
+        a[j.as_i64] := a[j.as_i64] + a[i.as_i64]
+    a.as_array.fold i32.type.sum
 
   say "dec 4: $part1 $part2"

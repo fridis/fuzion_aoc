@@ -1,6 +1,9 @@
 dec13_part2 is
 
-  input := (io.stdin.with ()->io.buffered.read_lines).val
+  LM : mutate is
+  input := LM ! ()->
+    (io.stdin.reader LM) ! ()->(io.buffered LM .read_lines)
+
   areas(inp Sequence String) (list (array2 bool)) =>
     n := (inp.take_while !="").count
     if n=0 then nil
@@ -10,10 +13,8 @@ dec13_part2 is
     c := inp.map s->s.as_codepoints
     array2 c.count c[0].count i,j->c[i][j]="#"
 
-  array2.transpose => array2 length1 length0 i,j->index[](j,i)
-
   mirrors(a, n) =>
-    (0..a.length0-2).flat_map_sequence i32 i->
+    (0..a.length0-2).flat_map i32 i->
                              for s := 0, s+sm
                                  j := 0, j+1
                              while i-j >= 0 && i+j+1 < a.length0
@@ -22,7 +23,7 @@ dec13_part2 is
                                if s = n then [i+1] else []
                     .first 0
 
-  part1 => (areas input).map (a -> 100 * mirrors a 0 + mirrors a.transpose 0) |> sum
-  part2 => (areas input).map (a -> 100 * mirrors a 1 + mirrors a.transpose 1) |> sum
+  part1 => (areas input).map (a -> 100 * mirrors a 0 + mirrors a.transpose 0) .sum
+  part2 => (areas input).map (a -> 100 * mirrors a 1 + mirrors a.transpose 1) .sum
 
   say "part1 $part1 part2 $part2"

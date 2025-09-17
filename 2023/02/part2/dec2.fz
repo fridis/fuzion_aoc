@@ -1,17 +1,17 @@
 dec2 is
 
   bag(r, g, b) is
-    ok(d bag) => (r >= d.r &&
+    ok(d bag) => (bag.this.r >= d.r &&
                   g >= d.g &&
                   b >= d.b   )
-    power => r*g*b
+    power => bag.this.r*g*b
 
   bag_min : Monoid bag is
-    public infix ∙ (a, b bag) =>
+    public redef infix ∙ (a, b bag) bag =>
       (bag (max a.r b.r)
            (max a.g b.g)
            (max a.b b.b))
-    public e => bag 0 0 0
+    public redef e bag => bag 0 0 0
 
   bag := bag 12 13 14
 
@@ -27,11 +27,12 @@ dec2 is
     draws := (s1[1].split ";").map (x->draw x)
     min => draws.fold bag_min
 
-  r := io.stdin.with ()->
+  LM : mutate is
+  r := LM ! ()->(io.stdin.reader LM) ! ()->
     for
       score1 := 0, score1 + (ok ? g.num : 0)
       score2 := 0, score2 + g.min.power
-      l := io.buffered.read_line
+      l := io.buffered LM .read_line ? s String => s | * => ""
     while l != ""
       g := game l
       ok := g.draws ∀ bag.ok

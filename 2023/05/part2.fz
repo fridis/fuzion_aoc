@@ -1,22 +1,23 @@
 dec5_part2 is
 
-  public minimum : Monoid i64 is
-    public redef infix ∙ (a, b i64) => if a < b then a else b
-    public redef e => i64.type.max
+  minimum : Monoid i64 is
+    public redef infix ∙ (a, b i64) i64 => if a < b then a else b
+    public redef e i64 => i64.type.max
 
-  public minimum_range : Monoid range is
-    public redef infix ∙ (a, b range) => if a.l < b.l then a else b
-    public redef e => range i64.type.max-1 1
+  minimum_range : Monoid range is
+    public redef infix ∙ (a, b range) range => if a.l < b.l then a else b
+    public redef e range => range i64.type.max-1 1
 
   input =>
-    o := io.stdin.with ()->
+    LM : mutate is
+    o := LM ! ()->(io.stdin.reader LM) ! ()->
       for
         r Sequence u8 := [], r++n
-        n := (io.buffered.read_bytes 10000)
+        n := (io.buffered LM .read_bytes 10000)
       while n.count > 0 else
         r
-    ref : String
-      utf8 => o.val
+    ref : String is
+      public redef utf8 Sequence u8 => o
 
   lines := input.split "\n"
   ls := lines.as_array
@@ -30,7 +31,7 @@ dec5_part2 is
     l => start
 
   maps => maps (ls.drop 2)
-  maps(ml) list map => if ml.is_empty || ml.first = "" then nil
+  maps(ml) list map => if ml.is_empty || ml.first.val = "" then nil
                        else
                          h := (ml.drop 1).take_while !=""
                          r := ml.drop h.count+2
@@ -57,7 +58,7 @@ dec5_part2 is
         from ++ res
 
     convert2s(rs Sequence range) =>
-      rs.flat_map_sequence range convert2
+      rs.flat_map range convert2
 
   conv(li list String) is
     to   := li[0].parse_i64.val
@@ -67,7 +68,7 @@ dec5_part2 is
     r => from+len
     convert(i i64) =>
       if from <= i < from+len then i - from + to else i
-    convert2(rs, mapped)   => rs.flat_map_sequence range s->
+    convert2(rs, mapped)   => rs.flat_map range s->
       ll := l-s.l
       rl := s.r-r
       il := s.len - (max 0 ll) - (max 0 rl)
@@ -78,19 +79,19 @@ dec5_part2 is
       else                            if mapped then [ range to        il ] else [ range s.l ll, range s.r-rl rl ] # middle mapped
 
   p1 := seeds.map s->
-      for v := s, v2
+      check !maps.is_empty
+      for v := s, m.convert v
           m in maps
-          v2 := m.convert v
       else
-        v2
+        v
     .fold minimum
 
-  p2 := seeds2.flat_map_sequence range s->
-      for v Sequence range := [s], v2
+  p2 := seeds2.flat_map range s->
+      check !maps.is_empty
+      for v Sequence range := [s], m.convert2s v
           m in maps
-          v2 := m.convert2s v
       else
-        v2
+        v
     .fold minimum_range
     .l
 
