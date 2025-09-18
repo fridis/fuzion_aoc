@@ -1,0 +1,57 @@
+dec1 is
+
+  part1 =>
+    LM : mutate is
+    LM ! ()->(io.stdin.reader LM) ! ()->
+      for
+        sum := 0, sum + 10 * first + last
+        l := io.buffered LM .read_line ? s String => s | * => ""
+      while l != ""  do
+        digits := l.as_codepoints
+                  .filter x->(codepoint.type.ascii_digit.contains x.val)
+        first := digits.first.val.parse_i32.val
+        last  := digits.last .val.parse_i32.val
+      else
+        sum
+
+
+  part2 =>
+    numbers := [
+      ("one"  , "1"),
+      ("two"  , "2"),
+      ("three", "3"),
+      ("four" , "4"),
+      ("five" , "5"),
+      ("six"  , "6"),
+      ("seven", "7"),
+      ("eight", "8"),
+      ("nine" , "9"),
+      ]
+
+    text_to_digit(s String) =>
+      if s != ""
+        f :=
+          for m in numbers do
+            t0,d := m
+          until s.starts_with t0 then d
+          else  s
+        t1 := s.substring 1  # this should IMHO be s.substring to avoid counting overlaps twice as in "fiveight", but ok.
+        f + text_to_digit t1
+      else
+        s
+
+    LM : mutate is
+    LM ! ()->(io.stdin.reader LM) ! ()->
+      for
+        sum := 0, sum + 10 * first + last
+        l := io.buffered LM .read_line ? s String => s | * => ""
+      while l != "" do
+        d := text_to_digit l
+        digits := d.as_codepoints
+                  .filter x->(codepoint.type.ascii_digit.contains x.val)
+        first := digits.first.val.parse_i32.val
+        last  := digits.last .val.parse_i32.val
+      else
+        sum
+
+  say "$part1:$part2"
