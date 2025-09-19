@@ -1,18 +1,20 @@
 dec1 is
 
+  LM : mutate is
+  input := LM ! ()->
+    (io.stdin.reader LM) ! ()->(io.buffered LM .read_lines).filter !=""
+
   part1 =>
-    LM : mutate is
-    LM ! ()->(io.stdin.reader LM) ! ()->
-      for
-        sum := 0, sum + 10 * first + last
-        l := io.buffered LM .read_line ? s String => s | * => ""
-      while l != ""  do
-        digits := l.as_codepoints
-                  .filter x->(codepoint.type.ascii_digit.contains x.val)
-        first := digits.first.val.parse_i32.val
-        last  := digits.last .val.parse_i32.val
-      else
-        sum
+    for
+      sum := 0, sum + 10 * first + last
+      l in input
+    while l != ""  do
+      digits := l.as_codepoints
+                .filter x->(codepoint.type.ascii_digit.contains x.val)
+      first := digits.first.val.parse_i32.val
+      last  := digits.last .val.parse_i32.val
+    else
+      sum
 
 
   part2 =>
@@ -28,30 +30,27 @@ dec1 is
       ("nine" , "9"),
       ]
 
-    text_to_digit(s String) =>
+    text_to_digit(s String) String =>
       if s != ""
-        f :=
-          for m in numbers do
-            t0,d := m
-          until s.starts_with t0 then d
-          else  s
-        t1 := s.substring 1  # this should IMHO be s.substring to avoid counting overlaps twice as in "fiveight", but ok.
-        f + text_to_digit t1
+        for m in numbers do
+          t0,d := m
+        until s.starts_with t0
+          d + text_to_digit (s.substring (min d.codepoint_length s.codepoint_length))
+        else
+          s.substring 0 1 + text_to_digit (s.substring 1)
       else
         s
 
-    LM : mutate is
-    LM ! ()->(io.stdin.reader LM) ! ()->
-      for
-        sum := 0, sum + 10 * first + last
-        l := io.buffered LM .read_line ? s String => s | * => ""
-      while l != "" do
-        d := text_to_digit l
-        digits := d.as_codepoints
-                  .filter x->(codepoint.type.ascii_digit.contains x.val)
-        first := digits.first.val.parse_i32.val
-        last  := digits.last .val.parse_i32.val
-      else
-        sum
+    for
+      sum := 0, sum + 10 * first + last
+      l in input
+    while l != "" do
+      d := text_to_digit l
+      digits := d.as_codepoints
+                .filter x->(codepoint.type.ascii_digit.contains x.val)
+      first := digits.first.val.parse_i32.val
+      last  := digits.last .val.parse_i32.val
+    else
+      sum
 
   say "$part1:$part2"
