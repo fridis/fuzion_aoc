@@ -1,10 +1,10 @@
 dec2 is
 
   bag(r, g, b) is
-    ok(d bag) => (bag.this.r >= d.r &&
+    ok(d bag) => (r >= d.r &&
                   g >= d.g &&
                   b >= d.b   )
-    power => bag.this.r*g*b
+    power => r*g*b
 
   bag_min : Monoid bag is
     public redef infix ∙ (a, b bag) bag =>
@@ -28,7 +28,7 @@ dec2 is
     min => draws.fold bag_min
 
   LM : mutate is
-  r := LM ! ()->(io.stdin.reader LM) ! ()->
+  say <| LM ! ()->(io.stdin.reader LM) ! ()->
     for
       score1 := 0, score1 + (ok ? g.num : 0)
       score2 := 0, score2 + g.min.power
@@ -38,4 +38,3 @@ dec2 is
       ok := g.draws ∀ bag.ok
     else
       "done: score1 $score1, score2 $score2"
-  say r
