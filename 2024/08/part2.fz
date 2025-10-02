@@ -3,14 +3,13 @@ dec8_part2 =>
   LM : mutate is
   LM ! ()->
     arr := (io.stdin.reader LM) ! ()->(io.buffered LM .read_lines)
-             .filter !="" .map (.as_codepoints.as_array) .as_array
+             .filter !="" .map (.codepoints.as_array) .as_array
     h := arr.length   .as_i64
     w := arr[0].length.as_i64
     area := (mutate.array2 i64).type.new LM w h 0
-
-    for x in area.indices0 do
-      for y in area.indices1 do
-        area[x,y] := arr[y.as_i32][x.as_i32].val.as_i64
+    area.indices0.pairs area.indices1
+        .for_each ||>x,y->
+          area[x,y] := arr[y.as_i32][x.as_i32].val.as_i64
 
     location_count(antinode_pos Sequence i64) =>
 

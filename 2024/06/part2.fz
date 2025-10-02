@@ -6,7 +6,7 @@ dec6_part2 =>
 
     # the relation defined by input as an array
     arr := input.filter !=""
-                .map (.as_codepoints.as_array)
+                .map (.codepoints.as_array)
                 .as_array
 
     h := arr.length.as_i64
@@ -14,10 +14,9 @@ dec6_part2 =>
 
     data := array2 arr.length arr[0].length y,x->arr[y][x]
     area := (mutate.array2 codepoint).type.new LM h w "0"
-
-    for x in area.indices0 do
-      for y in area.indices1 do
-        area[y,x] := data[y.as_i32, x.as_i32]
+    area.indices0.pairs area.indices1
+        .for_each ||>y,x->
+          area[y,x] := data[y.as_i32, x.as_i32]
 
     start := data.index_pairs.filter (yx -> data[yx.0,yx.1] = "^")
                              .first.val ||> y,x -> pos y.as_i64 x.as_i64
