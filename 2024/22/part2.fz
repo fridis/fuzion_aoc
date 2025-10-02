@@ -16,7 +16,7 @@ dec22 is
     prices seed .map (-) .map_pairs (-) .as_array
 
   part1 =>
-    input.map (seed -> secrets seed .drop 2000 .first.val) |> sum
+    input.map (seed -> secrets seed .drop 2000 .first.val) .sum
 
   part2 =>
     range => i64 -9 .. 9
@@ -37,8 +37,7 @@ dec22 is
              ((0..(n-1)).flat_map i64 i->
                c[i].filter   (j -> cs[i][j+3] = d)
                    .flat_map (j -> prices input[i] .drop j+4)
-                   .first
-             ) |> sum
+             ).sum
     ).fold1 max
 
   say "$part1:$part2"

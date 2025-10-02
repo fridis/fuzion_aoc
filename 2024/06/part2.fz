@@ -2,7 +2,7 @@ dec6_part2 =>
 
   LM : mutate is
   LM ! ()->
-    input := io.stdin LM ! (() -> io.buffered.read_lines LM)
+    input := io.stdin.reader LM ! (() -> io.buffered LM .read_lines)
 
     # the relation defined by input as an array
     arr := input.filter !=""
@@ -13,8 +13,12 @@ dec6_part2 =>
     w := arr[0].length.as_i64
 
     data := array2 arr.length arr[0].length y,x->arr[y][x]
-    area := (mutate.array2 codepoint).type.new LM h w y,x->data[y.as_i32,
-                                                                x.as_i32]
+    area := (mutate.array2 codepoint).type.new LM h w "0"
+
+    for x in area.indices0 do
+      for y in area.indices1 do
+        area[y,x] := data[y.as_i32, x.as_i32]
+
     start := data.index_pairs.filter (yx -> data[yx.0,yx.1] = "^")
                              .first.val ||> y,x -> pos y.as_i64 x.as_i64
 
@@ -53,7 +57,7 @@ dec6_part2 =>
           dd
 
     # candidate positions  that should be checked in part2, filled in part1
-    cand := (mutate.array2 bool).type.new LM h w y,x->false
+    cand := (mutate.array2 bool).type.new LM h w false
 
     # perform part1 and fill cand
     part1_res := LM.env.new 0
@@ -71,7 +75,7 @@ dec6_part2 =>
           .map (c -> c ||> pos)
           .filter (p -> p.get cand && p.get area != "#")
           .filter cp->
-              visited := (mutate.array2 u8).type.new LM h w y,x->0
+              visited := (mutate.array2 u8).type.new LM h w 0
               for d := up, p.change_dir d q->(q.get area = "#" || q = cp)
                   p := start, p + d
                   loup := false, (v & d.bit) != 0

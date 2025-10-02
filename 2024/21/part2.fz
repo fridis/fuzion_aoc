@@ -32,8 +32,9 @@ dec21 is
 
   shortest(n) =>
     lengths := input.map (find_shortest n)
-    numeric := input.map (.as_codepoints.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
-    lengths.zip numeric (*) |> sum
+    numeric_ := input.map (.as_codepoints.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
+    lengths.zip numeric_ (*)
+           .sum
 
   part1 => shortest 2
   part2 => shortest 25

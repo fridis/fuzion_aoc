@@ -21,11 +21,13 @@ dec13 =>
       else
         0
 
-  part1 => input.map (.cost) |> sum
+  part1 => input.map (.cost)
+                .sum
 
   part2 =>
     delta := i64 1E13
     input.map (c -> claw c.ax c.ay c.bx c.by c.px+delta c.py+delta)
-         .map (.cost) |> sum
+         .map (.cost)
+         .sum
 
   say "$part1,$part2"

@@ -2,7 +2,7 @@ dec9_part2 =>
 
   LM : mutate is
   LM ! ()->
-    data := (io.stdin LM) ! ()->(io.buffered.read_lines LM)
+    data := (io.stdin.reader LM) ! ()->(io.buffered LM .read_lines)
              .filter !="" .first.val.as_codepoints.map (.parse_i64.val) .as_array
     disk := data.zip ((i64 0 ..).flat_map (n -> id (Sequence i64) [n,-1])) a,b->(a,b)
                 .flat_map (||> n,id_ -> id (Sequence i64) ([id_].cycle.take n.as_i32))
@@ -13,14 +13,15 @@ dec9_part2 =>
       c0 := rev.count
       compacted := disk.reduce (id (Sequence i64) [], rev, 0) (
               rrv,id0 -> rrv |||> res,rv,n ->
-                           (h,rr) := if      c0 <= n     then (i64 -1, rv                           )
-                                     else if id0 >= 0    then (id0   , rv                           )
-                                     else if rv.is_empty then (i64 -1, rv                           )
-                                     else                     (rv[0] , id (Sequence i64) (rv.drop 1))
+                           h,rr := if      c0 <= n     then (i64 -1, rv                           )
+                                   else if id0 >= 0    then (id0   , rv                           )
+                                   else if rv.is_empty then (i64 -1, rv                           )
+                                   else                     (rv[0] , id (Sequence i64) (rv.drop 1))
                            (id (Sequence i64) [h]++res, rr, n+1))
 
       ca := compacted.0.reverse
-      ca.zip (i64 0).. id,n->(max 0 id)*n |> sum
+      ca.zip (i64 0).. id,n->(max 0 id)*n
+        .sum
 
     part2 =>
       sz := disk.count
@@ -60,6 +61,7 @@ dec9_part2 =>
           else
             unit
 
-      mdisk.as_array.zip (i64 0).. id,n->(max 0 id)*n |> sum
+      mdisk.as_array.zip (i64 0).. id,n->(max 0 id)*n
+                    .sum
 
     say "$part1,$part2"

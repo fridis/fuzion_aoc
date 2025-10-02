@@ -1,9 +1,9 @@
 dec18 =>
 
-  wi := envir.args[1].parse_i32.val
+  wi := envir.args.count > 1 ? envir.args[1].parse_i32.val : 71
   w := wi.as_i64
   inside(x) => 0 <= x < w
-  l := envir.args[2].parse_i32.val
+  l :=  envir.args.count > 2 ? envir.args[2].parse_i32.val : 1024
   input2 := io.stdin.read_lines.filter !="" .map (.split "," .map s->s.parse_i64.val) .map s->(s[0],s[1])
   input1 := input2.map (||>x,y->(x.as_i32,y.as_i32)) .take l .as_array
   lm : mutate is
@@ -26,7 +26,7 @@ dec18 =>
       leftbot := (mutate.array2 bool).type.new lm w w false
       toprite := (mutate.array2 bool).type.new lm w w false
       for cor in input2 do
-        (x,y) := cor
+        x,y := cor
         area[x,y] := true
         fill leftbot x y (x=0 || y=w-1)
         fill toprite x y (y=0 || x=w-1)

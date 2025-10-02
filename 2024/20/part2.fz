@@ -1,6 +1,6 @@
 dec20 =>
 
-  min_saving := envir.args[1].parse_i32.val
+  min_saving := envir.args.count > 1 ? envir.args[1].parse_i32.val : 100
   input := io.stdin.read_lines.filter !="" .map (.as_codepoints)
   w := input[0].count
   h := input.count
@@ -37,7 +37,7 @@ dec20 =>
 
     part1 =>
       saving(p) =>
-        (t,b,l,r) := p.neighbors.map pico .as_4tuple
+        t,b,l,r := p.neighbors.map pico .as_4tuple
         if      t>=0 && b>=0 then (|t-b|)-2
         else if l>=0 && r>=0 then (|l-r|)-2
         else                      0

@@ -47,7 +47,7 @@ dec15 =>
           panic "found $v"
 
       for yx in a.index_pairs do
-        (y,x) := yx
+        y,x := yx
         a[y,x] := area[y.as_i32,x.as_i32]
 
       for yx in a.index_pairs do
@@ -63,7 +63,8 @@ dec15 =>
         panic "robot not found"
 
       a.index_pairs
-       .map ||>y,x->a[y,x]="O"?y*100+x:0 |> sum
+       .map ||>y,x->a[y,x]="O"?y*100+x:(i64 0) # NYI: CLEANUP: explicit type should not be necessary when type inference improves, see #5866
+       .sum
 
 
   part2 =>
@@ -72,7 +73,7 @@ dec15 =>
       ryx := lm.env.new (i64 0, i64 0)
 
       moveH(yyxx, d) option (i64,i64)=>
-        (yy,xx) := yyxx
+        yy,xx := yyxx
         nx := xx + d
         v := a[yy,nx]
         if v = "#" then nil
@@ -108,12 +109,12 @@ dec15 =>
 
       moveV(d) option (i64,i64) =>
         xxs := array 2*w =ryx.get.1.as_i32
-        (y,x) := ryx.get
+        y,x := ryx.get
         if can_moveV xxs y d then  do_moveV xxs y d; (y+d, x)
         else                                         nil
 
       for yx in a.index_pairs do
-        (y,x) := yx
+        y,x := yx
         v := area[y.as_i32,x.as_i32/2]
         v1 := if      v = "O" then ["[","]"]
               else if v = "@" then ["@","."]
@@ -133,6 +134,7 @@ dec15 =>
       else
         panic "robot not found"
 
-      a.index_pairs.map ||>y,x->a[y,x]="["?y*100+x:0 |> sum
+      a.index_pairs.map ||>y,x->a[y,x]="["?y*100+x:(i64 0) # NYI: CLEANUP: explicit type should not be necessary when type inference improves, see #5866
+                   .sum
 
   say "$part1,$part2"

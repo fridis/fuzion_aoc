@@ -43,9 +43,9 @@ dec14 =>
     for i := 0, i+1
         a := input.as_array, array a.length (x->a[x].move 1)
 
-        # xmas tree is boxed: find max num of robots aligned horizontall & vertically
-        maxx := (0..(h-1)).map (y -> a.count r->r.y=y) .foldf max 0
-        maxy := (0..(w-1)).map (x -> a.count r->r.x=x) .foldf max 0
+        # xmas tree is boxed: find max num of robots aligned horizontally & vertically
+        maxx := (0..(h-1)).map (y -> a.count r->r.y=y) .foldf 0 max
+        maxy := (0..(w-1)).map (x -> a.count r->r.x=x) .foldf 0 max
         maxxy := maxx * maxy
         maxmaxxy := maxxy, max maxmaxxy maxxy
 

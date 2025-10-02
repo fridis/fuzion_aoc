@@ -2,8 +2,8 @@ dec10_part2 =>
 
   LM : mutate is
   arr := LM ! ()->
-          (io.stdin LM) ! ()->(io.buffered.read_lines LM)
-             .filter !="" .map (.as_codepoints.map (.parse_i32) .as_array) .as_array
+          (io.stdin.reader LM) ! ()->(io.buffered LM .read_lines)
+             .filter !="" .map (.as_codepoints.map (.parse_i32.get) .as_array) .as_array
 
   h := arr.length    + 2
   w := arr[0].length + 2
@@ -17,7 +17,7 @@ dec10_part2 =>
   partn(init1 (i32,i32)->T, init2 T, join (array2 T,i32,i32)->T) =>
     f(i,a) => i<0 ? a : f i-1 (array2 w h (x,y -> area[x,y] = i ? join a x y : init2))
     f 8 (array2 w h (x,y -> area[x,y] = 9 ? init1 x y : init2))
-  part1 => partn x,y->[w*x*y] [] join1 .map (.count) |> sum
-  part2 => partn x,y->1       0  join2               |> sum
+  part1 => partn x,y->[w*x*y] [] join1 .map (.count) .sum
+  part2 => partn x,y->1       0  join2               .sum
 
   say "$part1,$part2"
