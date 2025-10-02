@@ -14,7 +14,7 @@ dec6_part2 =>
 
     data := array2 arr.length arr[0].length y,x->arr[y][x]
     area := (mutate.array2 codepoint).type.new LM h w "0"
-    area.indices0.pairs area.indices1
+    area.index_pairs
         .for_each ||>y,x->
           area[y,x] := data[y.as_i32, x.as_i32]
 
