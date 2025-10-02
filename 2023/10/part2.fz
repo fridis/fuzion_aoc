@@ -4,7 +4,7 @@ dec10_part2 is
   cp := LM ! ()->((io.stdin.reader LM ! ()->
           io.buffered LM .read_lines)
           .filter !="")
-          .map s->s.as_codepoints
+          .map s->s.codepoints
 
   # our map
   map := array2 cp.count cp[0].count i,j->cp[i][j]
@@ -18,7 +18,7 @@ dec10_part2 is
       cur  String)  # possible current tiles
   is
     # get next direction using given tile, nil if that tile is not connected
-    next(i,j i32) => (next.find (at i j)) .bind dir ix->dirs[ix]
+    next(i,j i32) => next.find (at i j) .bind dir ix->dirs[ix]
 
     # move one step from i,j and check if that tile connects to i,j
     connects(i,j) => (next i+di j+dj).exists
@@ -31,12 +31,9 @@ dec10_part2 is
 
   # find the start tile coordinates
   start =>
-    for ij in map.index_pairs do
-      i,j := ij
-    until map[i,j] = "S"
-      ij
-    else
-      panic "no start found"
+    map.index_pairs.filter ||>(i,j -> map[i,j] = "S")
+      .first
+      .or_else (panic "no start found")
 
   # find the loop:
   loup =>
@@ -53,7 +50,7 @@ dec10_part2 is
             go d i j
             lp[i][j.as_i64] := d.cur                          # set start to possible tiles
           else
-            lp[i][j.as_i64] := lp[i][j.as_i64].as_codepoints         # find correct start tile
+            lp[i][j.as_i64] := lp[i][j.as_i64].codepoints         # find correct start tile
                                 .filter c->(d.cur.contains c)
                                 .as_string ""
 
