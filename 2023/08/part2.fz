@@ -1,35 +1,37 @@
 dec8_part2 is
 
   bytes0 =>
-    o := io.stdin.with ()->
+    LM : mutate is
+    o := LM ! ()->(io.stdin.reader LM) ! ()->
       for
         r Sequence u8 := [], r++n
-        n := (io.buffered.read_bytes 10000)
+        n := (io.buffered LM .read_bytes 10000)
       while n.count > 0 else
         r
-    o.val
+    o
   bytes := bytes0
   input :=
-    ref : String
-      utf8 => bytes
+    ref : String is
+      public redef utf8 Sequence u8 => bytes
   lines := input.split "\n"
                  .map s->(String.type.from_bytes s.utf8.as_array)
                  .filter !=""
   ls := lines.as_array
 
-  lrs := ls[0].as_codepoints.map_sequence s->s="L"
+  lrs := ls[0].as_codepoints.map s->s="L"
   lrscnt := lrs.count
   tuples := for i i32 := 1, i+1
-                t list (tuple String String String) := nil, t ++ nl
+                t Sequence (tuple String String String) := [], t ++ nl
             while i < ls.length
               ns := ls[i]
-              nl := if ns != ""
+              nl :=
+                if ns != ""
                   name  := ns.substring 0 3
                   left  := ns.substring 7 10
                   right := ns.substring 12 15
-                  (name, left, right) : nil
+                  [(name, left, right)]
                 else
-                  nil
+                  []
             else
               t
   names := (tuples.map t->t.values.0).as_array
@@ -39,7 +41,7 @@ dec8_part2 is
     get(s) =>
       if s  then l else r
   forks := tuples.map t->
-                   (n,l,r) := t
+                   _,l,r := t
                    fork name_to_num[l].get name_to_num[r].get
                  .as_array
   part1 =>
@@ -59,17 +61,16 @@ dec8_part2 is
     start := (names.filter s->(s.ends_with "A")).map s->name_to_num[s].get
     end   := (names.map s->(s.ends_with "Z")).as_array
 
-    lm : mutate.
-    lm.go ()->
-      res := mut u64 1
+    lm : mutate is
+    lm ! ()->
       for res := u64 1, prod / gcd
           s in start
       do
-        visited := (lm.array i32).type.new lm lrscnt*names.length -1
+        visited := (lm.array i32).type.new lm (lrscnt*names.length).as_i64 (-1)
         visited_index(n i32, cell i32) => (n % lrscnt) * names.length + cell
         period := for cur := s, next
                       n in 0..
-                      vi := visited_index n cur
+                      vi := visited_index n cur .as_i64
                       v  := visited[vi]
                       lr in lrs.cycle
                       next := forks[cur].get lr
@@ -96,7 +97,7 @@ dec8_part2 is
     t0 := time.nano.read
     show(n i32) =>
       t1 := time.nano.read
-      say "..$n..{time.durations.ns (t1-t0)/n.as_u64}/it"
+      say "..$n..{time.duration.ns ((t1-t0)/(time.duration.ns n.as_u64))}/it"
     if start.count = 6
       s0 := start[0]
       s1 := start[1]
@@ -120,7 +121,7 @@ dec8_part2 is
           next5 := {if lr then forks[i5].l else forks[i5].r}
           done := end[next0] && end[next1] && end[next2] && end[next3] && end[next4] && end[next5]
       do
-   //     if (n & (n-1)) = 0 then show n
+   #      if (n & (n-1)) = 0 then show n
       until done
         n
       else

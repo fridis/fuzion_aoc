@@ -1,14 +1,15 @@
 dec15_part2 is
 
-  input := (io.stdin.with ()->io.buffered.read_line).val
+  LM : mutate is
+  input := LM ! ()->(io.stdin.reader LM) ! ()->(io.buffered LM .read_line).val
 
   hash(s String) => s.utf8.reduce 0 (h,c -> (h + c.as_i32) * 17 % 256)
 
-  part1 => input.split "," |> (.map hash) |> sum
+  part1 => input.split "," .map (s->hash s) .sum
 
-  part2 =>
-    lm : mutate.
-    lm.go i32 ()->
+  part2 i32 =>
+    lm : mutate is
+    lm ! ()->
       entry(is_add bool, s Sequence String) is
         k => s[0]
         val  => s[1].trim.parse_i32.val
@@ -17,12 +18,13 @@ dec15_part2 is
                     .map (e -> if e.contains "=" then e.split "=" |> entry true
                                                  else e.split "-" |> entry false)
       do
-        b := hm[hash e.k]
-        hm[hash e.k] := if      !e.is_add        then b.filter x->x.k!=e.k
-                        else if b ∃ (x->x.k=e.k) then b.map    x->if x.k=e.k then e else x
-                        else                          b ++ [e]
+        b := hm[hash e.k .as_i64]
+        hm[hash e.k .as_i64] :=
+          if      !e.is_add        then b.filter x->x.k!=e.k
+          else if b ∃ (x->x.k=e.k) then b.map    x->if x.k=e.k then e else x
+          else                          b ++ [e]
       else
-        hm.indexed.map (||> b,l->
-          (l.indexed 1).map (||> n,e->(b+1)*n*e.val) |> sum) |> sum
+        hm.as_array.indexed.map (||> b2,l->
+          (l.indexed 1).map (||> (n,e2->((b2+1)*n*e2.val))) .sum) .sum
 
   say "part1 $part1 part2 $part2"
