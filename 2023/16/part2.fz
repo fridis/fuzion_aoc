@@ -1,7 +1,10 @@
 dec16_part2 is
 
-  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
-                                                     .map (.codepoints)
+  LM : mutate is
+  input := LM ! ()->
+    (io.stdin.reader LM) ! ()->(io.buffered LM .read_lines)
+     .filter !=""
+     .map (.codepoints)
   area := array2 String input.count input[0].count i,j->input[i][j]
   xs => area.indices1
   ys => area.indices0
@@ -9,25 +12,25 @@ dec16_part2 is
   r => {0}; l => {1}; u => {2}; d => {3}
   start(x0,y0,w0 i32) =>
     lm : mutate is
-    lm.go ()->
-      visited := (lm.array i32).type.new lm area.length 0
+    lm ! ()->
+      visited := (lm.array i32).type.new lm area.length.as_i64 0
       ix(x,y) => y+x*area.length1
       trace(x,y,w i32) unit =>
         if ((x ∈ xs) && (y ∈ ys) &&
-            (visited[ix x y] & (1 << w)) = 0) then
-          visited[ix x y] := visited[ix x y] | (1 << w)
+            (visited[ix x y .as_i64] & (1 << w)) = 0) then
+          visited[ix x y .as_i64] := visited[ix x y .as_i64] | (1 << w)
           c := area[y,x]
           if (["\\|", "/|" , "xx"  , ".|" ][w].find c).exists then trace x   y+1 d
           if (["/|" , "\\|", ".|"  , "xx" ][w].find c).exists then trace x   y-1 u
           if (["xx" , ".-" , "\\-" , "/-" ][w].find c).exists then trace x-1 y   l
           if ([".-" , "xx" , "/-"  , "\\-"][w].find c).exists then trace x+1 y   r
       trace x0 y0 w0
-      (visited.filter !=0).count
+      (visited.as_array.filter !=0).count
 
   part1 => start 0 0 r
   part2 => (xs.map (x -> start x        0        d) ++
-            xs.map (x -> start x        ys.upper u) ++
+            xs.map (x -> start x        ys.max.val u) ++
             ys.map (y -> start 0        y        r) ++
-            ys.map (y -> start xs.upper y        l)    ).reduce 0 max
+            ys.map (y -> start xs.max.val y        l)    ).reduce 0 max
 
   say "part1 $part1 part2 $part2"
