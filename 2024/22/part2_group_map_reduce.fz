@@ -17,7 +17,7 @@ dec22 is
                  .take 2001
                  .map %10
                  .sliding 5
-                 .group_map_reduce (.map_pairs (-) .as_array.as_orderable) (.last.val) x,_->x
+                 .group_map_reduce (.map_pairs (-) .as_array) (.last.val) x,_->x
                  .items)
       .group_map_reduce x->x.0 x->x.1 (+)
       .values

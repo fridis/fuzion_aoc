@@ -39,7 +39,7 @@ dec17 =>
         a := i64 0, new_a
     while delta > 0
       new_a := for na := a, na + delta
-               until ((runa na).drop i).as_equatable = (code.drop i).as_equatable then na
+               until (runa na).drop i = code.drop i then na
     else
       a
 
