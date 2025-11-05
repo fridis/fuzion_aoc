@@ -15,7 +15,7 @@ dec3_part1 is
   read_scheme =>
     l := lines
     a1 := array l.count i->l[i]
-    a2 := array2 l.count a1[0].as_codepoints.count i,j->a1[i].as_codepoints[j]
+    a2 := array2 l.count a1[0].codepoints.count i,j->a1[i].codepoints[j]
     scheme a2 a1
 
   scheme(a,ls) is

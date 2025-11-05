@@ -2,7 +2,7 @@ dec4_part1 =>
 
   LM : mutate is
   input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
-                                                                     .map (.as_codepoints)
+                                                                     .map (.codepoints)
 
   area := array2 String input.count input[0].count i,j->input[i][j]
 

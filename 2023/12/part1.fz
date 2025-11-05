@@ -10,7 +10,7 @@ dec12_part1 is
 
   record(s String) =>
     (record (s.split[0]
-             .as_codepoints)
+             .codepoints)
             (s.split[1]
               .split ","
               .map_sequence (.parse_i32.val)))

@@ -3,7 +3,7 @@ dec14 =>
   input := io.stdin.read_string
              .replace "," " "
              .replace "\n" " "
-             .as_codepoints .filter (c -> "0" <= c <= "9" || c = " " || c = "-") .as_string ""
+             .codepoints .filter (c -> "0" <= c <= "9" || c = " " || c = "-") .as_string ""
              .split " " .as_array
              .map (.parse_i32.val)
              .as_4tuples.map ||||>robot

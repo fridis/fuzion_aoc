@@ -42,7 +42,7 @@ dec1 is
       # NYI: #2284: read_line should return a choice of String | end_of_file or similar
       l1 := num_to_digit l
 
-      l2 := l1.as_codepoints
+      l2 := l1.codepoints
               .as_list       # NYI: #2286: would be good not to need this
               .map (.val)    # NYI: #2285: would be good not to need this
               .filter codepoint_type_ascii_digit.contains    # using brand new partial application!

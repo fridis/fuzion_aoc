@@ -12,14 +12,14 @@ dec12_part2 is
 
   record(s String) =>
     (record (s.split[0]
-             .as_codepoints)
+             .codepoints)
             (s.split[1]
               .split ","
               .map (.parse_i32.val)))
 
   record(springs Sequence codepoint, groups Sequence i32) is
 
-    times5 => (record ((springs ++ ["?".as_codepoints.first.get]).cycle.take springs.count*5+4).as_array
+    times5 => (record ((springs ++ ["?".codepoints.first.get]).cycle.take springs.count*5+4).as_array
                       (groups.cycle.take groups.count*5).as_array)
 
     count(s, g, sr) i64 =>

@@ -3,7 +3,7 @@ dec10_part1 =>
   LM : mutate is
   LM ! ()->
     arr := (io.stdin LM) ! ()->(io.buffered.read_lines LM)
-             .filter !="" .map (.as_codepoints.map (.parse_i32) .as_array) .as_array
+             .filter !="" .map (.codepoints.map (.parse_i32) .as_array) .as_array
 
     h := arr.length;   # hl := h.as_i64
     w := arr[0].length;# wl := w.as_i64

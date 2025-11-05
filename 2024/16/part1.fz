@@ -3,7 +3,7 @@ dec16 =>
   input := io.stdin.read_string
              .split "\n" .as_array
              .filter !=""
-             .map (.as_codepoints)
+             .map (.codepoints)
   h := input.count
   w := input[0].count
   area := array2 codepoint h w y,x->input[y][x]

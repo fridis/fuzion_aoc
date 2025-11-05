@@ -9,7 +9,7 @@ dec14 =>
              .replace "\n" " " |> (s->String.type.from_bytes s.utf8.as_array))
   say "2: "+input2.byte_length
   input3 := (input2
-             .as_codepoints .as_array .filter (c -> { { if c = "p" then yak "." }; "0" <= c <= "9" || c = " " || c = "-"})) .as_array .as_string ""
+             .codepoints .as_array .filter (c -> { { if c = "p" then yak "." }; "0" <= c <= "9" || c = " " || c = "-"})) .as_array .as_string ""
   say "3: "+input3.byte_length
   input4  := input3
              .split " " .as_array

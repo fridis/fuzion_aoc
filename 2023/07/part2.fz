@@ -69,23 +69,23 @@
 
   ranks := "AKQJT98765432"
   ranks2:= "AKQT98765432J"
-  r     := "omlkj98765432".as_codepoints
+  r     := "omlkj98765432".codepoints
 
   hand(s String) : property.orderable is
-    rankedl := s.as_codepoints.map_sequence String x->{r[(ranks.find x).get] /* (codepoint (65+(ranks.find x).get).as_u32)*/}
+    rankedl := s.codepoints.map_sequence String x->{r[(ranks.find x).get] /* (codepoint (65+(ranks.find x).get).as_u32)*/}
     ranked := rankedl.fold String.type.concat
     sortedr := container.sorted_array_of String rankedl
     sorted := sortedr.fold String.type.concat
-    sa := sorted.as_codepoints.as_array
+    sa := sorted.codepoints.as_array
 
     j2 String := r[(ranks2.find "J").get]
-    rankedl2 := s.as_codepoints.map_sequence String x->r[(ranks2.find x).get]
+    rankedl2 := s.codepoints.map_sequence String x->r[(ranks2.find x).get]
     ranked2 := rankedl2.fold String.type.concat
     sortedr2 := container.sorted_array_of String rankedl2
     sorted2 := sortedr2.fold String.type.concat
-    sa2 := sorted2.as_codepoints.as_array
+    sa2 := sorted2.codepoints.as_array
 
-    #sorted := (container.sorted_array_of (s.as_codepoints.map_sequence String x->x)).fold String.type.concat
+    #sorted := (container.sorted_array_of (s.codepoints.map_sequence String x->x)).fold String.type.concat
 
     k2 := kk2
     k := kk

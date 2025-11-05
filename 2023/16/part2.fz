@@ -1,14 +1,14 @@
 dec16_part2 is
 
   input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
-                                                     .map (.as_codepoints)
+                                                     .map (.codepoints)
   area := array2 String input.count input[0].count i,j->input[i][j]
   xs => area.indices1
   ys => area.indices0
 
   r => {0}; l => {1}; u => {2}; d => {3}
   start(x0,y0,w0 i32) =>
-    lm : mutate.
+    lm : mutate is
     lm.go ()->
       visited := (lm.array i32).type.new lm area.length 0
       ix(x,y) => y+x*area.length1

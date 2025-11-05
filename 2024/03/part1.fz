@@ -8,12 +8,12 @@ dec3_part2 =>
   LM : mutate is
   input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
 
-  data := input.reduce "" (+) .as_codepoints
+  data := input.reduce "" (+) .codepoints
 
   parser(d) is
 
     skip(str, dd) Sequence codepoint ! parse_err =>
-      cps := str.as_codepoints
+      cps := str.codepoints
       if dd.starts_with cps
         dd.drop cps.count
       else

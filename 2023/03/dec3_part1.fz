@@ -15,7 +15,7 @@ dec3_part1 is
     o.val.as_array
 
   scheme(ls) is
-    cp := ls.map x->x.as_codepoints
+    cp := ls.map x->x.codepoints
     a := array2 cp.count cp[0].count i,j->cp[i][j]
     w => a.length1
     h => a.length0

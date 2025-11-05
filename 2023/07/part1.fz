@@ -58,15 +58,15 @@
       high_card => 4
 
   ranks := "AKQJT987654321"
-  r     := "omlkj987654321".as_codepoints
+  r     := "omlkj987654321".codepoints
 
   hand(s String) : property.orderable is
-    rankedl := s.as_codepoints.map_sequence String x->{r[(ranks.find x).get] /* (codepoint (65+(ranks.find x).get).as_u32)*/}
+    rankedl := s.codepoints.map_sequence String x->{r[(ranks.find x).get] /* (codepoint (65+(ranks.find x).get).as_u32)*/}
     ranked := rankedl.fold String.type.concat
     sorted2 := container.sorted_array_of String rankedl
     sorted := sorted2.fold String.type.concat
-    sa := sorted.as_codepoints.as_array
-    #sorted := (container.sorted_array_of (s.as_codepoints.map_sequence String x->x)).fold String.type.concat
+    sa := sorted.codepoints.as_array
+    #sorted := (container.sorted_array_of (s.codepoints.map_sequence String x->x)).fold String.type.concat
 
     k := kk
     kk kind =>

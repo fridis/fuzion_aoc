@@ -5,7 +5,7 @@ dec6_part1 =>
 
   # the relation defined by input as an array
   arr := input.filter !=""
-              .map (.as_codepoints.as_array)
+              .map (.codepoints.as_array)
               .as_array
 
   h := arr.length.as_i64
