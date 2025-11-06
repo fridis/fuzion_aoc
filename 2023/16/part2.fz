@@ -1,10 +1,8 @@
 dec16_part2 is
 
-  LM : mutate is
-  input := LM ! ()->
-    (io.stdin.reader LM) ! ()->(io.buffered LM .read_lines)
-     .filter !=""
-     .map (.codepoints)
+  input := io.stdin.read_lines
+             .filter !=""
+             .map (.codepoints)
   area := array2 String input.count input[0].count i,j->input[i][j]
   xs => area.indices1
   ys => area.indices0
