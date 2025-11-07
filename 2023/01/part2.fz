@@ -9,7 +9,7 @@ dec1 is
       sum := 0, sum + 10 * first + last
       l in input
     while l != ""  do
-      digits := l.as_codepoints
+      digits := l.codepoints
                 .filter x->(codepoint.type.ascii_digit.contains x.val)
       first := digits.first.val.parse_i32.val
       last  := digits.last .val.parse_i32.val
@@ -46,7 +46,7 @@ dec1 is
       l in input
     while l != "" do
       d := text_to_digit l
-      digits := d.as_codepoints
+      digits := d.codepoints
                 .filter x->(codepoint.type.ascii_digit.contains x.val)
       first := digits.first.val.parse_i32.val
       last  := digits.last .val.parse_i32.val

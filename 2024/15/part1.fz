@@ -2,7 +2,7 @@ dec15 =>
 
   input := io.stdin.read_string
              .split "\n\n"
-  input1 := input[0].split "\n" .map (.as_codepoints)
+  input1 := input[0].split "\n" .map (.codepoints)
   input2 := input[1].replace "\n" ""
   h := input1.count
   w := input1[0].count
@@ -54,7 +54,7 @@ dec15 =>
         rx <- yx.1
         ry <- yx.0
 #        say "{yx.1},{yx.0}"
-        input2.as_codepoints.for_each s->
+        input2.codepoints.for_each s->
           d := dir s
           match move rx.get ry.get d
             nil => unit

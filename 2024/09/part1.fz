@@ -3,7 +3,7 @@ dec9_part2 =>
   LM : mutate is
   LM ! ()->
     data := (io.stdin LM) ! ()->(io.buffered.read_lines LM)
-             .filter !="" .first.val.as_codepoints.map (.parse_i64.val) .as_array
+             .filter !="" .first.val.codepoints.map (.parse_i64.val) .as_array
 
     Sequence.infix +++(a Sequence T) => Sequence.this.as_list.concat_eagerly a.as_list
 

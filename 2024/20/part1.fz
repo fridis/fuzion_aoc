@@ -1,6 +1,6 @@
 dec20 =>
 
-  input := io.stdin.read_lines.filter !="" .map (.as_codepoints)
+  input := io.stdin.read_lines.filter !="" .map (.codepoints)
   w := input[0].count
   h := input.count
   area := array2 w h x,y->input[y][x]

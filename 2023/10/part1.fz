@@ -1,6 +1,6 @@
 dec10_part1 is
 
-  cp := ((io.stdin.with ()->io.buffered.read_lines).val.filter !="").map s->s.as_codepoints
+  cp := ((io.stdin.with ()->io.buffered.read_lines).val.filter !="").map s->s.codepoints
 
   # our map
   map := array2 cp.count cp[0].count i,j->cp[i][j]

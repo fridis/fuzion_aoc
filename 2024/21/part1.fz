@@ -1,6 +1,6 @@
 dec21 is
 
-  input := io.stdin.read_lines.filter !="" .map (.as_codepoints)
+  input := io.stdin.read_lines.filter !="" .map (.codepoints)
 
   a := i32 10
   key(v i32)
@@ -91,17 +91,17 @@ dec21 is
         s + shortest1 c.tail k2
 
   fixed shortest2(l) =>
-    l.as_codepoints
+    l.codepoints
 #        .reduce (key, String) (key a, "") (s,c)->
 #             k2:= c.as_key
 #             (k1,str) := s
 #             (k2,str + k1.move_to k2 + "A")
-#        .values.1.as_codepoints
+#        .values.1.codepoints
         .reduce (key2, String) (key2 "A", "") (s,c)->
              k2:= c.as_key2
              (k1,str) := s
              (k2,str + k1.move_to k2 + "A")
-        .values.1.as_codepoints.reduce (key2, String) (key2 "A", "") (s,c)->
+        .values.1.codepoints.reduce (key2, String) (key2 "A", "") (s,c)->
              k2:= c.as_key2
              (k1,str) := s
              (k2,str + k1.move_to k2 + "A")

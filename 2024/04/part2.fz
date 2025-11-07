@@ -2,7 +2,7 @@ dec4_part1 =>
 
   LM : mutate is
   input := LM ! ()->(io.stdin.reader LM) ! ()->(io.buffered LM .read_lines).filter !=""
-                                                                     .map (.as_codepoints)
+                                                                     .map (.codepoints)
 
   area := array2 String input.count input[0].count i,j->input[i][j]
 
@@ -22,7 +22,7 @@ dec4_part1 =>
         yx, dd := v
         yy, xx := yx
         dy, dx := dd
-        is_string yy xx dy dx "XMAS".as_codepoints
+        is_string yy xx dy dx "XMAS".codepoints
       .count
 
   is_x(y, x) =>

@@ -24,7 +24,7 @@ dec21 is
     else
       for res := i64 0, res + s
           cur := "A", next
-          next in l.as_codepoints
+          next in l.codepoints
           s := move cur next .map (find_shortest d-1)
                              .fold1 min
       else
@@ -32,7 +32,7 @@ dec21 is
 
   shortest(n) =>
     lengths := input.map (find_shortest n)
-    numeric_ := input.map (.as_codepoints.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
+    numeric_ := input.map (.codepoints.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
     lengths.zip numeric_ (*)
            .sum
 

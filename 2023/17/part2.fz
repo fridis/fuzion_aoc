@@ -1,7 +1,7 @@
 dec17_part2 is
 
   input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
-                                                     .map (.as_codepoints)
+                                                     .map (.codepoints)
   area := array2 input.count input[0].count i,j->input[i][j].parse_i32.val
   xs => area.indices1
   ys => area.indices0

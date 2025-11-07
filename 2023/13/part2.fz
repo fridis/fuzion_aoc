@@ -10,7 +10,7 @@ dec13_part2 is
     else inp.split_at n ||> (a,b -> area a : areas (b.drop 1))
 
   area(inp) =>
-    c := inp.map s->s.as_codepoints
+    c := inp.map s->s.codepoints
     array2 c.count c[0].count i,j->c[i][j]="#"
 
   mirrors(a, n) =>
