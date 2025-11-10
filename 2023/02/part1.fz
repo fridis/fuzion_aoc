@@ -21,7 +21,7 @@ dec2 is
     draws := (s1[1].split ";").map (x->draw x)
 
   LM : mutate is
-  r := LM ! ()->(io.stdin.reader LM) ! ()->
+  r := LM ! ()->io.stdin.reader LM ! ()->
     for
       score := 0, score + (ok ? g.num : 0)
       l := io.buffered LM .read_line ? s String => s | * => ""

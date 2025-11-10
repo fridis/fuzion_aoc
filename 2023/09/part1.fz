@@ -1,9 +1,10 @@
 dec9_part1 is
 
-  ls := (io.stdin.with ()->io.buffered.read_lines).val
+  LM : mutate is
+  ls := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines
 
   # parse input into sequence of sequence of i32
-  seqs := ls.map_sequence s->(s.split.map (.parse_i32.val)).as_array
+  seqs := ls.map s->(s.split.map (.parse_i32.val)).as_array
 
   # extend given seuence by one element
   #
@@ -12,7 +13,7 @@ dec9_part1 is
       0
     else
       di := extend (sq.map_pairs a,b->b-a).as_array       # extend diffs
-      sq.last + di                                        # use diffs to add  last
+      sq.last.val + di                                        # use diffs to add  last
 
   ex := seqs.map (s -> extend s)
   part1 => ex.fold i32.type.sum

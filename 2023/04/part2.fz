@@ -2,7 +2,7 @@ dec4_part2 is
 
   lines =>
     LM : mutate is
-    o := LM ! ()->(io.stdin.reader LM) ! ()->
+    o := LM ! ()->io.stdin.reader LM ! ()->
       for
         li Sequence String := [], li ++ [l]
         l := io.buffered LM .read_line ? str String => str | * => ""

@@ -1,14 +1,17 @@
-input := (io.stdin.with ()->io.buffered.read_line).val.split ","
+LM : mutate is
+input := LM ! ()->
+  io.stdin.reader LM ! ()->io.buffered LM .read_line .val.split ","
 hash(s String) => s.utf8.reduce 0 (h,c -> (h + c.as_i32) * 17 % 256)
-say "part1 {(input.map hash) |> sum}"
-lm : mutate is; lm.go unit ()->
+say "part1 {(input.map hash) .sum}"
+lm : mutate is
+lm ! ()->
   hm := (lm.array (Sequence (tuple String i32))).type.new lm 256 []
-  input | e->
-    k := e.substring 0 ((e.find "=").get (e.find "-").get)
-    p := (k, (e.split "=").last.parse_i32.val -1)
-    b := hm[hash k]
-    hm[hash k] :=
+  input.for_each e->
+    k := e.substring 0 ((e.find "=").get) # (e.find "-").get)
+    p := (k, (e.split "=").last.get.parse_i32.val -1)
+    b := hm[hash k .as_i64]
+    hm[hash k .as_i64] :=
        if      e.contains "-"        then b.filter (x -> x.values.0 != k)
        else if b ∃ (x->x.values.0=k) then b.map    (x -> if x.values.0=k then p else x)
        else                               b ++ [p]
-  say "part2 {hm.indexed.map (p -> p ||> b,l->((l.indexed 1).map (||> n,e->(b+1)*n*e.values.1)) |> sum) |> sum}"
+  say "part2 {hm.as_array.indexed.map (p -> p ||> b,l->((l.indexed 1).map (||> n,e2->(b+1)*n*e2.values.1)) .sum) .sum}"

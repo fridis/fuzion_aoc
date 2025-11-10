@@ -1,28 +1,30 @@
 dec8_part1 is
 
   bytes0 =>
-    o := io.stdin.with ()->
+    LM : mutate is
+    o := LM ! ()->io.stdin.reader LM ! ()->
       for
-        r Sequence u8 := [], r++n
-        n := (io.buffered.read_bytes 10000)
-      while n.count > 0 else
-        r
-    o.val
+        r1 Sequence u8 := [], r1++n
+        n := (io.buffered LM .read_bytes 10000)
+      while n.count > 0
+      else r1
+    o
   bytes := bytes0
   input :=
-    ref : String
-      utf8 => bytes
+    ref : String is
+      public redef utf8 Sequence u8 => bytes
   lines := input.split "\n"
-                 .map s->(String.type.from_bytes s.utf8.as_array)
+                 .map s->(String.type.from s.utf8.as_array)
                  .filter !=""
   ls := lines.as_array
 
   lrs := ls[0].codepoints
   tuples := for i i32 := 1, i+1
-                t list (tuple String String String) := nil, t ++ nl
+                t list (tuple String String String) := nil, (t ++ nl).as_list
             while i < ls.length
               ns := ls[i]
-              nl := if ns != ""
+              nl :=
+                if ns != ""
                   name  := ns.substring 0 3
                   left  := ns.substring 7 10
                   right := ns.substring 12 15
@@ -40,7 +42,7 @@ dec8_part1 is
       else if s = "R" then r
       else panic "direction '$s' unkown"
   forks := tuples.map t->
-                   (n,l,r) := t
+                   _,l,r := t
                    fork name_to_num[l] name_to_num[r]
                  .as_array
   start := name_to_num["AAA"].get
