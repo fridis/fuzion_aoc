@@ -1,6 +1,7 @@
 dec18_part1 is
 
-  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
+  LM : mutate is
+  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines .filter !=""
 
   data := input.map action
   action(s String) =>
@@ -13,10 +14,10 @@ dec18_part1 is
   dy := [-1,+1,0,0]
 
   part1 =>
-    lm : mutate.
-    lm.go i32 ()->
+    lm : mutate is
+    lm.instate_self i32 ()->
       cell(n lm.new String) ref is
-      area := array2 cell 1000 1000 _,_->(cell (lm.env.new "."))
+      area := array2 cell 1000 1000 _,_->(cell (lm.env.new $"."))
       say "start: "
       for px := 500, nx
           py := 500, ny

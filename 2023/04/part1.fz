@@ -2,14 +2,8 @@ dec4_part1 is
 
   String.strip => String.this.replace " " ""
 
-  lines =>
-    o := io.stdin.with ()->
-      for
-        li list String := nil, li ++ [l]
-        l := io.buffered.read_line
-      while l != ""  else
-        li
-    o.val.as_array
+  LM : mutate is
+  lines := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines .filter !=""
 
   card(s String) is
     wy(i) => ((s.split ":")[1].split "|")[i].split.map (.parse_i32.val)

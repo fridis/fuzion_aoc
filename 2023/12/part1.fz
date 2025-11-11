@@ -1,6 +1,7 @@
 dec12_part1 is
 
-  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
+  LM : mutate is
+  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines .filter !=""
 
   binomial(n, k i64) =>
     for res := i64 1, res * (n+1-i) / i
@@ -13,7 +14,7 @@ dec12_part1 is
              .codepoints)
             (s.split[1]
               .split ","
-              .map_sequence (.parse_i32.val)))
+              .map (.parse_i32.val)))
 
   record(springs Sequence codepoint, groups Sequence i32) is
 
@@ -38,16 +39,17 @@ dec12_part1 is
             next_is_dot := if s+q >= springs.count || springs[s+q] = "." then 1 else 0
             for ng := 0, ng + 1
                 csum := i64 0, csum + cng + cls
-            while g+ng <= groups.count && ((0..ng-1).map gi->groups[g+gi] |> sum) + ng - next_is_dot <= q do
+            while g+ng <= groups.count && ((0..ng-1).map gi->groups[g+gi] .sum) + ng - next_is_dot <= q do
               # collapse groups to size 1 including gap:
-              q_collapsed := q - ((0..ng-1).map gi->groups[g+gi] |> sum) + next_is_dot
+              q_collapsed := q - ((0..ng-1).map gi->groups[g+gi] .sum) + next_is_dot
 
               # we fit ng groups into q question marks
               factor := binomial q_collapsed.as_i64 ng.as_i64
               cng := if factor = 0 then i64 0 else factor * count s+q g+ng sr
 
               # now try to connect the following one
-              cls i64 := if next_is_dot = 0 && g+ng < groups.count
+              cls i64 :=
+                if next_is_dot = 0 && g+ng < groups.count
                   lsz := groups[g+ng]
                   for cl := i64 0, cl + cd
                       nl := 1, nl + 1
@@ -61,8 +63,8 @@ dec12_part1 is
             else
               csum
 
-  data := input.map_sequence record
+  data := input.map record
 
-  part1 => data.map_sequence (.count 0 0 -1) |> sum
+  part1 => data.map (.count 0 0 -1) .sum
 
   say "part1 $part1"

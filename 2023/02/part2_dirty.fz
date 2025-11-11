@@ -5,10 +5,10 @@ dec2 is
                    g >= d.b.g &&
                    b >= d.b.b   )
     power => r*g*b
-    redef as_string => "$r red, $g green, $b blue"
+    public redef as_string String => "$r red, $g green, $b blue"
 
   bag_min_monoid : Monoid bag is
-    public redef infix ∙ (a, b bag) =>
+    public redef infix ∙ (a, b bag) bag =>
       say "min of $a AND $b => {
         (bag (min a.r b.r)
              (min a.g b.g)
@@ -17,7 +17,7 @@ dec2 is
       (bag (max a.r b.r)
            (max a.g b.g)
            (max a.b b.b))
-    public redef e => bag 0 0 0
+    public redef e bag => bag 0 0 0
 
 
   bag1 := bag 12 13 14
@@ -27,7 +27,7 @@ dec2 is
     b := (bag ((cubes.map c->(c.ends_with "red"   ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum)
               ((cubes.map c->(c.ends_with "green" ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum)
               ((cubes.map c->(c.ends_with "blue"  ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum))
-    redef as_string => $b
+    public redef as_string String => $b
 
   game(s String) is
     s1 := s.split(":")
@@ -35,13 +35,14 @@ dec2 is
     num := (game.split " ")[1].parse_i32.val
     draws := (s1[1].split ";").map (x->draw x)   # NYI: partial `draw` did not work?
     min => (draws.map (.b)).fold bag_min_monoid
-    redef as_string => "$game: {draws.as_string "; "}"
+    public redef as_string String => "$game: {draws.as_string "; "}"
 
-  r := io.stdin.with ()->
+  LM : mutate is
+  res := LM ! ()->io.stdin.reader LM ! ()->
     for
       score := 0, score + (ok ? g.num : 0)
       score2 := 0, score2 + g.min.power
-      l := io.buffered.read_line
+      l := io.buffered LM .read_line ? s String => s | * => ""
     while l != ""
       g := game l
       #  ok := (g.draws.map bag1.ok).fold bool_and_monoid  # NYI: partial does not work here, why?
@@ -49,9 +50,9 @@ dec2 is
       say "$ok: $g"
     else
       "done: score $score, score2 $score2"
-  say r
+  say res
 
   # NYI: this should be defined in base.fum for bool.type:
   bool_and_monoid : Monoid bool is
-    public redef infix ∙ (a, b bool) => a && b
-    public redef e => true
+    public redef infix ∙ (a, b bool) bool => a && b
+    public redef e bool => true

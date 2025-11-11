@@ -1,20 +1,12 @@
 dec5_part1 is
 
-  public minimum : Monoid i64 is
-    public redef infix ∙ (a, b i64) => if a < b then a else b
-    public redef e => i64.type.max
+  minimum : Monoid i64 is
+    public redef infix ∙ (a, b i64) i64 => if a < b then a else b
+    public redef e i64 => i64.type.max
 
-  input =>
-    o := io.stdin.with ()->
-      for
-        r Sequence u8 := [], r++n
-        n := (io.buffered.read_bytes 10000)
-      while n.count > 0 else
-        r
-    ref : String
-      utf8 => o.val
+  LM : mutate is
+  lines := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines
 
-  lines := input.split "\n"
   ls := lines.as_array
 
   seeds := ls[0].split.drop 1
@@ -55,7 +47,7 @@ dec5_part1 is
           m in maps
           v2 := m.convert v
       else
-        v2
+        v
     .fold minimum
 
   say "part1 $p1"

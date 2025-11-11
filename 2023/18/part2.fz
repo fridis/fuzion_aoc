@@ -1,6 +1,7 @@
 dec18_part2 is
 
-  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
+  LM : mutate is
+  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines .filter !=""
 
   data := input.map action
   action(s String) =>
@@ -16,10 +17,10 @@ dec18_part2 is
   dy := [-1,+1,0,0]
 
   part1 =>
-    lm : mutate.
-    lm.go i32 ()->
+    lm : mutate is
+    lm.instate_self i32 ()->
       cell(n lm.new String) ref is
-      area := array2 cell 1000 1000 _,_->(cell (lm.env.new "."))
+      area := array2 cell 1000 1000 _,_->(cell (lm.env.new $"."))
       for px := 500, nx
           py := 500, ny
           min_x := px-1, min min_x px-1
@@ -48,17 +49,17 @@ dec18_part2 is
         for y in min_y..max_y do
           for x in min_x..max_x do
             c := area[x,y].n.get
-            if c = "#" || c = "." then
+            if c = "#" || c = "."
               res <- res.get + 1
         res.get
 
   part2 =>
-    lm : mutate.
-    lm.go i64 ()->
+    lm : mutate is
+    lm.instate_self i64 ()->
       cell(n lm.new String) ref is
       icell(n lm.new i32) ref is
       size => 2000
-      area := array2 cell 2*size 2*size _,_->(cell (lm.env.new "."))
+      area := array2 cell 2*size 2*size _,_->(cell (lm.env.new $"."))
       for p0x := 1, nx
           p0y := 1, ny
           ws Sequence i64 := [i64.type.max,i64.type.max], nws.as_array
@@ -66,75 +67,78 @@ dec18_part2 is
           a in data
       do
         l := a.len2.as_i64
-        (nx, nws) := if a.dir2 = "R" then
-                       for al := l, al-ws[ax]
-                           ax := p0x, ax+1
-                       while al >= ws[ax] else
-                         wl := ws.take ax
-                         wm := ws[ax]
-                         wr := ws.drop ax+1
-                         if al = 0 then
-                           if wm-1 = 0 then
-                             (ax, ws)
-                           else
-                             wn Sequence i64 := wl ++ [1, wm-1] ++ wr
-                             (ax, wn)
-                         else
-                           wn Sequence i64 := wl ++ [al-1,1, wm-al] ++ wr
-                           (ax+2, wn)
-                     else if a.dir2 = "L" then
-                       for al := l, al-ws[ax-1]
-                           ax := p0x, ax-1
-                       while al >= ws[ax-1] else
-                         wl := ws.take ax-1
-                         wm := ws[ax-1]
-                         wr := ws.drop ax
-                         if al = 0 then
-                           if wm-1=0
-                             (ax, ws)
-                           else
-                             wn Sequence i64 := wl ++ [wm-1, 1] ++ wr
-                             (ax, wn)
-                         else
-                           wn Sequence i64 := wl ++ [wm-al-1, 1, al] ++ wr
-                           (ax+1, wn)
-                     else
+        nx, nws :=  if a.dir2 = "R"
+                      for al := l, al-ws[ax]
+                          ax := p0x, ax+1
+                      while al >= ws[ax] else
+                        wl := ws.take ax
+                        wm := ws[ax]
+                        wr := ws.drop ax+1
+                        if al = 0
+                          if wm-1 = 0
+                            (ax, ws)
+                          else
+                            wn Sequence i64 := wl ++ [1, wm-1] ++ wr
+                            (ax, wn)
+                        else
+                          wn Sequence i64 := wl ++ [al-1,1, wm-al] ++ wr
+                          (ax+2, wn)
+                    else if a.dir2 = "L"
+                      for al := l, al-ws[ax-1]
+                          ax := p0x, ax-1
+                      while al >= ws[ax-1]
+                      else
+                        wl := ws.take ax-1
+                        wm := ws[ax-1]
+                        wr := ws.drop ax
+                        if al = 0
+                          if wm-1=0
+                            (ax, ws)
+                          else
+                            wn Sequence i64 := wl ++ [wm-1, 1] ++ wr
+                            (ax, wn)
+                        else
+                          wn Sequence i64 := wl ++ [wm-al-1, 1, al] ++ wr
+                          (ax+1, wn)
+                    else
                        (p0x, ws)
-        (ny, nhs) := if a.dir2 = "D" then
-                       for al := l, al-hs[ay]
-                           ay := p0y, ay+1
-                       while al >= hs[ay] else
-                         wl := hs.take ay
-                         wm := hs[ay]
-                         wr := hs.drop ay+1
-                         if al = 0 then
-                           if wm-1 = 0 then
-                             (ay, hs)
-                           else
-                             wn Sequence i64 := wl ++ [1, wm-1] ++ wr
-                             (ay, wn)
-                         else
-                           if (wm-al-1=0) panic "wm-al-1 is 0 A"
-                           wn Sequence i64 := wl ++ [al-1, 1, wm-al] ++ wr
-                           (ay+2, wn)
-                     else if a.dir2 = "U" then
-                       for al := l, al-hs[ay-1]
-                           ay := p0y, ay-1
-                       while al >= hs[ay-1] else
-                         wl := hs.take ay-1
-                         wm := hs[ay-1]
-                         wr := hs.drop ay
-                         if al = 0 then
-                           if wm-1=0
-                             (ay, hs)
-                           else
-                             wn Sequence i64 := wl ++ [wm-1, 1] ++ wr
-                             (ay, wn)
-                         else
-                           if (wm-al-1=0) panic "wm-al-1 is 0"
-                           wn Sequence i64 := wl ++ [wm-al-1, 1, al] ++ wr
-                           (ay+1, wn)
-                     else
+        ny, nhs :=  if a.dir2 = "D"
+                      for al := l, al-hs[ay]
+                          ay := p0y, ay+1
+                      while al >= hs[ay]
+                      else
+                        wl := hs.take ay
+                        wm := hs[ay]
+                        wr := hs.drop ay+1
+                        if al = 0
+                          if wm-1 = 0
+                            (ay, hs)
+                          else
+                            wn Sequence i64 := wl ++ [1, wm-1] ++ wr
+                            (ay, wn)
+                        else
+                          if (wm-al-1=0) then panic "wm-al-1 is 0 A"
+                          wn Sequence i64 := wl ++ [al-1, 1, wm-al] ++ wr
+                          (ay+2, wn)
+                    else if a.dir2 = "U"
+                      for al := l, al-hs[ay-1]
+                          ay := p0y, ay-1
+                      while al >= hs[ay-1]
+                      else
+                        wl := hs.take ay-1
+                        wm := hs[ay-1]
+                        wr := hs.drop ay
+                        if al = 0
+                          if wm-1=0
+                            (ay, hs)
+                          else
+                            wn Sequence i64 := wl ++ [wm-1, 1] ++ wr
+                            (ay, wn)
+                        else
+                          if (wm-al-1=0) then panic "wm-al-1 is 0"
+                          wn Sequence i64 := wl ++ [wm-al-1, 1, al] ++ wr
+                          (ay+1, wn)
+                    else
                        (p0y, hs)
       else
         for p1x := p0x, nx
@@ -149,14 +153,14 @@ dec18_part2 is
             d := a.dir2
             l := a.len2.as_i64
         do
-          nx := if d = "R" then
+          nx := if d = "R"
                   for al := l, al - ws[pnx]
                       pnx := p1x, pnx+1
                   while al > 0 do
                     area[pnx+size,p1y+size].n <- "#"
                   else
                     pnx
-                else if d = "L" then
+                else if d = "L"
                   for al := l, al - ws[pnx-1]
                       pnx := p1x, pnx-1
                   while al > 0 do
@@ -165,14 +169,14 @@ dec18_part2 is
                     pnx
                 else
                   p1x
-          ny := if d = "D" then
+          ny := if d = "D"
                   for al := l, al - hs[pny]
                       pny := p1y, pny+1
                   while al > 0 do
                     area[p1x+size,pny+size].n <- "#"
                   else
                     pny
-                else if d = "U" then
+                else if d = "U"
                   for al := l, al - hs[pny-1]
                       pny := p1y, pny-1
                   while al > 0 do
@@ -183,8 +187,8 @@ dec18_part2 is
         else
           fill(x,y i32) unit =>
             if (min_x <= x <= max_x &&
-                min_y <= y <= max_y) then
-              if area[x,y].n.get = "." then
+                min_y <= y <= max_y)
+              if area[x,y].n.get = "."
                 area[x,y].n <- "_"
                 fill x-1 y
                 fill x+1 y
@@ -194,7 +198,7 @@ dec18_part2 is
           (min_y..max_y).reduce (i64 0) s1,y->
             (min_x..max_x).reduce s1 s2,x->
               c := area[x,y].n.get
-              if c = "#" || c = "." then
+              if c = "#" || c = "."
                 ww := ws[x-size]
                 hh := hs[y-size]
                 s2 + ww*hh

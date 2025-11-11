@@ -1,7 +1,10 @@
 dec17_part2 is
 
-  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
-                                                     .map (.codepoints)
+  LM : mutate is
+  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM
+    .read_lines
+    .filter !=""
+    .map (.codepoints)
   area := array2 input.count input[0].count i,j->input[i][j].parse_i32.val
   xs => area.indices1
   ys => area.indices0
@@ -9,21 +12,21 @@ dec17_part2 is
   r => {0}; l => {1}; u => {2}; d => {3}
 
   part12(min_str8, max_str8) =>
-    lm : mutate.
-    lm.go ()->
+    lm : mutate is
+    lm ! ()->
       ix(y, x, dir, str8) => ((y*area.length1+x)*4+dir)*max_str8+str8
-      la := (lm.array i32).type.new lm area.length0*area.length1*4*max_str8 -1
+      la := (lm.array i32).type.new lm (area.length0*area.length1*4*max_str8).as_i64 -1
       modified := lm.env.new false
       res := lm.env.new i32.type.max
 
       put(x, y, dir, str8, loss0 i32) =>
         if  (x ∈ xs) && (y ∈ ys) then
           loss := loss0 + area[y,x]
-          ol := la[ix y x dir str8];
+          ol := la[ix y x dir str8 .as_i64];
           if ol < 0 || ol > loss then
-            la[ix y x dir str8] := loss
+            la[ix y x dir str8 .as_i64] := loss
             modified <- true
-          if x = xs.upper && y = ys.upper && str8 >= min_str8 && loss < res.get then
+          if x = xs.max.val && y = ys.max.val && str8 >= min_str8 && loss < res.get then
             res <- loss
 
       update =>
@@ -31,7 +34,7 @@ dec17_part2 is
           for x in xs do
             for dir in r..d do
               for str8 in 0..(max_str8-1) do
-                loss := if y=0 && x=0 then 0 else la[ix y x dir str8]
+                loss := if y=0 && x=0 then 0 else la[ix y x dir str8 .as_i64]
                 if loss >= 0 then
                   if (dir = u || dir = d) && str8+1 >= min_str8 || dir = r && str8+1 < max_str8 then put x+1 y r (dir = r ? str8+1 : 0) loss
                   if (dir = u || dir = d) && str8+1 >= min_str8 || dir = l && str8+1 < max_str8 then put x-1 y l (dir = l ? str8+1 : 0) loss

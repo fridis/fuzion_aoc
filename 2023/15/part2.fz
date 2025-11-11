@@ -1,7 +1,7 @@
 dec15_part2 is
 
   LM : mutate is
-  input := LM ! ()->(io.stdin.reader LM) ! ()->(io.buffered LM .read_line).val
+  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_line .val
 
   hash(s String) => s.utf8.reduce 0 (h,c -> (h + c.as_i32) * 17 % 256)
 
