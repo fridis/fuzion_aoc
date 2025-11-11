@@ -1,12 +1,12 @@
 parse_err(h unit->void) : eff.fallible unit h is
-  public fixed redef type.new(h unit->void) => parse_err h
+  public fixed redef type.new(h unit->void) parse_err => parse_err h
 
 parse_err => parse_err.env.cause unit
 
 dec3_part2 =>
 
   LM : mutate is
-  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
+  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines.filter !=""
 
   data := input.reduce "" (+) .codepoints
 
@@ -30,7 +30,7 @@ dec3_part2 =>
         (v, rst)
 
     # parsed product and remaining codepoints to parse
-    (product, rest) :=
+    product, rest :=
        parse_err.try ()->
             n1 := skip "mul(" d |> skip_num
             n2 := skip "," n1.1 |> skip_num

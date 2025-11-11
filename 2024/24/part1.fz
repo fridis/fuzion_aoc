@@ -8,11 +8,11 @@ dec24 is
     state(get String->bool) bool => abstract
 
   input_wire(redef name String, state0 bool) : Wire name is
-    redef as_string => "$name: $state0"
+    public redef as_string String => "$name: $state0"
     redef state(get String->bool) bool => state0
 
   input_gate(in1 String, op String, in2 String, redef name String) : Wire name is
-    redef as_string => "$in1 $op $in2 -> $name"
+    public redef as_string String => "$in1 $op $in2 -> $name"
     redef state(get String->bool) bool =>
       a := get in1
       b := get in2
@@ -34,7 +34,7 @@ dec24 is
     get_state(name) =>
       all_wires[name].val.state get_state
     say bits
-    for r := i64 0, r | ((get_state "z"+(i.as_string 2 10) ? i64 1 : 0) << i.as_i64)
+    for r := i64 0, r | ((get_state "z"+(i.as_string 2 10) ? i64 1 : i64 0) << i.as_i64) # NYI: CLEANUP: explicit type should not be necessary when type inference improves, see #5866
         i in 0..bits
     else
       r

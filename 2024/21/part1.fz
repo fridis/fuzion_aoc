@@ -78,7 +78,7 @@ dec21 is
 
     numparts := input.map (l->l.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i32.val)
     say "$lens \n $numparts"
-    lens.zip numparts (*) |> sum
+    lens.zip numparts (*) .sum
 
   fixed shortest1(l, k) =>
     match l.as_list
@@ -99,11 +99,11 @@ dec21 is
 #        .values.1.codepoints
         .reduce (key2, String) (key2 "A", "") (s,c)->
              k2:= c.as_key2
-             (k1,str) := s
+             k1,str := s
              (k2,str + k1.move_to k2 + "A")
         .values.1.codepoints.reduce (key2, String) (key2 "A", "") (s,c)->
              k2:= c.as_key2
-             (k1,str) := s
+             k1,str := s
              (k2,str + k1.move_to k2 + "A")
         .values.1.byte_length
 

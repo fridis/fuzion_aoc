@@ -1,7 +1,7 @@
 dec5_part1 =>
 
   LM : mutate is
-  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM))
+  input := LM ! ()->(io.stdin.reader LM ! ()->io.buffered LM .read_lines)
 
   input1 := input.filter (s -> (s.find "|")??)
   input2 := input.filter (s -> (s.find ",")??)
@@ -23,13 +23,13 @@ dec5_part1 =>
   mid(s) => s.drop s.count/2 .first.val
 
   part1 =>
-    sum <| input2.map s->
-        n := s.split ","
-              .map (.parse_i32.val)
-#        say "$s {is_ordered n}"
-#        m := is_ordered n ? mid n : 0
-#        say m
-        is_ordered n ? mid n : 0
+    (input2.map s->
+      n := s.split ","
+            .map (.parse_i32.val)
+#      say "$s {is_ordered n}"
+#      m := is_ordered n ? mid n : 0
+#      say m
+      is_ordered n ? mid n : 0).sum
 
 #    _ := input1.map say .fold unit.monoid
 #   say "---"
