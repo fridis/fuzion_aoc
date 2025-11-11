@@ -51,10 +51,10 @@ dec21 is
     x => if      v="A" || v = ">" then 2
          else if v="^" || v = "v" then 1
          else if v="<"            then 0
-         else panic "unexpeced key2 $v"
+         else panic "unexpected key2 $v"
     y => if      v = "^" || v = "A" then 0
          else if v = "<" || v = "v" || v = ">" then 1
-         else panic "unexpeced key2 $v"
+         else panic "unexpected key2 $v"
     fixed move_to(target key2) =>
       dx := target.x-x
       dy := target.y-y

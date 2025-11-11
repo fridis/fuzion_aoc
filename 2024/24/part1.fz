@@ -19,7 +19,7 @@ dec24 is
       if op = "AND" then a && b
       else if op = "OR" then a || b
       else if op = "XOR" then a ^ b
-      else panic "unkown $op"
+      else panic "unknown $op"
 
   part1 =>
     iws := in_wires.map (s -> s.split ": " |> (iw -> input_wire iw[0] iw[1]="1"))
