@@ -13,7 +13,7 @@ dec13 =>
              .map (x -> claw x[0] x[1] x[2] x[3] x[4] x[5])
 
   claw(ax,ay,bx,by,px,py) is
-   redef as_string => "$ax $ay $bx $by $px $py"
+   public redef as_string String => "$ax $ay $bx $by $px $py"
    test(a) =>
      b := (px-ax*a)/bx
      if b >= 0 && b <= 100 && ay*a+by*b = py
@@ -31,7 +31,7 @@ dec13 =>
 #             .first.or_else 0
 
   part1 =>
-    input.map (.min_tokens) |> sum
+    input.map (.min_tokens) .sum
 
   part2 => "NYI"
 

@@ -5,9 +5,9 @@ dec23 is
   vertex(s) ref : property.orderable is
       _id := vertex_count.get
       vertex_count <- vertex_count.get + 1
-      fixed redef type.lteq(a,b dec23.vertex) => a._id <= b._id
-      fixed redef type.equality(a,b dec23.vertex) => a._id = b._id
-      redef as_string => "$_id[$s]"
+      public fixed redef type.lteq(a,b dec23.vertex) bool => a._id <= b._id
+      public fixed redef type.equality(a,b dec23.vertex) bool => a._id = b._id
+      public redef as_string String => "$_id[$s]"
       edges_to := lm.env.new (container.Set vertex) (container.ps_set vertex).empty
       ignore edges_to
 
@@ -18,8 +18,8 @@ dec23 is
     _id := v._id << 16 | w._id
     v.edges_to <- v.edges_to.get.add w
     w.edges_to <- w.edges_to.get.add v
-    fixed redef type.lteq(a,b dec23.edge) => a._id <= b._id
-    redef as_string => "$v-$w"
+    public fixed redef type.lteq(a,b dec23.edge) bool => a._id <= b._id
+    public redef as_string String => "$v-$w"
   get_vertex(s) : memoize =>
 #    say "{vertex_count}: $s"
     keep s (_ -> vertex s)

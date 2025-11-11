@@ -1,12 +1,12 @@
 dec14 =>
 
-  input0 := ((((io.stdin.read_string.trim.utf8.as_array |> (s->String.type.from_bytes s)) )))
+  input0 := ((((io.stdin.read_string.trim.utf8.as_array |> (s->String.type.from s)) )))
   say "0: "+input0.byte_length
   input1 := (input0
-             .replace "," " " |> (s->String.type.from_bytes s.utf8.as_array))
+             .replace "," " " |> (s->String.type.from s.utf8.as_array))
   say "1: "+input1.byte_length
   input2 := (input1
-             .replace "\n" " " |> (s->String.type.from_bytes s.utf8.as_array))
+             .replace "\n" " " |> (s->String.type.from s.utf8.as_array))
   say "2: "+input2.byte_length
   input3 := (input2
              .codepoints .as_array .filter (c -> { { if c = "p" then yak "." }; "0" <= c <= "9" || c = " " || c = "-"})) .as_array .as_string ""
@@ -27,7 +27,7 @@ dec14 =>
   product(T type : numeric, l Sequence T) => l.fold T.product
 
   robot(x,y,vx,vy) is
-    redef as_string => "$x $y $vx $vy"
+    public redef as_string String => "$x $y $vx $vy"
 #    say robot.this
     move(n i64) =>
       robot (x+vx*n+w*1000000)%w (y+vy*n+h*1000000)%h vx vy

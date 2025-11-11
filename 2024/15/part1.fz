@@ -41,7 +41,7 @@ dec15 =>
           panic "found $v"
 
       for yx in a.index_pairs do
-        (y,x) := yx
+        y,x := yx
         a[y,x] := area[y.as_i32,x.as_i32]
 
       show =>
@@ -65,7 +65,8 @@ dec15 =>
         panic "robot not found"
 
       a.index_pairs
-       .map ||>y,x->a[y,x]="O"?y*100+x:0 |> sum
+       .map ||>y,x->a[y,x]="O"?y*100+x:(i64 0) # NYI: CLEANUP: explicit type should not be necessary when type inference improves, see #5866
+       .sum
 
 
 

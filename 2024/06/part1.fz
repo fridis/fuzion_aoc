@@ -1,7 +1,7 @@
 dec6_part1 =>
 
   LM : mutate is
-  input := LM ! ()->((io.stdin LM) ! ()->(io.buffered.read_lines LM))
+  input := LM ! ()->(io.stdin.reader LM ! ()->io.buffered LM .read_lines)
 
   # the relation defined by input as an array
   arr := input.filter !=""
@@ -11,14 +11,18 @@ dec6_part1 =>
   h := arr.length.as_i64
   w := arr[0].length.as_i64
 
-  (starty, startx) := arr.indices.reduce (option (i32,i32) nil) a1,y->
+  starty, startx := arr.indices.reduce (option (i32,i32) nil) a1,y->
      row := arr[y]
      row.indices.reduce a1 (a2,x -> row[x] = "^" ? (y,x) : a2)
    .val
 
   part1 =>
     LM ! ()->
-      state := (mutate.array2 codepoint).type.new LM h w y,x->arr[y.as_i32][x.as_i32]
+      state := (mutate.array2 codepoint).type.new LM h w "\0"
+      for y in state.indices0 do
+        for x in state.indices1 do
+          state[y,x] := arr[y.as_i32][x.as_i32]
+
       res := LM.env.new 0
       for dy i64 := -1, dy2
           dx i64 :=  0, dx2
@@ -31,10 +35,10 @@ dec6_part1 =>
         if state[y,x] != "X"
           state[y,x] := "X"
           res <- 1 + res
-        (dy2,dx2) := if 0 <= yy < h && 0 <= xx < w && state[yy,xx] = "#" then
-                       (dx,-dy)
-                     else
-                       (dy,dx)
+        dy2,dx2 := if 0 <= yy < h && 0 <= xx < w && state[yy,xx] = "#"
+                     (dx,-dy)
+                   else
+                     (dy,dx)
       else
         res.get
 
