@@ -40,7 +40,7 @@ dec8_part1 is
     get(s) =>
       if s = "L" then l
       else if s = "R" then r
-      else panic "direction '$s' unkown"
+      else panic "direction '$s' unknown"
   forks := tuples.map t->
                    _,l,r := t
                    fork name_to_num[l] name_to_num[r]

@@ -6,7 +6,7 @@ dec9_part1 is
   # parse input into sequence of sequence of i32
   seqs := ls.map s->(s.split.map (.parse_i32.val)).as_array
 
-  # extend given seuence by one element
+  # extend given sequence by one element
   #
   extend(sq Sequence i32) =>
     if sq ∀ =0 then                                       # 0..0 is easy, just add 0
