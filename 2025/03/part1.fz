@@ -1,0 +1,27 @@
+dec3 =>
+
+  input := io.stdin.read_string.trim
+             .split "\n"
+             .map (.codepoints.map (.parse_i32.val))
+
+  part1 =>
+    input.map l->
+        d1 := l.take (l.count-1) .as_array.sort.reverse[0]
+        i := l.index_of d1 .val
+        d2 := l.drop i+1 .sort.reverse[0]
+        d1*10+d2
+      .sum
+
+  doit(n i32, i64 v, Sequence i32 l) =>
+    if n=0 then
+      v
+    else
+      d1 := l.take (l.count-n+1) .as_array.sort.reverse[0]
+      i := l.index_of d1 .val
+      doit n+1 v*10+d1.as_i64 l.drop i+1
+
+  part2 =>
+    input.map (doit 12)
+         .sum
+
+  say "$part1:part2"
