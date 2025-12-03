@@ -13,12 +13,10 @@ dec2 =>
 
   part1 =>
     input.flat_map ||>a,b->
-        l := a.strlen
-        a0 := if l %% 2 then a
-                        else ten**l
-        hl := a0.strlen / 2
-        f := ten**hl
-        (a0 / f .. (min f-1 b/f)).map hi->
+        sl := (a.strlen+1) / 2
+        f := ten**sl
+        (max f/10 a/f ..
+         min f-1  b/f    ).map hi->
             v := hi * (f+1)
             if a <= v <= b then v
                            else 0
@@ -26,14 +24,14 @@ dec2 =>
 
   part2 =>
     input.flat_map ||>a,b->
-        (i64 2 .. b.strlen).flat_map sn->
-          sl := (a.strlen+sn-1) / sn
-          f0 := ten**sl                          #     100
-          f := f0**(sn-1)                        # 1000000
-          ff := (f :: (/f0)).take_while >0 .sum  # 1010101
-          (max f0/10 a/f ..
-           min f0-1  b/f    ).map hi->
-            v := hi * ff
+        (i64 2 .. b.strlen).flat_map sn->         # eg.       4
+          sl := (a.strlen+sn-1) / sn              #           2
+          f0 := ten**sl                           #         100
+          f1 := f0**(sn-1)                        #     1000000
+          ff := (f1 :: (/f0)).take_while >0 .sum  #     1010101
+          (max f0/10 a/f1 ..
+           min f0-1  b/f1    ).map hi->
+            v := hi * ff                          #    34343434
             if a <= v <= b then v
                            else 0
       .unique
