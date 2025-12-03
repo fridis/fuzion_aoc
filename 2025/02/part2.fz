@@ -8,13 +8,16 @@ dec2 =>
                         .map (.parse_i64.val)
                         .as_tuples)
 
+  ten := i64 10
+  i64.strlen => ($val).byte_length.as_i64
+
   part1 =>
     input.flat_map ||>a,b->
-        l := ($a).byte_length.as_i64
+        l := a.strlen
         a0 := if l %% 2 then a
-                        else (i64 10)**l
-        hl := ($a0).byte_length / 2
-        f := (i64 10)**hl.as_i64
+                        else ten**l
+        hl := a0.strlen / 2
+        f := ten**hl
         (a0 / f .. (min f-1 b/f)).map hi->
             v := hi * (f+1)
             if a <= v <= b then v
@@ -23,21 +26,18 @@ dec2 =>
 
   part2 =>
     input.flat_map ||>a,b->
-        l := ($b).byte_length.as_i64
-        (2..l.as_i32).flat_map sn->
-          sl := (($a).byte_length+sn-1) / sn
-          f0 := (i64 10)**sl.as_i64
-          f := (i64 10)**(sl*(sn-1)).as_i64
-          ff := (f :: (/((i64 10)**sl.as_i64))).take_while >0 .sum
-          say "$a..$b: $sn $sl -> $ff"
-          (a / f .. b/f).map hi->
+        l := b.strlen
+        (i64 2 .. l).flat_map sn->
+          sl := (a.strlen+sn-1) / sn
+          f0 := ten**sl                          #     100
+          f := f0**(sn-1)                        # 1000000
+          ff := (f :: (/f0)).take_while >0 .sum  # 1010101
+          (max f0/10 a/f ..
+           min f0-1  b/f    ).map hi->
             v := hi * ff
-            if hi < f0 && a <= v <= b && (($v).byte_length=sn*sl) then say "inv: $a $b: $v  sl:$sl sn:$sn hi:$hi ff:$ff f0:$f0"; v
-            else 0
+            if a <= v <= b then v
+                           else 0
       .unique
       .sum
-
-  # 38113816686 too high
-
 
   say "$part1:$part2"
