@@ -1,0 +1,33 @@
+dec2 =>
+
+  input := io.stdin.read_string
+             .split "\n"
+             .first.val
+             .split ","
+             .flat_map (.split "-"
+                        .map (.parse_i64.val)
+                        .as_tuples)
+
+  part1 =>
+    say input.as_string_all
+    input.map (||> a,b->
+        a0 := if ($a).byte_length %% 2 then a
+                                       else (i64 10)**(($a).byte_length.as_i64)
+        say "$a-$b\t$a0"
+        hl := ($a0).byte_length / 2
+        f := (i64 10)**hl.as_i64
+        for
+          n := i64 0, n+w
+          hi := a0 / f, hi+1
+          v := hi * f + hi
+          w := if v>=a then v else 0
+        while v <= b && hi<f do
+          yak "$v "
+        else
+          say " ($a0-$b) --> $n"
+          n)
+      .sum
+
+  part2 =>
+
+  say "$part1:part2"
