@@ -1,0 +1,25 @@
+dec1 =>
+
+  input := io.stdin.read_string
+             .replace "R" "+"
+             .replace "L" "-"
+             .split "\n"
+             .filter !=""
+             .map (.parse_i32.val)
+
+  part1 =>
+    input.foldf (50,0) e,x->
+            n := (e.0 + x) % 100
+            c := e.1 + if n=0 then 1 else 0
+            (n,c)
+         .1
+
+  part2 =>
+    input.foldf (50,0) e,x->
+            (1 .. (|x|)).foldf e r,_->
+              n := (r.0 + x.sign) % 100
+              c := r.1 + if n=0 then 1 else 0
+              (n,c)
+         .1
+
+  say "$part1:$part2"
