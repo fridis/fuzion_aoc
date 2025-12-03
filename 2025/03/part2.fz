@@ -1,27 +1,21 @@
 dec3 =>
 
-  input := io.stdin.read_string.trim
-             .split "\n"
-             .map (.codepoints.map (.parse_i32.val))
+  input := io.stdin.read_string.trim.split "\n"
+             .map (.codepoints.map (.parse_i64.val))
 
-  part1 =>
-    input.map l->
-        d1 := l.take (l.count-1) .as_array.sort.reverse[0]
-        i := l.index_of d1 .val
-        d2 := l.drop i+1 .sort.reverse[0]
-        d1*10+d2
-      .sum
-
-  doit(n i32, v i64, l Sequence i32) =>
+  joltage(n,v,l) =>
     if n=0 then
       v
     else
-      d1 := l.take (l.count-n+1) .as_array.sort.reverse[0]
-      i := l.index_of d1 .val
-      doit n-1 v*10+d1.as_i64 (l.drop i+1)
+      d := l.take (l.count-n+1) .max.val
+      joltage n-1 v*10+d (l.drop_while !=d .drop 1)
+
+  part1 =>
+    input.map (joltage 2 (i64 0))
+         .sum
 
   part2 =>
-    input.map (doit 12 0)
+    input.map (joltage 12 (i64 0))
          .sum
 
   say "$part1:$part2"
