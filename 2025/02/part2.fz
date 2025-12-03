@@ -26,8 +26,7 @@ dec2 =>
 
   part2 =>
     input.flat_map ||>a,b->
-        l := b.strlen
-        (i64 2 .. l).flat_map sn->
+        (i64 2 .. b.strlen).flat_map sn->
           sl := (a.strlen+sn-1) / sn
           f0 := ten**sl                          #     100
           f := f0**(sn-1)                        # 1000000
