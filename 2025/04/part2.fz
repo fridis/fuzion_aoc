@@ -1,0 +1,45 @@
+dec4 =>
+
+  input := io.stdin.read_string.trim.split "\n"
+             .map (l -> l.codepoints.map ="@" .as_array)
+             .as_array
+
+  w := input[0].length
+  h := input.length
+
+  is_roll(x,y) =>
+    0 <= y < h && 0 <= x < w && input[y][x]
+
+  part1 =>
+    (-1 .. h).map y->
+        (-1 .. w).count x->
+            is_roll x y && (((y-1 .. y+1).flat_map yy->
+                                 (x-1 .. x+1).filter (xx -> is_roll xx yy)
+                               .count) <=4)
+      .sum
+
+  unaccessible(a) =>
+    array2 w+2 h+2 x,y->
+      a[x,y] && (((y-1 .. y+1).flat_map yy->
+                      (x-1 .. x+1).filter xx->a[xx,yy]
+                    .count) >4)
+
+  remove(a) =>
+    r := unaccessible a
+    if a.count id = r.count id then
+      r
+    else
+      remove r
+
+  part2 =>
+    a0 := array2 w+2 h+2 (x,y->is_roll x-1 y-1)
+    a0.count id - (remove a0 .count id)
+    /*
+    for
+      a := a0, a2
+      a2 := unaccessible a
+    until a.count id = a2.count id
+      a0.count id - a.count id
+      */
+
+  say "$part1:$part2"
