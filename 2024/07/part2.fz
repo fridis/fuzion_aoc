@@ -1,7 +1,7 @@
 dec7_part2 =>
 
   LM : mutate is
-  input := LM ! ()->(io.stdin.reader LM) ! ()->(io.buffered LM .read_lines).filter !=""
+  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines.filter !=""
 
   total(s) => s.split ":" .first.val.parse_i64.val
   nums(s) => s.split " " .drop 1 .map (.parse_i64.val)

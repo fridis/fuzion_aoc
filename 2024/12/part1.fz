@@ -13,7 +13,7 @@ dec12 =>
       for xx in 1..w do
         for yy in 1..h do
           kind := data[xx,yy]
-          (a,l) := fill xx yy
+          a,l := fill xx yy
           fill(x,y) =>
             if kind != data[x,y]
               (0, 1)
@@ -21,10 +21,10 @@ dec12 =>
               (0, 0)
             else
               done[x.as_i64,y.as_i64] := true
-              (a1,l1) := if kind = data[x,y] then fill x+1 y   else (0,1)
-              (a2,l2) := if kind = data[x,y] then fill x   y+1 else (0,1)
-              (a3,l3) := if kind = data[x,y] then fill x-1 y   else (0,1)
-              (a4,l4) := if kind = data[x,y] then fill x   y-1 else (0,1)
+              a1,l1 := if kind = data[x,y] then fill x+1 y   else (0,1)
+              a2,l2 := if kind = data[x,y] then fill x   y+1 else (0,1)
+              a3,l3 := if kind = data[x,y] then fill x-1 y   else (0,1)
+              a4,l4 := if kind = data[x,y] then fill x   y-1 else (0,1)
               (1+a1+a2+a3+a4, l1+l2+l3+l4)
           tot <- a*l + tot
 #          say "$xx $yy $kind $a * $l = $tot"

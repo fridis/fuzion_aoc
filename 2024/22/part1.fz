@@ -18,7 +18,7 @@ dec22 is
   say (secrets (i64 123))
 
   part1 =>
-    input.map (seed -> secrets seed .drop 2000 .first.val) |> sum
+    input.map (seed -> secrets seed .drop 2000 .first.val) .sum
   part2 =>
 
   say "$part1:$part2"
