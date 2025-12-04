@@ -6,10 +6,8 @@ dec4 =>
 
   w := input[0].length
   h := input.length
-  a := array2 w+2 h+2 (x,y->is_roll x-1 y-1)
-
-  is_roll(x,y) =>
-    0 <= y < h && 0 <= x < w && input[y][x]
+  a := array2 w+2 h+2 x,y->
+    1 <= y <= h && 1 <= x <= w && input[y-1][x-1]
 
   # array2 of bool with directly inaccessible rolls in array2 `o`
   inaccessible1(o) =>
