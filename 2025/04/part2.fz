@@ -6,40 +6,31 @@ dec4 =>
 
   w := input[0].length
   h := input.length
+  a := array2 w+2 h+2 (x,y->is_roll x-1 y-1)
 
   is_roll(x,y) =>
     0 <= y < h && 0 <= x < w && input[y][x]
 
+  # array2 of bool with directly inaccessible rolls in array2 `o`
+  inaccessible1(o) =>
+   array2 w+2 h+2 x,y->
+    if o[x,y] then ((x-1 .. x+1).pairs (y-1 .. y+1)
+                                .count ||>xx,yy->o[xx,yy])>4
+              else false
+
+  # count of recursively inaccessible rolls
+  inaccessible(o) =>
+    i := inaccessible1 o
+    co := o.count id
+    ci := i.count id
+    co = ci ? ci : inaccessible i
+
   part1 =>
-    (-1 .. h).map y->
-        (-1 .. w).count x->
-            is_roll x y && (((y-1 .. y+1).flat_map yy->
-                                 (x-1 .. x+1).filter (xx -> is_roll xx yy)
-                               .count) <=4)
-      .sum
-
-  unaccessible(a) =>
-    array2 w+2 h+2 x,y->
-      a[x,y] && (((y-1 .. y+1).flat_map yy->
-                      (x-1 .. x+1).filter xx->a[xx,yy]
-                    .count) >4)
-
-  remove(a) =>
-    r := unaccessible a
-    if a.count id = r.count id then
-      r
-    else
-      remove r
+    i := inaccessible1 a
+    a.index_pairs.count ||>x,y->
+       a[x,y] && !i[x,y]
 
   part2 =>
-    a0 := array2 w+2 h+2 (x,y->is_roll x-1 y-1)
-    a0.count id - (remove a0 .count id)
-    /*
-    for
-      a := a0, a2
-      a2 := unaccessible a
-    until a.count id = a2.count id
-      a0.count id - a.count id
-      */
+    a.count id - inaccessible a
 
   say "$part1:$part2"
