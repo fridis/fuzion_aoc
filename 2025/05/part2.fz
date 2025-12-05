@@ -14,11 +14,11 @@ dec4 =>
   join(a,b) => (min a.0 b.0, max a.1 b.1)
 
   part2 =>
-    fresh.foldf none l,n->                       # create list of disjoint ranges, adding one range n at a time
-        h, t := l.foldf (none, n) r,f->          # for each range ef we found so far
-          if separate r.1 f then (r.0++[f], r.1)       # if new and ef disjoint, keep ef
-                            else (r.0     ,join f r.1) # else join ef into new range
-        h ++ [t]
+    fresh.foldf none l,n->                  # create list of disjoint ranges, adding one range n at a time
+        h, t := l.foldf (n, none) r,f->     # for each range f we found so far
+          if separate r.0 f then (r.0, [f] ++ r.1)  # r.0 and f separate, so keep both
+                            else (join r.0 f, r.1)  # else join r.0 and f
+        [h] ++ t
       .map (||> a,b -> b-a+1)
       .sum
 
