@@ -1,4 +1,4 @@
-dec4 =>
+dec5 =>
 
   fr,id := io.stdin.read_string.trim.split "\n\n" .as_tuples.first.val
   fresh := fr.split "\n" .map (.split "-" .map (.parse_i64.val) .as_tuple)
