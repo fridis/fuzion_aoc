@@ -4,20 +4,21 @@ dec4 =>
   fresh := fr.split "\n" .map (.split "-" .map (.parse_i64.val) .as_tuple)
   ids   := id.split "\n" .map (.parse_i64.val)
 
-  part1 =>
-    ids.count (i -> fresh ∃ ||> a,b -> a<=i<=b)
+  none := fresh.take 0
 
-  disjoint(a,b) => a.1 < b.0 || b.1 < a.0
+  part1 =>
+    ids.count i->
+      fresh ∃ ||> a,b -> a<=i<=b
+
+  separate(a,b) => a.1+1 < b.0 || b.1+1 < a.0
   join(a,b) => (min a.0 b.0, max a.1 b.1)
 
   part2 =>
-    fresh.foldf (fresh.take 0) e,f->
-        f1 := e.foldf f ff,of->
-                  if disjoint ff of then ff
-                                    else join of ff
-        ee := e.filter (disjoint f1) ++ [f1]
-        say "adding $f ==> $ee"
-        ee
+    fresh.foldf none l,n->                       # create list of disjoint ranges, adding one range n at a time
+        h, t := l.foldf (none, n) r,f->          # for each range ef we found so far
+          if separate r.1 f then (r.0++[f], r.1)       # if new and ef disjoint, keep ef
+                            else (r.0     ,join f r.1) # else join ef into new range
+        h ++ [t]
       .map (||> a,b -> b-a+1)
       .sum
 
