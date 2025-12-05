@@ -1,0 +1,12 @@
+dec4 =>
+
+  fr,id := io.stdin.read_string.trim.split "\n\n" .as_tuples.first.val
+  fresh := fr.split "\n" .map (.split "-" .map (.parse_i64.val) .as_tuple)
+  ids   := id.split "\n" .map (.parse_i64.val)
+
+  part1 =>
+    ids.count (i -> fresh ∃ ||>a,b->a<=i<=b)
+
+  part2 =>
+
+  say "$part1:$part2"

@@ -1,0 +1,24 @@
+dec4 =>
+
+  fr,id := io.stdin.read_string.trim.split "\n\n" .as_tuples.first.val
+  fresh := fr.split "\n" .map (.split "-" .map (.parse_i64.val) .as_tuple)
+  ids   := id.split "\n" .map (.parse_i64.val)
+
+  part1 =>
+    ids.count (i -> fresh ∃ ||> a,b -> a<=i<=b)
+
+  disjoint(a,b) => a.1 < b.0 || b.1 < a.0
+  join(a,b) => (min a.0 b.0, max a.1 b.1)
+
+  part2 =>
+    fresh.foldf (fresh.take 0) e,f->
+        f1 := e.foldf f ff,of->
+                  if disjoint ff of then ff
+                                    else join of ff
+        ee := e.filter (disjoint f1) ++ [f1]
+        say "adding $f ==> $ee"
+        ee
+      .map (||> a,b -> b-a+1)
+      .sum
+
+  say "$part1:$part2"
