@@ -19,15 +19,12 @@ dec6 =>
     next(c) =>
       if c>=w || (0..h-1 ∀ y->a[c,y]=" ") then c+1
                                           else next c+1
-    for r := i64 0, r+v
-        c := 0, e
-        e := next c
-        nums := (c..e-2).map x->((0..h-2).map y->a[x,y] .foldf "" (+)) .map (.trim.parse_i64.val)
-    while c <= w do
-      v := if      a[c,h-1]="*" then nums.product
-           else if a[c,h-1]="+" then nums.sum
-           else panic "***"
-    else
-      r
+    (0 :: next).take_while <=w
+               .map c->
+                 nums := (c..(next c)-2).map x->((0..h-2).map y->a[x,y] .fold1 (+))
+                                        .map (.trim.parse_i64.val)
+                 if a[c,h-1]="*" then nums.product
+                                 else nums.sum
+               .sum
 
   say "$part1:$part2"
