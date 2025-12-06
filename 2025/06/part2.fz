@@ -1,28 +1,29 @@
 dec6 =>
 
   input := io.stdin.read_string.trim.split "\n" .as_array
-  h := input.length
+  h := input.length-1
 
   part1 =>
     a := input.map (.split " " .filter !="" .as_array) .as_array
     a[0].indices.map x->
-                  (0..h-2).map y->a[y][x].parse_i64.val
-                          .fold1 (if a[h-1][x]="*" then * else +)
+                  op := a[h][x]
+                  (0..h-1).map y->a[y][x].parse_i64.val
+                          .fold1 (if op="*" then * else +)
                 .sum
 
   part2 =>
     w := input.map (.trim.byte_length) .max.val
-    i := input.map s->(s+" ").codepoints.as_array .as_array
+    i := input.map_to_array (.codepoints.as_array)
     next(c) =>
-      if c>=w || (0..h-1 ∀ y->i[y][c]=" ") then c+1
-                                           else next c+1
+      if c<w && (0..h ∃ y->i[y][c]!=" ") then next c+1
+                                         else c+1
     (0 :: next).take_while <=w
                .map c->
+                 op := i[h][c]
                  (c..(next c)-2).map x->
-                                  (0..h-2).map y->i[y][x].as_string
-                                          .fold1 (+)
+                                  (0..h-1).foldf "" e,y->e+i[y][x]
                                           .trim.parse_i64.val
-                                .fold1 (if i[h-1][c]="*" then * else +)
+                                .fold1 (op="*" ? * : +)
                .sum
 
   say "$part1:$part2"
