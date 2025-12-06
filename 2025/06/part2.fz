@@ -5,23 +5,24 @@ dec6 =>
 
   part1 =>
     a := input.map (.split " " .filter !="" .as_array) .as_array
-    w := a[0].count
-    tasks := (0..(w-1)).map x->(a[h-1][x], array h-1 y->a[y][x].parse_i64.val)
-    tasks.map t->
-           t.1.fold1 (if t.0="*" then * else +)
-         .sum
+    a[0].indices.map x->
+                  (0..h-2).map y->a[y][x].parse_i64.val
+                          .fold1 (if a[h-1][x]="*" then * else +)
+                .sum
 
   part2 =>
-    w := input.map (.byte_length) .max.val
-    a := array2 w h (x,y->if (x < input[y].byte_length) then input[y].substring x x+1 else " ")
+    w := input.map (.trim.byte_length) .max.val
+    i := input.map s->(s+" ").codepoints.as_array .as_array
     next(c) =>
-      if c>=w || (0..h-1 ∀ y->a[c,y]=" ") then c+1
-                                          else next c+1
+      if c>=w || (0..h-1 ∀ y->i[y][c]=" ") then c+1
+                                           else next c+1
     (0 :: next).take_while <=w
                .map c->
-                 (c..(next c)-2).map x->((0..h-2).map y->a[x,y] .fold1 (+))
-                                .map (.trim.parse_i64.val)
-                                .fold1 (if a[c,h-1]="*" then * else +)
+                 (c..(next c)-2).map x->
+                                  (0..h-2).map y->i[y][x].as_string
+                                          .fold1 (+)
+                                          .trim.parse_i64.val
+                                .fold1 (if i[h-1][c]="*" then * else +)
                .sum
 
   say "$part1:$part2"
