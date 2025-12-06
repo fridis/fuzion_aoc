@@ -4,7 +4,7 @@ dec6 =>
   h := input.length-1
 
   part1 =>
-    a := input.map (.split " " .filter !="" .as_array) .as_array
+    a := input.map (.split.as_array) .as_array
     a[0].indices.map x->
                   op := a[h][x]
                   (0..h-1).map y->a[y][x].parse_i64.val
