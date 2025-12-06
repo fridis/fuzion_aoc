@@ -1,30 +1,27 @@
 dec6 =>
 
   input := io.stdin.read_string.trim.split "\n" .as_array
+  h := input.length
 
   part1 =>
     a := input.map (.split " " .filter !="" .as_array) .as_array
-    h := a.count
     w := a[0].count
     tasks := (0..(w-1)).map x->(a[h-1][x], array h-1 y->a[y][x].parse_i64.val)
     tasks.map t->
-           if   t.0="*" then t.1.product
-                        else t.1.sum
+           t.1.fold1 (if t.0="*" then * else +)
          .sum
 
   part2 =>
     w := input.map (.byte_length) .max.val
-    h := input.length
     a := array2 w h (x,y->if (x < input[y].byte_length) then input[y].substring x x+1 else " ")
     next(c) =>
       if c>=w || (0..h-1 ∀ y->a[c,y]=" ") then c+1
                                           else next c+1
     (0 :: next).take_while <=w
                .map c->
-                 nums := (c..(next c)-2).map x->((0..h-2).map y->a[x,y] .fold1 (+))
-                                        .map (.trim.parse_i64.val)
-                 if a[c,h-1]="*" then nums.product
-                                 else nums.sum
+                 (c..(next c)-2).map x->((0..h-2).map y->a[x,y] .fold1 (+))
+                                .map (.trim.parse_i64.val)
+                                .fold1 (if a[c,h-1]="*" then * else +)
                .sum
 
   say "$part1:$part2"
