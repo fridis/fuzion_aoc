@@ -1,25 +1,26 @@
 dec7 =>
 
   input := io.stdin.read_string.trim.split "\n" .map (.codepoints.as_array) .as_array
-  h := input.count
   w := input[0].count
 
   part1 =>
-    (1..h-1).foldf (0,array w _->false) e,y->e||>c,a->
+    input.foldf (0,array w _->false) e,l->e||>c,a->
         a2 := array w x->
-          input[y-1][x]="S" || input[y-1][x]="." && a[x] || x>0 && input[y-1][x-1]="^" && a[x-1] || x<w-1 && input[y-1][x+1]="^" && a[x+1]
-        c2 := c + a.indices.count x->
-          input[y-1][x]="^" && a[x]
+          (l[x]="S"         ||
+           l[x]="." && a[x] ||
+           x>0   && l[x-1]="^" && a[x-1] ||
+           x<w-1 && l[x+1]="^" && a[x+1])
+        c2 := c + a.indices.count (x -> l[x]="^" && a[x])
         (c2,a2)
       .0
 
   part2 =>
-    (1..h-1).foldf (array w _->(i64 0)) a,y->
+    input.foldf (array w _->(i64 0)) a,l->
         a2 := array w x->
-          s0 := if input[y-1][x]="S" then i64 1 else 0
-          s1 := if input[y-1][x]="." then a[x] else 0
-          s2 := if x>0   && input[y-1][x-1]="^" then a[x-1] else 0
-          s3 := if x<w-1 && input[y-1][x+1]="^" then a[x+1] else 0
+          s0 := if          l[x  ]="S" then i64 1  else 0
+          s1 := if          l[x  ]="." then a[x  ] else 0
+          s2 := if x>0   && l[x-1]="^" then a[x-1] else 0
+          s3 := if x<w-1 && l[x+1]="^" then a[x+1] else 0
           s0+s1+s2+s3
         a2
       .sum
