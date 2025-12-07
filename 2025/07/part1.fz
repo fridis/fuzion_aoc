@@ -1,0 +1,19 @@
+dec7 =>
+
+  input := io.stdin.read_string.trim.split "\n" .map (.codepoints.as_array) .as_array
+  h := input.count
+  w := input[0].count
+
+  part1 =>
+    (1..h-1).foldf (0,array w _->false) e,y->e||>c,a->
+        a2 := array w x->
+          input[y-1][x]="S" || input[y-1][x]="." && a[x] || x>0 && input[y-1][x-1]="^" && a[x-1] || x<w-1 && input[y-1][x+1]="^" && a[x+1]
+        c2 := c + a.indices.count x->
+          input[y-1][x]="^" && a[x]
+        say "a $y is $a2"
+        (c2,a2)
+      .0
+
+  part2 =>
+
+  say "$part1:$part2"
