@@ -5,50 +5,49 @@ dec8 =>
   n := input.length
   m := envir.args[1].parse_i32.val
 
-  dists := (0..n-1).flat_map (i -> (i+1..n-1).map (dist i))
+  pairs := (0..n-1).flat_map (i -> (i+1..n-1).map (pair i))
                    .sort
 
-  class(cl, i) =>
-    if cl[i]<0 then class cl i+cl[i]
+  # get circuit id of junction box i
+  #
+  # cs[i] is >0 if i is identifying box, value is size of circuit,
+  #          <0 if identifiying box is at i+cs[i]
+  circuit(cs, i) =>
+    if cs[i]<0 then circuit cs i+cs[i]
                else i
 
-  dist(i,j) : property.orderable is
+  # pair of junction box i and j,  ordered by straight-line distance
+  pair(i,j) : property.orderable is
 
-    d := input[i].zip input[j] (-) .map **2 .sum
+    # straight-line distance between i and j
+    dist := input[i].zip input[j] (-) .map **2 .sum
 
-    public redef type.lteq(a,b dist.this) bool => a.d <= b.d
+    # order
+    public redef type.lteq(a,b pair.this) bool => a.dist <= b.dist
 
-    connect(cl) =>
-      ij := (class cl i, class cl j)
-      i0 := ij ||> min
-      j0 := ij ||> max
-      array n x->
-        if      i0 = j0         then cl[x]
-        else if x  = i0 && x!=j0 then cl[i0] + cl[j0]
-        else if class cl x = j0 then i0-x
-        else                    cl[x]
+    # connect this pair for given circuit cs, return resulting circuit
+    connect(cs) =>
+      ab := (circuit cs i, circuit cs j)
+      a := ab ||> min
+      b := ab ||> max
+      if a=b then cs
+             else array n x->
+                    if      x=a              then cs[a] + cs[b]
+                    else if circuit cs x = b then a-x
+                                             else cs[x]
 
   part1 =>
-    join(c,cl) i32 =>
-      if c = m
-        cl.sort.reverse.take 3
-          .product
-      else
-        join c+1 (dists[c].connect cl)
-
-    classes := array n _->1
-    join 0 classes
+    join(c,cs) i32 =>
+      if c = m then cs.sort.reverse.take 3 .product
+               else join c+1 (pairs[c].connect cs)
+    join 0 (array n _->1)
 
   part2 =>
-    join(c,cl) =>
-      d := dists[c]
-      cl0 := d.connect cl
-      if cl0[0]=n then
-        input[d.i][0]*input[d.j][0]
-      else
-        join c+1 cl0
-
-    classes := array n _->1
-    join 0 classes
+    join(c,cs) =>
+      p := pairs[c]
+      cs0 := p.connect cs
+      if cs0[0]=n then input[p.i][0]*input[p.j][0]
+                  else join c+1 cs0
+    join 0 (array n _->1)
 
   say "$part1:$part2"
