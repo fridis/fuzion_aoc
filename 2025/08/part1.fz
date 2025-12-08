@@ -33,8 +33,9 @@ dec8 =>
 
     join(c,l,cl) i32 =>
 #      say "join $c $l $cl"
-      if l > 1 then
+      if l > 0 then
         for
+          li := l-1, li-1
           ci := c, ci+1
           d := sorted[ci]
           i := d.i
@@ -52,7 +53,7 @@ dec8 =>
                              else if cx = j0 then (0, i0)
                              else                 cl[x])
           say "$cl0"
-          join ci+1 l-1 cl0
+          join ci+1 li cl0
       else
         say "done at $c: $cl: {cl.map (.0) .sort.reverse.take 3}"
 #        say "done at $c: $cl: {cl.map (.0) .sort.reverse.take 3 .product}"
