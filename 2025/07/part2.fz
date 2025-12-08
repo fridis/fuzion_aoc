@@ -16,13 +16,12 @@ dec7 =>
 
   part2 =>
     input.foldf (array w _->(i64 0)) a,l->
-        a2 := array w x->
+        array w x->
           (if      l[x]="." then a[x]
            else if l[x]="S" then 1
                             else 0
            + if x>0   && l[x-1]="^" then a[x-1] else 0
            + if x+1<w && l[x+1]="^" then a[x+1] else 0)
-        a2
       .sum
 
   say "$part1:$part2"
