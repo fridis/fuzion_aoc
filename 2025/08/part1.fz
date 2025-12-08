@@ -1,0 +1,71 @@
+dec8 =>
+
+  say "start"
+  input0 := io.stdin.read_string.trim.split "\n" .flat_map (.split ",") .as_array
+  say "start1"
+  input1 := input0.map (.parse_i64.val) .as_array
+  say "start2"
+  input2 := input1.as_3tuples .as_array
+  say "start3"
+  input := input2
+  n := input.length
+
+  dist(i,j) : property.orderable is
+    d := ((input[i].0-input[j].0)**2+
+          (input[i].1-input[j].1)**2+
+          (input[i].2-input[j].2)**2)
+    public redef fixed type.lteq(a,b dec8.dist.this) bool => a.d <= b.d
+    public redef as_string String => "$i-$j($d)"
+
+  part1 =>
+    say "getting distances..."
+    dist := (0..n-1).flat_map i->
+                       (i+1..n-1).map (j->dist i j)
+                    .as_array
+    say "sorting {dist.length} distances..."
+    sorted := dist.sort
+#    say "res: "+(sorted.take 100)
+
+    class(cl,i) =>
+      r := cl[i].1
+      if r<i then class cl r
+             else r
+
+    join(c,l,cl) i32 =>
+#      say "join $c $l $cl"
+      if l > 1 then
+        for
+          ci := c, ci+1
+          d := sorted[ci]
+          i := d.i
+          j := d.j
+        do
+#          if !(class cl i != class cl j) then
+#            say "SKIP $ci {input[i]} and {input[j]} for $d: $i $j, clazzes {class cl i} {class cl j}"
+        until class cl i != class cl j then
+          i0 := min (class cl i) (class cl j)
+          j0 := max (class cl i) (class cl j)
+          say "JOIN $i0/$j0 {input[i]} and {input[j]} for $d: $i $j, clazzes {class cl i} {class cl j} -> $i0"
+          cl0 := array n x->(cx := class cl x;
+                             if      x  = i0 then (cl[i0].0+cl[j0].0, i0)
+                             else if cx = i0 then (0, i0)
+                             else if cx = j0 then (0, i0)
+                             else                 cl[x])
+          say "$cl0"
+          join ci+1 l-1 cl0
+      else
+        say "done at $c: $cl: {cl.map (.0) .sort.reverse.take 3}"
+#        say "done at $c: $cl: {cl.map (.0) .sort.reverse.take 3 .product}"
+        cl.map (.0)
+          .sort.reverse.take 3
+          .product
+
+    classes := array input.length x->(1,x)
+    join 0 envir.args[1].parse_i32.val classes
+
+
+#    input
+
+  part2 =>
+
+  say "$part1:$part2"
