@@ -1,79 +1,54 @@
 dec8 =>
 
-  input := io.stdin.read_string.trim.split "\n" .flat_map (.split ",") .as_array
-             .map (.parse_i64.val) .as_array.as_3tuples.as_array
+  input := io.stdin.read_string.trim.split "\n"
+             .map (.split "," .map (.parse_i64.val) .as_array) .as_array
   n := input.length
   m := envir.args[1].parse_i32.val
 
+  dists := (0..n-1).flat_map (i -> (i+1..n-1).map (dist i))
+                   .sort
+
+  class(cl, i) =>
+    if cl[i]<0 then class cl i+cl[i]
+               else i
+
   dist(i,j) : property.orderable is
-    d := ((input[i].0-input[j].0)**2+
-          (input[i].1-input[j].1)**2+
-          (input[i].2-input[j].2)**2)
-    public redef fixed type.lteq(a,b dec8.dist.this) bool => a.d <= b.d
-    public redef as_string String => "$i-$j($d)"
+
+    d := input[i].zip input[j] (-) .map **2 .sum
+
+    public redef type.lteq(a,b dist.this) bool => a.d <= b.d
+
+    connect(cl) =>
+      ij := (class cl i, class cl j)
+      i0 := ij ||> min
+      j0 := ij ||> max
+      array n x->
+        if      i0 = j0         then cl[x]
+        else if x  = i0 && x!=j0 then cl[i0] + cl[j0]
+        else if class cl x = j0 then i0-x
+        else                    cl[x]
 
   part1 =>
-    dist := (0..n-1).flat_map i->
-                       (i+1..n-1).map (j->dist i j)
-                    .sort
-
-    class(cl,i) =>
-      r := cl[i].1
-      if r<i then class cl r
-             else r
-
     join(c,cl) i32 =>
-      d := dist[c]
-      i := class cl d.i
-      j := class cl d.j
       if c = m
-        cl.map (.0)
-          .sort.reverse.take 3
+        cl.sort.reverse.take 3
           .product
       else
-        i0 := min i j
-        j0 := max i j
-        cl0 := if i = j then  cl
-                        else array n x->
-                           cx := class cl x;
-                           if      x  = i0 then (cl[i0].0+cl[j0].0, i0)
-                           else if cx = i0 then (0, i0)
-                           else if cx = j0 then (0, i0)
-                           else                 cl[x]
-        join c+1 cl0
+        join c+1 (dists[c].connect cl)
 
-    classes := array input.length x->(1,x)
+    classes := array n _->1
     join 0 classes
 
   part2 =>
-    dist := (0..n-1).flat_map i->
-                       (i+1..n-1).map (j->dist i j)
-                    .sort
-
-    class(cl,i) =>
-      r := cl[i].1
-      if r<i then class cl r
-             else r
-
     join(c,cl) =>
-      d := dist[c]
-      i := class cl d.i
-      j := class cl d.j
-      i0 := min i j
-      j0 := max i j
-      cl0 := if i = j then  cl
-                      else array n x->
-                         cx := class cl x;
-                         if      x  = i0 then (cl[i0].0+cl[j0].0, i0)
-                         else if cx = i0 then (0, i0)
-                         else if cx = j0 then (0, i0)
-                         else                 cl[x]
-      if cl0[0].0=n then
-        input[d.i].0*input[d.j].0
+      d := dists[c]
+      cl0 := d.connect cl
+      if cl0[0]=n then
+        input[d.i][0]*input[d.j][0]
       else
         join c+1 cl0
 
-    classes := array input.length x->(1,x)
+    classes := array n _->1
     join 0 classes
 
   say "$part1:$part2"
