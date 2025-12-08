@@ -17,11 +17,11 @@ dec7 =>
   part2 =>
     input.foldf (array w _->(i64 0)) a,l->
         a2 := array w x->
-          s0 := if          l[x  ]="S" then i64 1  else 0
-          s1 := if          l[x  ]="." then a[x  ] else 0
-          s2 := if x>0   && l[x-1]="^" then a[x-1] else 0
-          s3 := if x<w-1 && l[x+1]="^" then a[x+1] else 0
-          s0+s1+s2+s3
+          (if      l[x  ]="S" then i64 1
+           else if l[x  ]="." then a[x]
+                              else 0
+           + if x>0   && l[x-1]="^" then a[x-1] else 0
+           + if x+1<w && l[x+1]="^" then a[x+1] else 0)
         a2
       .sum
 
