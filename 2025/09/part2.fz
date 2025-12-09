@@ -6,8 +6,6 @@ dec9 =>
   ys := input.map (.1) .unique .sort
   x(v) => xs.find_key v .val.as_i64
   y(v) => ys.find_key v .val.as_i64
-  say "x: {xs.count} $xs"
-  say "y: {ys.count} $ys"
 
   part1 =>
     input.foldf (i64 0) e,a->
@@ -24,33 +22,25 @@ dec9 =>
           say ""
         say ""
       input.for_each (a -> floor[x a.0, y a.1] := "#")
-      (input ++ [input[0]]).map_pairs tuple
-                           .for_each ||>p,q->
-                             px := x p.0
-                             py := y p.1
-                             qx := x q.0
-                             qy := y q.1
+      (input ++ [input[0]]).map_pairs p,q->
+                             px := x p.0; py := y p.1
+                             qx := x q.0; qy := y q.1
                              for xi := px, xi+(qx-px).sign.as_i64
                                  yi := py, yi+(qy-py).sign.as_i64
-                             do
+                             while xi!=qx || yi!=qy do
                                if floor[xi,yi]="." then floor[xi,yi] := "X"
-                             until xi=qx && yi=qy
-                               unit
+                           .for_each ignore
       floor.indices1.for_each y->
-        ignore <| floor.indices0.foldf false e,x->
-          if !e && floor[x,y]="." then say "$x,$y:$e"; floor[x,y] := " "; false
-                                  else true
-        ignore <| floor.indices0.foldf false e,x0->
-          x := (xs.length-1).as_i64-x0
-          if !e && floor[x,y]="." then floor[x,y] := " "; false
-                                  else true
+        clear(e,x) => if !e && floor[x,y]="." then floor[x,y] := " "; false else true
+        _ := floor.indices0.foldf false (e,x -> clear e x)
+        _ := floor.indices0.foldf false (e,x -> clear e (xs.length-1).as_i64-x)
       input.foldf (i64 0) e,a->
-              input.foldf e f,b->
-                m0 := ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)
-                xab := (x a.0, x b.0)
-                yab := (y a.1, y b.1)
-                if (m0 > f && ((xab ||> min) .. (xab ||> max)).foldf true g,x->
-                              ((yab ||> min) .. (yab ||> max)).foldf g   (h,y -> h && floor[x,y]!=" ")) then m0
-                                                                                                        else f
+             input.foldf e f,b->
+               m0 := ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)
+               xab := [x a.0, x b.0].sort.as_tuple ||> (..)
+               yab := [y a.1, y b.1].sort.as_tuple ||> (..)
+               if m0 > f && (xab.pairs yab
+                                .map p->floor[p.0,p.1] ∀ !=" ") then m0
+                                                                else f
 
   say "$part1:$part2"
