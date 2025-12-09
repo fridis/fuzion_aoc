@@ -1,0 +1,14 @@
+dec9 =>
+
+  input := io.stdin.read_string.trim.split "\n"
+             .map (.split "," .map (.parse_i64.val) .as_tuple) .as_array
+  n := input.length
+
+  part1 =>
+    input.foldf (i64 0) e,a->
+      input.foldf e f,b->
+        max f (a.0-b.0+1)*(a.1-b.1+1)
+
+  part2 =>
+
+  say "$part1:$part2"
