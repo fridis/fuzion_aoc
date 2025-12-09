@@ -6,7 +6,7 @@ dec9 =>
   ys := input.map (.1) .unique .sort
   x(v) => xs.find_key v .val.as_i64
   y(v) => ys.find_key v .val.as_i64
-  rect(ab) => (ab.0.0-ab.1.0+1)*(ab.0.1-ab.1.1+1)
+  rect(ab) => ((|ab.0.0-ab.1.0|)+1)*((|ab.0.1-ab.1.1|)+1)
 
   part1 =>
     input.combine input tuple
@@ -30,13 +30,12 @@ dec9 =>
         clear(e,x) => if !e && floor[x,y]="." then floor[x,y] := " "; false else true
         _ := floor.indices0.foldf false (e,x -> clear e x)
         _ := floor.indices0.foldf false (e,x -> clear e (xs.length-1).as_i64-x)
-      input.foldf (i64 0) e,a->
-             input.foldf e f,b->
-               m0 := ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)
-               xab := [x a.0, x b.0].sort.as_tuple ||> (..)
-               yab := [y a.1, y b.1].sort.as_tuple ||> (..)
-               if m0 > f && (xab.pairs yab
-                                .map p->floor[p.0,p.1] ∀ !=" ") then m0
-                                                                else f
+      input.combine input tuple
+           .foldf (i64 0) e,ab->
+               xab := [x ab.0.0, x ab.1.0].sort.as_tuple ||> (..)
+               yab := [y ab.0.1, y ab.1.1].sort.as_tuple ||> (..)
+               if rect ab > e && (xab.pairs yab
+                                     .map p->floor[p.0,p.1] ∀ !=" ") then rect ab
+                                                                     else e
 
   say "$part1:$part2"
