@@ -1,0 +1,50 @@
+dec9 =>
+
+  input := io.stdin.read_string.trim.split "\n"
+             .map (.split "," .map (.parse_i64.val) .as_tuple) .as_array
+
+  part1 =>
+    input.foldf (i64 0) e,a->
+      input.foldf e f,b->
+        max f (a.0-b.0+1)*(a.1-b.1+1)
+
+  part2 =>
+    m1 := input.foldf (i64 0) e,a->
+          input.filter b->(b.0>=a.0 && b.1>=a.1)
+           .foldf e f,b->
+             # ignoring the back link from last to first here, unlikely that this is the troublesome one:
+             if input.map_pairs p,q->
+                         (p.0=q.0 && a.1=b.1 && (a.0<p.0<b.0) && (min p.1 q.1 < a.1 < max p.1 q.1) ||
+                          p.1=q.1 && a.0=b.0 && (a.1<p.1<b.1) && (min p.0 q.0 < a.0 < max p.0 q.0)    )
+                     .count id = 0
+             then max f (a.0-b.0+1)*(a.1-b.1+1)
+             else f
+    say "m: $m1"
+    m1
+    /*
+    input.foldf (i64 0) e,a->
+      m2 := input.filter b->(b.0>=a.0 && b.1>=a.1)
+           .foldf e f,b->
+             # ignoring the back link from last to first here, unlikely that this is the troublesome one:
+             if input.map_pairs p,q->
+                         (p.0=q.0 && a.1=b.1 && (a.0<p.0<b.0) && (min p.1 q.1 < a.1 < max p.1 q.1) ||
+                          p.1=q.1 && a.0=b.0 && (a.1<p.1<b.1) && (min p.0 q.0 < a.0 < max p.0 q.0)    )
+                     .count id = 0
+             then max f (a.0-b.0+1)*(a.1-b.1+1)
+             else f
+      ignore m2
+      input# .filter b->(b.0>=a.0 && b.1>=a.1)
+           .foldf e f,b->
+             # ignoring the back link from last to first here, unlikely that this is the troublesome one:
+             if input.map_pairs p,q->
+                         (p.0=q.0 && !(max a.0 b.0 < p.0 || p.0 < min a.0 b.0) && (min p.1 q.1 < a.1 < max p.1 q.1 || min p.1 q.1 < b.1 < max p.1 q.1) ||
+                          p.1=q.1 && !(max a.1 b.1 < p.1 || p.1 < min a.1 b.1) && (min p.0 q.0 < a.0 < max p.0 q.0 || min p.0 q.0 < b.0 < max p.0 q.0))
+                     .count id = 0
+             then
+               if m1 = ((|a.0-b.0|) + 1)*((|a.1-b.1|) + 1) then
+                 say "max for $a / $b"
+               max f ((|a.0-b.0|) + 1)*((|a.1-b.1|) + 1)
+             else f
+             */
+
+  say "$part1:$part2"
