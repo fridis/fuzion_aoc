@@ -18,9 +18,12 @@ dec9 =>
     m : mutate is
     m ! ()->
       floor := m.env.new_array2 xs.length.as_i64 ys.length.as_i64 "."
-      show
+      show =>
+        floor.indices1.for_each y->
+          floor.indices0.for_each x->(yak floor[x,y])
+          say ""
+        say ""
       input.for_each (a -> floor[x a.0, y a.1] := "#")
-      show
       (input ++ [input[0]]).map_pairs tuple
                            .for_each ||>p,q->
                              px := x p.0
@@ -30,11 +33,9 @@ dec9 =>
                              for xi := px, xi+(qx-px).sign.as_i64
                                  yi := py, yi+(qy-py).sign.as_i64
                              do
-#                               say "$xi $yi $e"
                                if floor[xi,yi]="." then floor[xi,yi] := "X"
                              until xi=qx && yi=qy
                                unit
-      show
       floor.indices1.for_each y->
         ignore <| floor.indices0.foldf false e,x->
           if !e && floor[x,y]="." then say "$x,$y:$e"; floor[x,y] := " "; false
@@ -43,150 +44,13 @@ dec9 =>
           x := (xs.length-1).as_i64-x0
           if !e && floor[x,y]="." then floor[x,y] := " "; false
                                   else true
-      show
-
-      mx := input.foldf (i64 0) e,a->
-              e0 := input.foldf e f,b->
+      input.foldf (i64 0) e,a->
+              input.foldf e f,b->
                 m0 := ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)
-                if m0 <= f then
-#                  say "eee $f"
-                  f
-                else
-                  xab := (x a.0, x b.0)
-                  yab := (y a.1, y b.1)
-#                  say "$a/$b m0:$m0:{m0=24?"**********":""}{m0>e} $xab $yab"
-                  if ((xab ||> min) .. (xab ||> max)).foldf true g,x->
-                       ((yab ||> min) .. (yab ||> max)).foldf g h,y->
-#                         if (h && floor[x,y]=" ") then
-#                           say "$m0 $a/$b (x:$xab,y:$yab) fail for $x,$y: {floor[x,y]}"
-                         res := h && floor[x,y]!=" "
-#                         say "$a/$b m0:$m0:{m0=24?"**********":""}{m0>e} $xab $yab $h '{floor[x,y]}' res:$res"
-                         res
-                  then
-#                    say "m0: $m0"
-                    m0
-                  else
-#                    say "e: $f"
-                    f
-#              say "--------$e0"
-              e0
-               /*
-               if ((min (x a.0) (x b.0) .. max (x
-
-               r := if inside (a.0, b.1) && inside (b.0, a.1) && cuts a b = 0 then m
-                                                                              else e
-               say "$a/$b {inside (a.0, b.1)} {inside (b.0, a.1)} {cuts a b} -> $r"
-               r
-#    m1
-*/
-
-      show =>
-        floor.indices1.for_each y->
-          floor.indices0.for_each x->(yak floor[x,y])
-          say ""
-        say ""
-      say "FINITO: mx: $mx"
-      mx
-
-/*
-  inside(x) =>
-    c := vcuts x.0 x.1 (i64 1000000)
-    say "cuts for $x is $c"
-    c % 2 = 1
-
-  vcuts(x,y0,y1) =>
-    input.map_pairs p,q->
-           if   p.0=q.0 then 0  # p/q is parallel
-           else if min p.0 q.0 < x < max p.0 q.0 && min y0 y1 < p.1 < max y0 y1 then
-             say "$x/$y0-$y1 cuts $p/$q"
-             1
-           else 0
-         .sum
-
-  hcuts(x0,x1,y) =>
-    input.map_pairs p,q->
-           if   p.1=q.1 then 0  # p/q is parallel
-           else if min p.1 q.1 < y < max p.1 q.1 && min x0 x1 < p.0 < max x0 x1 then 1
-           else 0
-         .sum
-
-  cuts(a,b) =>
-    if a.0=b.0 then vcuts a.0 a.1 b.1
-               else hcuts a.0 b.1 a.0
-*/
-  /*
-  part2 =>
-    m1 := input.foldf (i64 0) e,a->
-            input.foldf e f,b->
-             m := ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)
-             if m <= e then  e
-             else
-               r := if inside (a.0, b.1) && inside (b.0, a.1) && cuts a b = 0 then m
-                                                                              else e
-               say "$a/$b {inside (a.0, b.1)} {inside (b.0, a.1)} {cuts a b} -> $r"
-               r
-    m1
-    */
-/*
-             else
-               e
-             if ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)=24 then
-               say "got 24 for $a $b"
-             # ignoring the back link from last to first here, unlikely that this is the troublesome one:
-             if input.map_pairs p,q->
-                         if (p.0=q.0 && !(max a.0 b.0 <= p.0 || p.0 <= min a.0 b.0) && (min p.1 q.1 <= a.1 <= max p.1 q.1 || min p.1 q.1 <= b.1 <= max p.1 q.1) ||
-                             p.1=q.1 && !(max a.1 b.1 <= p.1 || p.1 <= min a.1 b.1) && (min p.0 q.0 <= a.0 <= max p.0 q.0 || min p.0 q.0 <= b.0 <= max p.0 q.0))
-                         then say "$m1a: bad: $a/$b smashes $p/$q: {p.0=q.0 && !(max a.0 b.0 <= p.0 || p.0 <= min a.0 b.0) && (min p.1 q.1 <= a.1 <= max p.1 q.1 || min p.1 q.1 <= b.1 <= max p.1 q.1)}{p.1=q.1 && !(max a.1 b.1 <= p.1 || p.1 <= min a.1 b.1) && (min p.0 q.0 <= a.0 <= max p.0 q.0 || min p.0 q.0 <= b.0 <= max p.0 q.0)}:{p.1=q.1} && !({max a.1 b.1 <= p.1}|| {p.1 <= min a.1 b.1}) && ({min p.0 q.0 <= a.0 <= max p.0 q.0} || {min p.0 q.0 <= b.0 <= max p.0 q.0})"; true
-                         else if m1a=30 then say "NO CLASH: $a/$b vs. $p$q"; false
-                         else false
-                     .count id = 0
-             then max f ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)
-             else f
-             */
-  /*
-    m1 := input.foldf (i64 0) e,a->
-          input#.filter b->(b.0>=a.0 && b.1>=a.1)
-           .foldf e f,b->
-             m1a := ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)
-             if ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)=24 then
-               say "got 24 for $a $b"
-             # ignoring the back link from last to first here, unlikely that this is the troublesome one:
-             if input.map_pairs p,q->
-                         if (p.0=q.0 && !(max a.0 b.0 <= p.0 || p.0 <= min a.0 b.0) && (min p.1 q.1 <= a.1 <= max p.1 q.1 || min p.1 q.1 <= b.1 <= max p.1 q.1) ||
-                             p.1=q.1 && !(max a.1 b.1 <= p.1 || p.1 <= min a.1 b.1) && (min p.0 q.0 <= a.0 <= max p.0 q.0 || min p.0 q.0 <= b.0 <= max p.0 q.0))
-                         then say "$m1a: bad: $a/$b smashes $p/$q: {p.0=q.0 && !(max a.0 b.0 <= p.0 || p.0 <= min a.0 b.0) && (min p.1 q.1 <= a.1 <= max p.1 q.1 || min p.1 q.1 <= b.1 <= max p.1 q.1)}{p.1=q.1 && !(max a.1 b.1 <= p.1 || p.1 <= min a.1 b.1) && (min p.0 q.0 <= a.0 <= max p.0 q.0 || min p.0 q.0 <= b.0 <= max p.0 q.0)}:{p.1=q.1} && !({max a.1 b.1 <= p.1}|| {p.1 <= min a.1 b.1}) && ({min p.0 q.0 <= a.0 <= max p.0 q.0} || {min p.0 q.0 <= b.0 <= max p.0 q.0})"; true
-                         else if m1a=30 then say "NO CLASH: $a/$b vs. $p$q"; false
-                         else false
-                     .count id = 0
-             then max f ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)
-             else f
-    say "m: $m1"
-    m1
-    */
-    /*
-    input.foldf (i64 0) e,a->
-      m2 := input.filter b->(b.0>=a.0 && b.1>=a.1)
-           .foldf e f,b->
-             # ignoring the back link from last to first here, unlikely that this is the troublesome one:
-             if input.map_pairs p,q->
-                         (p.0=q.0 && a.1=b.1 && (a.0<p.0<b.0) && (min p.1 q.1 < a.1 < max p.1 q.1) ||
-                          p.1=q.1 && a.0=b.0 && (a.1<p.1<b.1) && (min p.0 q.0 < a.0 < max p.0 q.0)    )
-                     .count id = 0
-             then max f (a.0-b.0+1)*(a.1-b.1+1)
-             else f
-      ignore m2
-      input# .filter b->(b.0>=a.0 && b.1>=a.1)
-           .foldf e f,b->
-             # ignoring the back link from last to first here, unlikely that this is the troublesome one:
-             if input.map_pairs p,q->
-                         (p.0=q.0 && !(max a.0 b.0 < p.0 || p.0 < min a.0 b.0) && (min p.1 q.1 < a.1 < max p.1 q.1 || min p.1 q.1 < b.1 < max p.1 q.1) ||
-                          p.1=q.1 && !(max a.1 b.1 < p.1 || p.1 < min a.1 b.1) && (min p.0 q.0 < a.0 < max p.0 q.0 || min p.0 q.0 < b.0 < max p.0 q.0))
-                     .count id = 0
-             then
-               if m1 = ((|a.0-b.0|) + 1)*((|a.1-b.1|) + 1) then
-                 say "max for $a / $b"
-               max f ((|a.0-b.0|) + 1)*((|a.1-b.1|) + 1)
-             else f
-             */
+                xab := (x a.0, x b.0)
+                yab := (y a.1, y b.1)
+                if (m0 > f && ((xab ||> min) .. (xab ||> max)).foldf true g,x->
+                              ((yab ||> min) .. (yab ||> max)).foldf g   (h,y -> h && floor[x,y]!=" ")) then m0
+                                                                                                        else f
 
   say "$part1:$part2"
