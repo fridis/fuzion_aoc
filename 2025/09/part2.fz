@@ -3,11 +3,6 @@ dec9 =>
   input := io.stdin.read_string.trim.split "\n"
              .map (.split "," .map (.parse_i64.val) .as_tuple) .as_array
 
-  xs := input.map (.0) .unique .sort   # all used x coordinates
-  ys := input.map (.1) .unique .sort   # all used y coordinates
-  x(v) => xs.find_key v .val.as_i64    # compress x to index in xs
-  y(v) => ys.find_key v .val.as_i64    # compress y to index in ys
-
   # area or rectangle with corners a and b
   rect(a,b) => ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)
 
@@ -16,6 +11,11 @@ dec9 =>
          .max
 
   part2 =>
+    xs := input.map (.0) .unique .sort   # all used x coordinates
+    ys := input.map (.1) .unique .sort   # all used y coordinates
+    x(v) => xs.find_key v .val.as_i64    # compress x to index in xs
+    y(v) => ys.find_key v .val.as_i64    # compress y to index in ys
+
     m : mutate is
     m ! ()->
       floor := m.env.new_array2 xs.length.as_i64 ys.length.as_i64 "."
