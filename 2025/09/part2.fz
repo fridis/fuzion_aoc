@@ -35,8 +35,8 @@ dec9 =>
       floor.indices1.for_each y->
         clear(x) => if floor[x,y]="." then floor[x,y] := " "; true
                                       else false
-        _ := floor.indices0        .foldf true (e,x -> e && clear x)
-        _ := floor.indices0.reverse.foldf true (e,x -> e && clear x)
+        _ := floor.indices0        .take_while clear .count
+        _ := floor.indices0.reverse.take_while clear .count
 
       # try all rectangles
       input.combine input a,b->
