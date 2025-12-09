@@ -2,7 +2,7 @@ dec1_part1 is
 
   LM : mutate is
   input := LM ! ()->
-    ((io.stdin LM) ! ()->(io.buffered.read_lines LM)).filter !=""
+    io.stdin.reader LM ! ()->io.buffered LM .read_lines.filter !=""
 
   data := input.map s->
     n := s.split "   "
@@ -11,6 +11,6 @@ dec1_part1 is
   l := data.map x->x.0
   r := data.map x->x.1
 
-  part1 => l.sort.zip r.sort a,b->(|a-b|) |> sum
+  part1 => l.sort.zip r.sort a,b->(|a-b|) .sum
 
   say part1

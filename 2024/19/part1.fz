@@ -3,7 +3,7 @@ dec19 =>
   input := io.stdin.read_lines
   input1 := input[0].split ", " .map sarr .as_array
   input2 := input.drop 2 .filter !="" .map sarr
-  sarr(s) => String.from_bytes s.utf8.as_array
+  sarr(s) => String.from s.utf8.as_array
 
   sorted := input1.sort_by a,b->a.byte_length<=b.byte_length
 
