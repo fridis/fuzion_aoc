@@ -1,0 +1,52 @@
+dec10 =>
+
+  input := io.stdin.read_string.trim.split "\n"
+             .filter !=""
+             .map (.split " ") .map data .as_array
+  data(s) is
+    lights := s[0].substring 1 s[0].byte_length-1 .codepoints.foldf (i32,i32) (0,1) e,c->
+                (e.0|(c="#"?e.1:0),2*e.1)
+               .0
+    buttons := (s.drop 1 .take s.count-2).map (b->b.substring 1 b.byte_length-1 .split "," .foldf 0 e,c->e|1<<c.parse_i32.val)
+    joltage := s.last.val.substring 1 .replace "}" "" .split "," .map (.parse_i32.val) .as_array
+#    say buttons
+#    say "{lights.bin} {buttons.map (.bin)}"
+    try(l,n) =>
+      if l=lights then true
+      else if n=0 then false
+      else
+        for b in buttons
+        until try l^b n-1 then
+        #          say "press {b.bin}"
+#    say "READ: {data.this} from $s"
+    tryj(n0) =>
+      m : mutate is
+      m ! ()->
+        a := m.new_array joltage.length.as_i64 0
+        trya(n) =>
+          if joltage.indices ∀ i->joltage[i]=a[i.as_i64] then true
+          else if n=0 then false
+          else if joltage.indices ∀ i->joltage[i]>=a[i.as_i64] then
+            for b in buttons do
+              for i in joltage.indices do
+                a[i.as_i64] := a[i.as_i64]+((b>>i)&1)
+              res := trya n-1
+              for i in joltage.indices do
+                a[i.as_i64] := a[i.as_i64]-((b>>i)&1)
+            until res then
+          else
+            false
+        trya n0
+    public redef as_string String => "{lights.bin} {buttons.map (.bin)} $joltage"
+
+  part1 =>
+    input.map d->
+           ((0..).drop_while n->(!d.try 0 n))[0]
+         .sum
+
+  part2 =>
+    input.map d->
+           ((0..).drop_while n->(say "$n: $d"; !d.tryj n))[0]
+         .sum
+
+  say "$part1:$part2"

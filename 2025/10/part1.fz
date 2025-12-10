@@ -22,8 +22,7 @@ dec10 =>
 
   part1 =>
     input.map d->
-           (0..).drop_while n->(!d.try 0 n)
-                .first.val
+           ((0..).drop_while n->(!d.try 0 n))[0]
          .sum
 
   part2 =>
