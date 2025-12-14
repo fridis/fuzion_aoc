@@ -11,7 +11,7 @@ dec10 =>
     joltage := s.last.val.substring 1 .replace "}" "" .split "," .map (.parse_i32.val) .as_array
 
     try(l,n) =>
-      l=lights || n!=0 && (buttons ∃ (b->try l^b n-1))
+      l=lights || n!=0 && (buttons ∃ b->try l^b n-1)
 
     p2 =>
       # solution proposed by u/tenthmascot at
