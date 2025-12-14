@@ -12,106 +12,27 @@ dec10 =>
                .0
     buttons := (s.drop 1 .take s.count-2).map (b->b.substring 1 b.byte_length-1 .split "," .foldf 0 e,c->e|1<<c.parse_i32.val) .as_array
     joltage := s.last.val.substring 1 .replace "}" "" .split "," .map (.parse_i32.val) .as_array
-#    say buttons
-#    say "{lights.bin} {buttons.map (.bin)}"
+
     try(l,n) =>
       if l=lights then true
       else if n=0 then false
       else
         for b in buttons
         until try l^b n-1 then
-        #          say "press {b.bin}"
-#    say "READ: {data.this} from $s"
 
     p2 =>
       solve(j) : memoize => keep [id]++j _->
-#        say "solve($j) for {data.this}"
         if j ∀ =0 then 0
         else
           l := j.indices.foldf 0 e,ji->e|((j[ji]%2)<<ji)
-#          h := j.map (/2) .as_array
-#          say <| (0..(2**(buttons.length)-1)).filter b->(l = buttons.indices.foldf 0 (e,bi->(b>>bi)%2=1 ? e^buttons[bi] : e))
-#          say <| (0..(2**(buttons.length)-1)).filter b->(l = buttons.indices.foldf 0 (e,bi->(b>>bi)%2=1 ? e^buttons[bi] : e))
-#                                      .map b->(b.ones_count + solve h)
           r0 := (0..(2**(buttons.length)-1)).filter b->(l = buttons.indices.foldf 0 (e,bi->(b>>bi)%2=1 ? e^buttons[bi] : e))
                                       .map b->
                                         cs := j.indices.map ji->(buttons.indices.map bi->((b>>bi)%2=1 ? (buttons[bi]>>ji)%2 : 0)).sum
                                         hh := j.zip cs (f,g->f-g) .map /2 .as_array
-                                        #say "hh is $hh from $j and $cs"
-                                        (#say "{b.bin}: {b.ones_count} + 2*{solve hh} (hh=$hh, j=$j)";
-                                         (b.ones_count + 2 * solve hh))
+                                        b.ones_count + 2 * solve hh
                                       .min.or_else 1000000
-         # say "  $r0 for $j"
           r0
-      res := solve joltage
-#      say "$res for {data.this}"
-#      say "-----------------------------------"
-      res
-
-
-
-/*
-    tryj(n0) =>
-      m : mutate is
-      m ! ()->
-        a := m.new_array joltage.length.as_i64 0
-        trya(n) =>
-          if joltage.indices ∀ i->joltage[i]=a[i.as_i64] then true
-          else if n=0 then false
-          else if joltage.indices ∀ i->joltage[i]>=a[i.as_i64] then
-            for b in buttons do
-              for i in joltage.indices do
-                a[i.as_i64] := a[i.as_i64]+((b>>i)&1)
-              res := trya n-1
-              for i in joltage.indices do
-                a[i.as_i64] := a[i.as_i64]-((b>>i)&1)
-            until res then
-          else
-            false
-        trya n0
-*/
-    solve =>
-        done(c) => c.indices0 ∀ (j->c.indices1.count (b -> c[j,b]!=0) <= 1)
-        show(c,r) =>
-          c.indices0.for_each i->(say "{r[i]} = {c.indices1.map b->"{c[i,b]}*b$b"}");
-        coeff := array2 joltage.length buttons.length l,b->(buttons[b]>>l)%2
-        reslts := joltage
-        show coeff reslts
-        for c := coeff, c2
-            r := reslts, r2
-        while !done c do
-          c2,r2 := for b in c.indices1
-                       oj := c.indices0.drop_while j->c[j,b]<=0 .first
-                   until oj?? then
-                       j := oj.val
-                       say "eliminating b$b in line $j"
-                       nc0 := array2 c.length0 c.length1 jj,bb->
-                         c[jj,bb] + c[jj,b]*(-c[j,bb])
-                       nr0 := array r.length jj->
-                         r[jj] - c[jj,b]*r[j]
-                       say "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
-                       show nc0 nr0
-                       say "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
-                       gcds0 := array r.length i->
-                         gcd := (nc0.indices1.foldf |nr0[i]| (e,x->e.gcd |nc0[i,x]|))
-                         if gcd=0 || nr0[i].sign=0 then 1 else gcd*nr0[i].sign
-                       say gcds0
-                       gcds := gcds0 # gcds0.map (max 1) .as_array
-                       say gcds
-                       nc := array2 nc0.length0 nc0.length1  jj,bb->nc0[jj,bb]/gcds[jj]
-                       nr := array  nr0.length              (jj   ->nr0[jj   ]/gcds[jj])
-                       say "WWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-                       show nc nr
-                       say "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-                       (nc,nr)
-                   else
-                       panic "no candidate found!"
-        else
-          say "--------------------------------------------------"
-          "hi"
-
-
-    public redef as_string String => "$id: {lights.bin} {buttons.map (.bin)} $joltage"
+      solve joltage
 
   part1 =>
     input.map d->
@@ -119,20 +40,8 @@ dec10 =>
          .sum
 
   part2 =>
-  # trying a solution proposed by u/tenthmascot at https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
-    input.map d->
-           r := d.p2
-           say "Line {d.id+1}/{input.length}: answer {r}"
-           r
+    # solution proposed by u/tenthmascot at https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
+    input.map (.p2)
          .sum
-
-
-  part2_using_linear_algebra =>
-    # solve system of linear equations!
-    input.map d->
-           #((0..).drop_while n->(say "$n: $d"; !d.tryj n))[0]
-           r := d.solve
-           say "Line {d.id+1}/{input.length}: answer {r}"
-#         .sum
 
   say "$part1:$part2"
