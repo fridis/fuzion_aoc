@@ -1,46 +1,40 @@
 dec10 =>
 
-  cnt := mut 0
-
   input := io.stdin.read_string.trim.split "\n"
              .filter !=""
              .map (.split " ") .map data .as_array
   data(s) is
-    id := cnt+0; cnt <- cnt+1
     lights := s[0].substring 1 s[0].byte_length-1 .codepoints.foldf (i32,i32) (0,1) e,c->
                 (e.0|(c="#"?e.1:0),2*e.1)
                .0
-    buttons := (s.drop 1 .take s.count-2).map (b->b.substring 1 b.byte_length-1 .split "," .foldf 0 e,c->e|1<<c.parse_i32.val) .as_array
+    buttons := (s.drop 1 .take s.count-2).map (.substring 1 .replace ")" "" .split "," .foldf 0 e,c->e|1<<c.parse_i32.val) .as_array
     joltage := s.last.val.substring 1 .replace "}" "" .split "," .map (.parse_i32.val) .as_array
 
     try(l,n) =>
-      if l=lights then true
-      else if n=0 then false
-      else
-        for b in buttons
-        until try l^b n-1 then
+      l=lights || n!=0 && (buttons ∃ (b->try l^b n-1))
 
     p2 =>
-      solve(j) : memoize => keep [id]++j _->
+      # solution proposed by u/tenthmascot at
+      # https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
+      solve(j) : memoize => keep "$s/$j" _->
         if j ∀ =0 then 0
         else
-          l := j.indices.foldf 0 e,ji->e|((j[ji]%2)<<ji)
-          r0 := (0..(2**(buttons.length)-1)).filter b->(l = buttons.indices.foldf 0 (e,bi->(b>>bi)%2=1 ? e^buttons[bi] : e))
-                                      .map b->
-                                        cs := j.indices.map ji->(buttons.indices.map bi->((b>>bi)%2=1 ? (buttons[bi]>>ji)%2 : 0)).sum
-                                        hh := j.zip cs (f,g->f-g) .map /2 .as_array
-                                        b.ones_count + 2 * solve hh
-                                      .min.or_else 1000000
-          r0
+          l := j.indexed.map ||>i,jo->jo%2<<i .fold1 (|)
+          (0..(2**(buttons.length)-1))
+            .filter b->(l = buttons.indexed.map ||>bi,bu->(b>>bi)%2*bu .fold1 (^))
+            .map b->
+               hh := j.indexed.map ||>i,jo->
+                        (jo - buttons.indices.map bi->((b>>bi)%2*((buttons[bi]>>i)%2)) .sum)/2
+                      .as_array
+               b.ones_count + 2 * solve hh
+            .min.or_else 1000000
       solve joltage
 
   part1 =>
-    input.map d->
-           ((0..).drop_while n->(!d.try 0 n))[0]
+    input.map d->((0..).drop_while n->(!d.try 0 n))[0]
          .sum
 
   part2 =>
-    # solution proposed by u/tenthmascot at https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
     input.map (.p2)
          .sum
 
