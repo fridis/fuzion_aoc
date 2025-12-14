@@ -6,7 +6,7 @@ dec10 =>
              .filter !=""
              .map (.split " ") .map data .as_array
   data(s) is
-    id := cnt; cnt <- cnt+1
+    id := cnt+0; cnt <- cnt+1
     lights := s[0].substring 1 s[0].byte_length-1 .codepoints.foldf (i32,i32) (0,1) e,c->
                 (e.0|(c="#"?e.1:0),2*e.1)
                .0
@@ -24,7 +24,7 @@ dec10 =>
 #    say "READ: {data.this} from $s"
 
     p2 =>
-      solve(j) : memoize => keep j _->
+      solve(j) : memoize => keep [id]++j _->
 #        say "solve($j) for {data.this}"
         if j ∀ =0 then 0
         else
@@ -37,14 +37,15 @@ dec10 =>
                                       .map b->
                                         cs := j.indices.map ji->(buttons.indices.map bi->((b>>bi)%2=1 ? (buttons[bi]>>ji)%2 : 0)).sum
                                         hh := j.zip cs (f,g->f-g) .map /2 .as_array
-                                        say "hh is $hh from $j and $cs"
-                                        (say "{b.bin}: {b.ones_count} + 2*{solve hh} (hh=$hh, j=$j)"; (b.ones_count + 2 * solve hh))
+                                        #say "hh is $hh from $j and $cs"
+                                        (#say "{b.bin}: {b.ones_count} + 2*{solve hh} (hh=$hh, j=$j)";
+                                         (b.ones_count + 2 * solve hh))
                                       .min.or_else 1000000
-          say "  $r0 for $j"
+         # say "  $r0 for $j"
           r0
       res := solve joltage
-      say "$res for {data.this}"
-      say "-----------------------------------"
+#      say "$res for {data.this}"
+#      say "-----------------------------------"
       res
 
 
@@ -119,7 +120,10 @@ dec10 =>
 
   part2 =>
   # trying a solution proposed by u/tenthmascot at https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
-    input.map (.p2)
+    input.map d->
+           r := d.p2
+           say "Line {d.id+1}/{input.length}: answer {r}"
+           r
          .sum
 
 
@@ -127,7 +131,8 @@ dec10 =>
     # solve system of linear equations!
     input.map d->
            #((0..).drop_while n->(say "$n: $d"; !d.tryj n))[0]
-           d.solve
+           r := d.solve
+           say "Line {d.id+1}/{input.length}: answer {r}"
 #         .sum
 
   say "$part1:$part2"
