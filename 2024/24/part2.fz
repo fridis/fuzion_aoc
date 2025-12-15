@@ -36,7 +36,7 @@ dec24 =>
             if      op = "AND" then a && b
             else if op = "OR"  then a || b
             else if op = "XOR" then a ^  b
-            else panic "unkown $op"
+            else panic "unknown $op"
 
     redef fix(n i32) =>
       fix <- n+fix

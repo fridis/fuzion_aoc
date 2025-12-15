@@ -1,7 +1,7 @@
 dec5_part2 =>
 
   LM : mutate is
-  input := LM ! ()->((io.stdin.reader LM) ! ()->(io.buffered LM .read_lines))
+  input := LM ! ()->(io.stdin.reader LM ! ()->io.buffered LM .read_lines)
 
   # the relation defined by input as an array
   rel := input.filter (.contains "|")

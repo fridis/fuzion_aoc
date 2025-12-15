@@ -7,7 +7,7 @@ dec20 =>
   point(x,y) : property.equatable is
     xl => x.as_i64
     yl => y.as_i64
-    redef type.equality(a,b point.this) => a.x=b.x && a.y=b.y
+    public redef type.equality(a,b point.this) bool => a.x=b.x && a.y=b.y
     neighbors => [point x+1 y, point x-1 y, point x y+1, point x y-1]
       .filter (.valid)
     valid => 0 <= x < w && 0 <= y < h

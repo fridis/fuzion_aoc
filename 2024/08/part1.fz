@@ -2,7 +2,7 @@ dec8_part1 =>
 
   LM : mutate is
   LM ! ()->
-    arr := (io.stdin LM) ! ()->(io.buffered.read_lines LM)
+    arr := io.stdin.reader LM ! ()->io.buffered LM .read_lines
              .filter !="" .map (.codepoints.as_array) .as_array
 
     h := arr.length;    hl := h.as_i64
@@ -13,7 +13,7 @@ dec8_part1 =>
 
     part(n) =>
       antennas := (mutate.array (list (i32,i32))).type.new LM 128 nil
-      antinodes := (mutate.array2 bool).type.new LM wl hl _,_->false
+      antinodes := (mutate.array2 bool).type.new LM wl hl false
       antinode(xi,yi) =>
         x := xi.as_i64; y := yi.as_i64
         if 0 <= x < wl && 0 <= y < hl && !antinodes[x,y] then
@@ -26,7 +26,7 @@ dec8_part1 =>
             a := antennas[vl]
             for axy in a do
               axy ||> ax, ay ->
-                for i = 1 .. (n=1 ? 1 : max w h) do
+                for i in 1 .. (n=1 ? 1 : max w h) do
                   antinode  x+i*(x-ax)  y+i*(y-ay)
                   antinode ax+i*(ax-x) ay+i*(ay-y)
 
