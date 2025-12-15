@@ -1,0 +1,38 @@
+dec11 =>
+
+#  names := mut (Sequence String) []
+
+  input := io.stdin.read_string.trim.split "\n"
+             .map (.split ": " .as_tuple)
+  names := (input.map (.0) ++ ["out"]).as_array
+  nums := container.hash_map names 0..names.count-1
+  nm(name String) => nums[name].val
+  say "A"
+  nodes := input.map t->(node (nm t.0) (t.1.split " " .map nm))
+             .as_array
+  say "B"
+
+  node(n, succs) is
+    public redef as_string String => "$n: $succs ({names[n]}: {succs.map s->names[s]})}\n"
+
+#  nm(name String) : memoize => keep name _->
+#    names <- names ++ [name]
+#    names.count-1
+
+  out := nm "out"
+
+  count(n i32) i32 : memoize => keep n _->
+    say "count: $n {names[n]}"
+    if nodes[n].succs ∃ (=out) then
+      1
+    else
+      nodes[n].succs.map nn->(count nn)
+                    .sum
+
+
+  part1 =>
+    count (nm "you")
+
+  part2 =>
+
+  say "$part1:$part2"
