@@ -1,41 +1,25 @@
 dec11 =>
 
-  input := io.stdin.read_string.trim.split "\n"
-             .map (.split ": " .as_tuple)
-  names := (input.map (.0) ++ ["out"]).as_array
-  nums := container.hash_map names 0..names.count-1
-  num(name String) => nums[name].val
-  nodes := input.map t->(node (num t.0) (t.1.split " " .map dec11.this.num)) .as_array
+  input := io.stdin.read_string.trim.split "\n" .map (.split ": " .as_tuple)
+  nums := container.hash_map (input.map (.0)) 0..input.count-1
+  num(name) => nums[name].or_else -1
+  succs := input.map (.1.split " " .map dec11.this.num) .as_array
 
-  node(n, succs) is
-    public redef as_string String => "$n: $succs ({names[n]}: {succs.map s->names[s]})}\n"
-
-  out := num "out"
   dac := num "dac"
   fft := num "fft"
 
-  count(n i32) u64 : memoize => keep n _->
-    if nodes[n].succs ∃ (=out) then
-      u64 1
+  cnts(n,d,f,b u64) is  # counts (n)one, (d)ac, (f)ft, (b)oth
+
+  count(n i32) cnts : memoize => keep n _->
+    if n < 0 then cnts 1 0 0 0
     else
-      nodes[n].succs.map nn->(count nn)
-                    .sum
+      r := succs[n].map count
+                   .fold1 a,b->(cnts a.n+b.n a.d+b.d a.f+b.f a.b+b.b)
+      if      n=dac then cnts 0 r.n+r.d 0       r.d+r.f+r.b
+      else if n=fft then cnts 0 0       r.n+r.f r.d+r.f+r.b
+                    else r
 
-  count2(n i32) (u64,u64,u64,u64) : memoize => keep n _->
-    if nodes[n].succs ∃ (=out) then
-      (u64 1,u64 0,u64 0,u64 0)
-    else
-      res := nodes[n].succs.map nn->(count2 nn)
-                           .foldf (u64 0, u64 0, u64 0, u64 0) a,b->(a.0+b.0,a.1+b.1,a.2+b.2,a.3+b.3)
-      if      n=dac then (u64 0,res.0+res.1,u64 0,res.1+res.2+res.3)
-      else if n=fft then (u64 0,u64 0,res.0+res.2,res.1+res.2+res.3)
-                    else res
-
-
-  part1 =>
-    count (num "you")
-
-  part2 =>
-    count2 (num "svr")
+  part1 => count (num "you") .n
+  part2 => count (num "svr") .b
 
   say "$part1:$part2"
