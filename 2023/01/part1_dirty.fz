@@ -4,13 +4,14 @@ dec1 is
   codepoint_type_ascii_digit => u32 0x30 .. 0x39
   # NYI: #2285: this should be public in codepoint, had to copy it over!
 
-  r := io.stdin.with ()->
+  LM : mutate is
+  r := LM ! ()->io.stdin.reader LM ! ()->
     for
 
       prev_sum := u32 0, sum
       # NYI: #2282: would be nice if `u32` would be inferred and not needed explicitly here
 
-      l := io.buffered.read_line
+      l := io.buffered LM .read_line ? s String => s | * => ""
       # NYI: #2284: read_line should return a choice of String | end_of_file or similar
 
       l2 := l.codepoints

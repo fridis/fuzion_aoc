@@ -30,10 +30,10 @@ dec16 =>
       set_cost(d,p,cost) => costs[d,p.y][p.x.as_i64] := cost
 
       move(d,p,cost) =>
-        p2 := if      d = 0 then point p.y+1 p.x   // up backwardds, i.e., down
-              else if d = 1 then point p.y   p.x+1 // left backwards, i.e., right
-              else if d = 2 then point p.y-1 p.x   // down backwards, i.e., up
-              else               point p.y   p.x-1 // right backwards, i.e. left
+        p2 := if      d = 0 then point p.y+1 p.x   # up backwards, i.e., down
+              else if d = 1 then point p.y   p.x+1 # left backwards, i.e., right
+              else if d = 2 then point p.y-1 p.x   # down backwards, i.e., up
+              else               point p.y   p.x-1 # right backwards, i.e. left
         if (".S".contains area[p2.y,p2.x] &&
             cost+1 < cur_cost d p2 &&
             cost+1 < cur_cost 3 s)

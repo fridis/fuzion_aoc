@@ -2,44 +2,45 @@
 
   say "start"
   bytes0 =>
-    o := io.stdin.with ()->
+    LM : mutate is
+    o := LM ! ()->io.stdin.reader LM ! ()->
       for
-        r Sequence u8 := [], r++n
-        n := (io.buffered.read_bytes 10000)
+        r0 Sequence u8 := [], r0++n
+        n := (io.buffered LM .read_bytes 10000)
       while n.count > 0 else
-        r
-    o.val
+        r0
+    o
   bytes := bytes0
   say "got bytes"
   say "got bytes {bytes.count}"
   input :=
-    ref : String
-      utf8 => bytes
+    ref : String is
+      public redef utf8 Sequence u8 => bytes
   say "got input {input.byte_length}"
   lines := input.split "\n"
-                 .map s->(String.type.from_bytes s.utf8.as_array)
+                 .map s->(String.type.from s.utf8.as_array)
                  .filter !=""
   say "got lines {lines.count}"
   ls := lines.as_array
   say "got ls {ls.count}"
 
   handbid(s) =>
-    s := s.split
-    say s
-    handbid (hand s[0]) s[1].parse_i32.val
+    s2 := s.split
+    say s2
+    handbid (hand s2[0]) s2[1].parse_i32.val
   handbid2(s) =>
-    s := s.split
-    say s
-    handbid2 (hand s[0]) s[1].parse_i32.val
+    s2 := s.split
+    say s2
+    handbid2 (hand s.codepoints[0]) s2[1].parse_i32.val
 
   handbid(h hand, bid i32) : property.orderable is
-    redef as_string => "{h.s} $bid"
-    public type.lteq(a, b handbid.this) bool is
+    public redef as_string String => "{h.s} $bid"
+    public redef type.lteq(a, b handbid.this) bool =>
       cmp a.h b.h
 
   handbid2(h hand, bid i32) : property.orderable is
-    redef as_string => "{h.s} $bid"
-    public type.lteq(a, b handbid2.this) bool is
+    public redef as_string String => "{h.s} $bid"
+    public redef type.lteq(a, b handbid2.this) bool =>
       cmp2 a.h b.h
 
   cmp(a, b hand) =>
@@ -56,7 +57,14 @@
              else a.ranked2 <= b.ranked2 # a.sorted <= b.sorted
       res
 
-  five_of_a_kind, four_of_a_kind, full_house, three_of_a_kind, two_pair, one_pair, high_card.
+  five_of_a_kind is
+  four_of_a_kind is
+  full_house is
+  three_of_a_kind is
+  two_pair is
+  one_pair is
+  high_card is
+
   kind : choice five_of_a_kind four_of_a_kind full_house three_of_a_kind two_pair one_pair high_card is
     ord => match kind.this
       five_of_a_kind => 10
@@ -72,20 +80,20 @@
   r     := "omlkj98765432".codepoints
 
   hand(s String) : property.orderable is
-    rankedl := s.codepoints.map_sequence String x->{r[(ranks.find x).get] /* (codepoint (65+(ranks.find x).get).as_u32)*/}
+    rankedl := s.codepoints.map String x->{r[(ranks.find x).get] /* (codepoint (65+(ranks.find x).get).as_u32)*/}
     ranked := rankedl.fold String.type.concat
-    sortedr := container.sorted_array_of String rankedl
+    sortedr := container.sorted_array String rankedl String.lteq
     sorted := sortedr.fold String.type.concat
     sa := sorted.codepoints.as_array
 
     j2 String := r[(ranks2.find "J").get]
-    rankedl2 := s.codepoints.map_sequence String x->r[(ranks2.find x).get]
+    rankedl2 := s.codepoints.map String x->r[(ranks2.find x).get]
     ranked2 := rankedl2.fold String.type.concat
-    sortedr2 := container.sorted_array_of String rankedl2
+    sortedr2 := container.sorted_array String rankedl2 String.lteq
     sorted2 := sortedr2.fold String.type.concat
     sa2 := sorted2.codepoints.as_array
 
-    #sorted := (container.sorted_array_of (s.codepoints.map_sequence String x->x)).fold String.type.concat
+    #sorted := (container.sorted_array_of (s.codepoints.map String x->x)).fold String.type.concat
 
     k2 := kk2
     k := kk
@@ -142,7 +150,7 @@
                                      sa2[2] =  sa2[3]            ||
                                                sa2[3] =  sa2[4]) then one_pair
         else if (j 0) then one_pair
-//        else if (j 1 || j 2 || j 3 || j 4) panic "**** FAILED {hand.this}"
+        # else if (j 1 || j 2 || j 3 || j 4) panic "**** FAILED {hand.this}"
         else high_card
       )
       say "kk2 of $s $sa2 {j 3} {j 4} => {res.ord}  j2: $j2"
@@ -151,8 +159,8 @@
 
     say "got $s {k.ord} $sa type 2 {k2.ord} $sorted2"
 
-    redef as_string => $sorted
-    public type.lteq(a, b hand.this) bool is
+    public redef as_string String => $sorted
+    public redef type.lteq(a, b hand.this) bool =>
      a.sorted2 <= b.sorted2
 
 
@@ -161,26 +169,27 @@
     a := ls.map x->(handbid x)
 #    (container.sorted_array_of a).zip (1..) a,b->a.bid*b
 #    (container.sorted_array_of a).zip [1,2,3,4,5] a,b->a.bid*b
-    sa := container.sorted_array_of a
-    for i := 0 , i+1
-        r := 0, r+w
-    while i<sa.length do
-      w := (i+1)*sa[i].bid
-      say "{sa[i]} {i>sa.length-2 || sa[i] >= sa[i+1]} {sa[i].bid} $w {r+w}"
-    r := sa.zip ints a,b->a.bid*b
-    r.fold i32.type.sum
+    sa := container.sorted_array a handbid.type.lteq
+    _ :=
+      for i := 0 , i+1
+          r0 := 0, r0+w
+      while i<sa.length do
+        w := (i+1)*sa[i].bid
+        say "{sa[i]} {i>sa.length-2 || sa[i] >= sa[i+1]} {sa[i].bid} $w {r0+w}"
+    r1 := sa.zip ints x,y->x.bid*y
+    r1.fold i32.type.sum
 
   part2 =>
     a := ls.map x->(handbid2 x)
 #    (container.sorted_array_of a).zip (1..) a,b->a.bid*b
 #    (container.sorted_array_of a).zip [1,2,3,4,5] a,b->a.bid*b
-    sa := container.sorted_array_of a
-    r := sa.zip ints a,b->a.bid*b
-    r.fold i32.type.sum
+    sa := container.sorted_array a handbid2.type.lteq
+    r := sa.zip ints x,y->x.bid*y
+    part2.this.r.fold i32.type.sum
 
 
 
-#  p1 := part1
+  p1 := part1
   p2 := part2
 
-  say "part2 $p2"
+  say "$p1:$p2"

@@ -2,7 +2,7 @@ dec1 is
 
   LM : mutate is
   input := LM ! ()->
-    (io.stdin.reader LM) ! ()->(io.buffered LM .read_lines).filter !=""
+    io.stdin.reader LM ! ()->io.buffered LM .read_lines .filter !=""
 
   part1 =>
     for

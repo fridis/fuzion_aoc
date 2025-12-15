@@ -6,7 +6,7 @@ parse_err => parse_err.env.cause unit
 dec3_part2 =>
 
   LM : mutate is
-  input := LM ! ()->(io.stdin.reader LM) ! ()->(io.buffered LM .read_lines).filter !=""
+  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines.filter !=""
 
   data := input.reduce "" (+) .codepoints
 

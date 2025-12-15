@@ -1,9 +1,12 @@
 dec10_part2 =>
 
   LM : mutate is
-  arr := LM ! ()->
-          (io.stdin.reader LM) ! ()->(io.buffered LM .read_lines)
-             .filter !="" .map (.codepoints.map (.parse_i32.get) .as_array) .as_array
+  arr := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM
+    .read_lines
+    .filter !=""
+    .map (.codepoints.map (.parse_i32.get) .as_array)
+    .as_array
+
 
   h := arr.length    + 2
   w := arr[0].length + 2

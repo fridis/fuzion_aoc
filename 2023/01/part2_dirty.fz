@@ -18,11 +18,12 @@ dec1 is
 
   num_to_digit(s String) =>
 
-    s1 := for m in num_to_digits_table
-    until s.starts_with m.values.0
-      s.replace m.values.0 m.values.1 1
-    else
-      s
+    s1 :=
+      for m in num_to_digits_table
+      until s.starts_with m.values.0
+        s.replace m.values.0 m.values.1 1
+      else
+        s
     if s1 != ""
       f := s1.substring 0 1
       t := s.substring 1  # this should IMHO be s1.substring to avoid counting overlaps twice as in "fiveight", but ok.
@@ -32,13 +33,14 @@ dec1 is
     else
       s
 
-  r := io.stdin.with ()->
+  LM : mutate is
+  res := LM ! ()->io.stdin.reader LM ! ()->
     for
 
       prev_sum := u32 0, sum
       # NYI: #2282: would be nice if `u32` would be inferred and not needed explicitly here
 
-      l := io.buffered.read_line
+      l := io.buffered LM .read_line ? s String => s | * => ""
       # NYI: #2284: read_line should return a choice of String | end_of_file or similar
       l1 := num_to_digit l
 
@@ -59,4 +61,4 @@ dec1 is
     # do  # NYI issue #2280: produces "no targets for access" error
     while l != "" else
       sum
-  say r
+  say res

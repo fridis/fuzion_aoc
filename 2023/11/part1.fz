@@ -1,24 +1,25 @@
 dec11_part1 is
 
-  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
-                                                     .map (.codepoints.map_sequence ="#")
-  image := array2 input.count input.first.count i,j->input[i][j]
-
+  LM : mutate is
+  input := LM ! ()->
+    io.stdin.reader LM ! ()->io.buffered LM .read_lines .filter !=""
+     .map s->(s.codepoints.map (="#"))
+  image := array2 input.count input.first.val.count i,j->input[i][j]
   part1 =>
     xs := image.indices0
     ys := image.indices1
     expand_rows := ys.map (y -> ys ∀ (x -> !image[y,x]))
     expand_cols := xs.map (x -> xs ∀ (y -> !image[y,x]))
 
-    galaxies => image.index_pairs.filter yx->{(y,x) := yx; image[y,x]}
+    galaxies => image.index_pairs.filter yx->{y,x := yx; image[y,x]}
 
-    dist1(exp, s, e) => sum ((s..e-1).map i->(if exp[i] then 2 else 1))
+    dist1(exp, s, e) => ((s..e-1).map i->(if exp[i] then 2 else 1)).sum
     dist(a,b) =>
       dx := dist1 expand_cols a.values.1 b.values.1
       dy := dist1 expand_rows a.values.0 b.values.0
       dx + dy
 
-    sum (galaxies.pairs galaxies
-                 .map_sequence ab->{(a,b) := ab; dist a b})
+    (galaxies.pairs galaxies
+                 .map ab->{a,b := ab; dist a b}).sum
 
   say "part1 $part1"
