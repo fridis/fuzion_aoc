@@ -19,14 +19,13 @@ dec10 =>
       solve(j) : memoize => keep "$s/$j" _->
         if j ∀ =0 then 0
         else
-          l := j.indexed.map ||>i,jo->jo%2<<i .fold1 (|)  # odd joltages
-          (0..(2**(buttons.length)-1))                    # for all button combinations
-            .map b->
-               pr := buttons.indexed.map ||>bi,bu->(b>>bi)%2*bu  # lights switched
-               if l=pr.fold1 (^) then                                    # resulting lights ok?
-                 j2 := j.indexed.map ||>i,jo->(jo - (pr.map bu->(bu>>i)%2 .sum))/2
-                 b.ones_count + 2 * solve j2
-               else 1000000
+          l := j.indexed.map ||>i,jo->jo%2<<i .fold1 (|)    # odd joltages
+          (0..(2**(buttons.length)-1)).map m->              # for all button combinations
+              pr := buttons.zip (m :: (/2)) b,mb->mb%2*b    # pressed buttons
+              if l=pr.fold1 (^) then                        # resulting lights ok?
+                j2 := j.indexed.map ||>i,jo->(jo - (pr.map b->(b>>i)%2 .sum))/2
+                m.ones_count + 2 * solve j2
+              else 1000000
             .min.val
       solve joltage
 
