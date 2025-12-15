@@ -8,7 +8,7 @@ dec10 =>
                 (e.0|(c="#"?e.1:0),2*e.1)
                .0
     buttons := (s.drop 1 .take s.count-2).map (.substring 1 .replace ")" "" .split "," .foldf 0 e,c->e|1<<c.parse_i32.val) .as_array
-    joltage := s.last.val.substring 1 .replace "}" "" .split "," .map (.parse_i32.val) .as_array
+    joltage := s.last.val.substring 1 .replace "}" "" .split "," .map (.parse_i32.val) # .as_array
 
     try(l,n) =>
       l=lights || n!=0 && (buttons ∃ b->try l^b n-1)
@@ -19,15 +19,15 @@ dec10 =>
       solve(j) : memoize => keep "$s/$j" _->
         if j ∀ =0 then 0
         else
-          l := j.indexed.map ||>i,jo->jo%2<<i .fold1 (|)
-          (0..(2**(buttons.length)-1))
-            .filter b->(l = buttons.indexed.map ||>bi,bu->(b>>bi)%2*bu .fold1 (^))
+          l := j.indexed.map ||>i,jo->jo%2<<i .fold1 (|)  # odd joltages
+          (0..(2**(buttons.length)-1))                    # for all button combinations
             .map b->
-               hh := j.indexed.map ||>i,jo->
-                        (jo - buttons.indices.map bi->((b>>bi)%2*((buttons[bi]>>i)%2)) .sum)/2
-                      .as_array
-               b.ones_count + 2 * solve hh
-            .min.or_else 1000000
+               pr := buttons.indexed.map ||>bi,bu->(b>>bi)%2*bu  # lights switched
+               if l=pr.fold1 (^) then                                    # resulting lights ok?
+                 j2 := j.indexed.map ||>i,jo->(jo - (pr.map bu->(bu>>i)%2 .sum))/2
+                 b.ones_count + 2 * solve j2
+               else 1000000
+            .min.val
       solve joltage
 
   part1 =>
