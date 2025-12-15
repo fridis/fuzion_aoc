@@ -1,0 +1,41 @@
+dec11 =>
+
+  input := io.stdin.read_string.trim.split "\n"
+             .map (.split ": " .as_tuple)
+  names := (input.map (.0) ++ ["out"]).as_array
+  nums := container.hash_map names 0..names.count-1
+  num(name String) => nums[name].val
+  nodes := input.map t->(node (num t.0) (t.1.split " " .map dec11.this.num)) .as_array
+
+  node(n, succs) is
+    public redef as_string String => "$n: $succs ({names[n]}: {succs.map s->names[s]})}\n"
+
+  out := num "out"
+  dac := num "dac"
+  fft := num "fft"
+
+  count(n i32) u64 : memoize => keep n _->
+    if nodes[n].succs ∃ (=out) then
+      u64 1
+    else
+      nodes[n].succs.map nn->(count nn)
+                    .sum
+
+  count2(n i32) (u64,u64,u64,u64) : memoize => keep n _->
+    if nodes[n].succs ∃ (=out) then
+      (u64 1,u64 0,u64 0,u64 0)
+    else
+      res := nodes[n].succs.map nn->(count2 nn)
+                           .foldf (u64 0, u64 0, u64 0, u64 0) a,b->(a.0+b.0,a.1+b.1,a.2+b.2,a.3+b.3)
+      if      n=dac then (u64 0,res.0+res.1,u64 0,res.1+res.2+res.3)
+      else if n=fft then (u64 0,u64 0,res.0+res.2,res.1+res.2+res.3)
+                    else res
+
+
+  part1 =>
+    count (num "you")
+
+  part2 =>
+    count2 (num "svr")
+
+  say "$part1:$part2"
