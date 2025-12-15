@@ -2,7 +2,7 @@ dec8_part2 is
 
   bytes0 =>
     LM : mutate is
-    o := LM ! ()->(io.stdin.reader LM) ! ()->
+    o := LM ! ()->io.stdin.reader LM ! ()->
       for
         r Sequence u8 := [], r++n
         n := (io.buffered LM .read_bytes 10000)
@@ -14,7 +14,7 @@ dec8_part2 is
     ref : String is
       public redef utf8 Sequence u8 => bytes
   lines := input.split "\n"
-                 .map s->(String.type.from_bytes s.utf8.as_array)
+                 .map s->(String.type.from s.utf8.as_array)
                  .filter !=""
   ls := lines.as_array
 

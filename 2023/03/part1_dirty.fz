@@ -1,0 +1,64 @@
+dec3_part1 is
+
+  public redef option.as_list list T => (option.this ? v T => v : nil
+                                                     | nil => nil   )
+
+  LM : mutate is
+  lines := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines .filter !=""
+
+  read_scheme =>
+    l := lines
+    a1 := array l.count i->l[i]
+    a2 := array2 l.count a1[0].codepoints.count i,j->a1[i].codepoints[j]
+    scheme a2 a1
+
+  scheme(a,ls) is
+    w => a.length0
+    h => ls.count
+    index [](i,j) =>
+      if 0 <= i < h && 0 <= j < w then a[i,j] else "."
+
+  String.is_digit => $"0" <= String.this <= $"9"
+  String.is_symbol => !is_digit && String.this != $"."
+
+  number(s1 scheme, l, c i32) is
+    len := for res := 1, res+1
+           while s1[l,c+res].is_digit
+           else res
+    str => s1.ls[l].substring c c+len
+    public redef as_string String => "$ok" + s1.ls[l].substring c c+len
+    ok =>
+      !(-1..1).filter y->
+                  !(-1..len+1).filter x->s1[l+y,c+x].is_symbol
+                              .is_empty
+               .is_empty
+    val => str.parse_i32.val
+
+  find_numbers(s1) =>
+    for
+      li list number := nil, (li ++ f).as_list
+      i in s1.a.indices0
+    do # NYI: BUG: fails without the `do`, see #4528
+      f :=
+        for
+          found list number := nil, (found ++ new).as_list
+          j in s1.a.indices1
+          p := s1[i,j-1]
+          c := s1[i,j  ]
+          prev_is_num := "0" <= p <= "9"
+          this_is_num := "0" <= c <= "9"
+          new option number := if !prev_is_num && this_is_num
+                                 number s i j
+                               else
+                                 nil
+        else
+          found
+    else
+      li
+
+  s := read_scheme
+  n := find_numbers s
+  r := n.filter x->x.ok
+        .map x->x.val
+        .fold i32.type.sum
+  say r

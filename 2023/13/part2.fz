@@ -2,7 +2,7 @@ dec13_part2 is
 
   LM : mutate is
   input := LM ! ()->
-    (io.stdin.reader LM) ! ()->(io.buffered LM .read_lines)
+    io.stdin.reader LM ! ()->io.buffered LM .read_lines
 
   areas(inp Sequence String) (list (array2 bool)) =>
     n := (inp.take_while !="").count

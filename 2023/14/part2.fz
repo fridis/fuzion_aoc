@@ -1,31 +1,34 @@
 dec14_part2 is
 
-  input := (io.stdin.with ()->io.buffered.read_lines).val.filter !=""
-                                                     .map (.codepoints)
+  LM : mutate is
+  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM
+    .read_lines
+    .filter !=""
+    .map (.codepoints)
   area := array2 String input.count input[0].count i,j->input[i][j]
 
   a2(a) => array2 String a.count a[0].count i,j->a[j][i]
   infix == (a1,a2) => a1.zip a2 x,y->x=y ∀ x->x
-  dots(n) => ["."].cycle.take n
+  dots(n) => [$"."].cycle.take n
 
   tilt(a) =>
     a2 (a.indices0.map x->
-       (nd, nl) := a.indices1.reduce (0,(list String).type.empty) t,y->
-         (ndots, l) := t
-         if      a[y,x] = "O" (ndots  , l ++ ["O"])
-         else if a[y,x] = "." (ndots+1, l)
-         else                 (0      , l ++ dots ndots ++ ["#"])
+       nd, nl := a.indices1.reduce (0,(list String).type.empty) t,y->
+         ndots, l := t
+         if      a[y,x] = "O" then (ndots  , (l ++ ["O"]).as_list)
+         else if a[y,x] = "." then (ndots+1, l)
+         else                      (0      , (l ++ dots ndots ++ ["#"]).as_list)
        nl ++ dots nd)
 
   turn (a) => array2 a.length1 a.length0 y,x->a[a.length1-x-1,y]
 
-  weight(a) => a.index_pairs.map (||> y,x -> if a[y,x] = "O" then a.length0-y else 0) |> sum
+  weight(a) => a.index_pairs.map (||> y,x -> if a[y,x] = "O" then a.length0-y else 0) .sum
 
   part1 => tilt area |> weight
 
   part2 => max := 1_000_000_000
            for a := area, a |> tilt |> turn |> tilt |> turn |> tilt |> turn |> tilt |> turn
-               s := a : nil, s ++ [a]
+               s := a : nil, (s ++ [a]).as_list
                n in 0..max
            do  f := (s.take_while (x -> ! (x==a))).count
            until f < n then weight s[f - 1 + (max-f+1) % (n-f)]

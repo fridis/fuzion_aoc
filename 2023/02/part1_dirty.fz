@@ -1,30 +1,31 @@
 dec2 is
 
-  bag(r, g, b i32) is
-    ok(d draw) => (r >= d.r &&
-                   g >= d.g &&
-                   b >= d.b   )
+  bag(red, green, blue i32) is
+    ok(d draw) => (red   >= d.red &&
+                   green >= d.green &&
+                   blue  >= d.blue   )
 
   bag1 := bag 12 13 14
 
   draw(s String) is
     cubes := s.split ","
-    r := (cubes.map c->(c.ends_with "red"   ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum
-    g := (cubes.map c->(c.ends_with "green" ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum
-    b := (cubes.map c->(c.ends_with "blue"  ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum
-    redef as_string => "$r red, $g green, $b blue"
+    red   := (cubes.map c->(c.ends_with "red"   ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum
+    green := (cubes.map c->(c.ends_with "green" ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum
+    blue  := (cubes.map c->(c.ends_with "blue"  ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum
+    public redef as_string String => "$red red, $green green, $blue blue"
 
   game(s String) is
     s1 := s.split(":")
     game := s1[0]
     num := (game.split " ")[1].parse_i32.val
     draws := (s1[1].split ";").map (x->draw x)   # NYI: partial `draw` did not work?
-    redef as_string => "$game: {draws.as_string "; "}"
+    public redef as_string String => "$game: {draws.as_string "; "}"
 
-  r := io.stdin.with ()->
+  LM : mutate is
+  r := LM ! ()->io.stdin.reader LM ! ()->
     for
       score := 0, score + (ok ? g.num : 0)
-      l := io.buffered.read_line
+      l := io.buffered LM .read_line ? s String => s | * => ""
     while l != ""
       g := game l
       #  ok := (g.draws.map bag1.ok).fold bool_and_monoid  # NYI: partial does not work here, why?
@@ -36,5 +37,5 @@ dec2 is
 
   # NYI: PR #2287: this should be defined in base.fum for bool.type:
   bool_and_monoid : Monoid bool is
-    public redef infix ∙ (a, b bool) => a && b
-    public redef e => true
+    public redef infix ∙ (a, b bool) bool => a && b
+    public redef e bool => true
