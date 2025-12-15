@@ -1,14 +1,23 @@
 dec10 =>
 
   input := io.stdin.read_string.trim.split "\n"
-             .filter !=""
              .map (.split " ") .map data .as_array
+
   data(s) is
-    lights := s[0].substring 1 s[0].byte_length-1 .codepoints.foldf (i32,i32) (0,1) e,c->
-                (e.0|(c="#"?e.1:0),2*e.1)
-               .0
-    buttons := (s.drop 1 .take s.count-2).map (.substring 1 .replace ")" "" .split "," .foldf 0 e,c->e|1<<c.parse_i32.val) .as_array
-    joltage := s.last.val.substring 1 .replace "}" "" .split "," .map (.parse_i32.val) # .as_array
+    lights := s[0].replace "[" ""
+                  .replace "]" ""
+                  .codepoints.foldf (0,1) e,c->(e.0|(c="#"?e.1:0),2*e.1)
+                  .0
+    buttons := (s.drop 1 .take s.count-2).map (.replace "(" ""
+                                               .replace ")" ""
+                                               .split ","
+                                               .map c->1<<c.parse_i32.val
+                                               .fold1 (|))
+                                         .as_array
+    joltage := s.last.val.replace "\{" ""
+                         .replace "\}" ""
+                         .split ","
+                         .map (.parse_i32.val)
 
     try(l,n) =>
       l=lights || n!=0 && (buttons ∃ b->try l^b n-1)
@@ -17,14 +26,14 @@ dec10 =>
       # solution proposed by u/tenthmascot at
       # https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
       solve(j) : memoize => keep "$s/$j" _->
-        if j ∀ =0 then 0
+        if j ∀ =0 then 0                                    # all 0, nothing more to do
         else
-          l := j.indexed.map ||>i,jo->jo%2<<i .fold1 (|)    # odd joltages
-          (0..(2**(buttons.length)-1)).map m->              # for all button combinations
+          l := j.indexed.map ||>i,jo->jo%2<<i .fold1 (|)    # desired lights = odd joltages
+          (0..(2**buttons.length-1)).map m->                # for all button combinations
               pr := buttons.zip (m :: (/2)) b,mb->mb%2*b    # pressed buttons
-              if l=pr.fold1 (^) then                        # resulting lights ok?
+              if l = pr.fold1 (^) then                      # resulting lights ok?
                 j2 := j.indexed.map ||>i,jo->(jo - (pr.map b->(b>>i)%2 .sum))/2
-                m.ones_count + 2 * solve j2
+                m.ones_count + 2 * solve j2                 # recurse with halved joltage
               else 1000000
             .min.val
       solve joltage
