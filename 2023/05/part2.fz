@@ -60,7 +60,7 @@ dec5_part2 is
     convert2s(rs Sequence range) =>
       rs.flat_map range convert2
 
-  conv(li list String) is
+  conv(li Sequence String) is
     to   := li[0].parse_i64.val
     from := li[1].parse_i64.val
     len  := li[2].parse_i64.val
