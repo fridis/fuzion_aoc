@@ -1,0 +1,13 @@
+dec12 =>
+
+  input := io.stdin.read_string.trim.split "\n\n" .as_array
+  presents := array 6 (i->input[i].codepoints.count ="#")
+  grids := input[6].split "\n" .map (.split ": ")
+  sizes := grids.map (.index[] 0 .split "x" .map (.parse_i32.val) .fold1 (*))
+  pcnts := grids.map (.index[] 1 .split " " .map (.parse_i32.val))
+  fits  := sizes.zip pcnts s,p->(p.zip presents (*) .fold1 (+) <= s) .count id
+
+  part1 => fits
+  part2 =>
+
+  say "$part1:$part2"
