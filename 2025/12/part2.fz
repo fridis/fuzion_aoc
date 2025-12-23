@@ -6,7 +6,7 @@ dec12 =>
   pcnts := grids.map (g->g[1].split " " .map (.parse_i32.val))
 
   part1 =>
-    # just stupidly count if the number of #s would fit, ignoreing the
+    # just stupidly count if the number of #s would fit, ignoring the
     # actual shapes.  Does not work in general, but for the given input:
 
     # present reduced to number of #s
