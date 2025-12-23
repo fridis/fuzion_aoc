@@ -3,7 +3,7 @@ dec8 =>
   input := io.stdin.read_string.trim.split "\n"
              .map (.split "," .map (.parse_i64.val) .as_array) .as_array
   n := input.length
-  m := envir.args[1].parse_i32.val
+  m := envir.args.count < 2 ? 1000 : envir.args[1].parse_i32.val
 
   pairs := (0..n-1).flat_map (i -> (i+1..n-1).map (pair i))
                    .sort
@@ -11,7 +11,7 @@ dec8 =>
   # get circuit id of junction box i
   #
   # cs[i] is >0 if i is identifying box, value is size of circuit,
-  #          <0 if identifiying box is at i+cs[i]
+  #          <0 if identifying box is at i+cs[i]
   circuit(cs, i) =>
     if cs[i]<0 then circuit cs i+cs[i]
                else i

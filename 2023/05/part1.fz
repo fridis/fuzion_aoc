@@ -33,7 +33,7 @@ dec5_part1 is
           n <- ni
       n.get
 
-  conv(li list String) is
+  conv(li Sequence String) is
     to   := li[0].parse_i64.val
     from := li[1].parse_i64.val
     len  := li[2].parse_i64.val
