@@ -16,7 +16,7 @@ dec5_part2 is
         n := (io.buffered LM .read_bytes 10000)
       while n.count > 0 else
         r
-    ref : String is
+    _ : String is
       public redef utf8 Sequence u8 => o
 
   lines := input.split "\n"

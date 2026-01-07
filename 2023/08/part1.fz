@@ -11,7 +11,7 @@ dec8_part1 is
     o
   bytes := bytes0
   input :=
-    ref : String is
+    _ : String is
       public redef utf8 Sequence u8 => bytes
   lines := input.split "\n"
                  .map s->(String.type.from s.utf8.as_array)
