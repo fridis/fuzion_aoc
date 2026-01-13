@@ -14,7 +14,7 @@
   say "got bytes"
   say "got bytes {bytes.count}"
   input :=
-    ref : String is
+    _ : String is
       public redef utf8 Sequence u8 => bytes
   say "got input {input.byte_length}"
   lines := input.split "\n"
