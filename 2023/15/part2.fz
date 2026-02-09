@@ -21,7 +21,7 @@ dec15_part2 is
         b := hm[hash e.k .as_i64]
         hm[hash e.k .as_i64] :=
           if      !e.is_add        then b.filter x->x.k!=e.k
-          else if b ∃ (x->x.k=e.k) then b.map    x->if x.k=e.k then e else x
+          else if b ∃ (x->x.k=e.k) then b.map    x->(x.k=e.k ? e : x)
           else                          b ++ [e]
       else
         hm.as_array.indexed.map (||> b2,l->

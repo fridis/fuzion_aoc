@@ -72,11 +72,11 @@ dec5_part2 is
       ll := l-s.l
       rl := s.r-r
       il := s.len - (max 0 ll) - (max 0 rl)
-      if s.r <= l || s.l >= r    then if mapped then [                    ] else [ s                             ] # not    mapped
-      else if ll <= 0 && rl <= 0 then if mapped then [ range to-ll     il ] else [                               ] # fully  mapped
-      else if ll <= 0            then if mapped then [ range to+len-il il ] else [               range s.r-rl rl ] # left   mapped
-      else if rl <= 0            then if mapped then [ range to        il ] else [ range s.l ll                  ] # right  mapped
-      else                            if mapped then [ range to        il ] else [ range s.l ll, range s.r-rl rl ] # middle mapped
+      if s.r <= l || s.l >= r    then mapped ? [                    ] : [ s                             ] # not    mapped
+      else if ll <= 0 && rl <= 0 then mapped ? [ range to-ll     il ] : [                               ] # fully  mapped
+      else if ll <= 0            then mapped ? [ range to+len-il il ] : [               range s.r-rl rl ] # left   mapped
+      else if rl <= 0            then mapped ? [ range to        il ] : [ range s.l ll                  ] # right  mapped
+      else                            mapped ? [ range to        il ] : [ range s.l ll, range s.r-rl rl ] # middle mapped
 
   p1 := seeds.map s->
       check !maps.is_empty

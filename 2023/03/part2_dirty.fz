@@ -14,7 +14,7 @@ dec3_part2 is
       if 0 <= l < h && 0 <= c < w then a[l,c] else "."
 
     number(l, c i32) is
-      len := for res := 1, res+1 while scheme.this[l,c+res].is_ascii_digit
+      len := for res := 1, res+1 while scheme.this[l,c+res].is_ascii_digit else res
       ok := (-1..1) ∃ y -> (-1..len) ∃ x -> scheme.this[l+y,c+x].is_symbol
       val := (0..len-1).map i->scheme.this[l,c+i].as_string
                        .fold String.type.concat
