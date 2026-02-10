@@ -81,6 +81,7 @@ dec6_part2 =>
               while p.ok && !loup
                 v := p.get visited
                 p.put visited (v | d.bit)
+              else loup
           .count
 
     say part1
