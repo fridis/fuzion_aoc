@@ -11,7 +11,7 @@ dec16_part2 is
   start(x0,y0,w0 i32) =>
     lm : mutate is
     lm ! ()->
-      visited := (lm.array i32).type.new lm area.length.as_i64 0
+      visited := (lm.array i32).type.new area.length.as_i64 0
       ix(x,y) => y+x*area.length1
       trace(x,y,w i32) unit =>
         if ((x ∈ xs) && (y ∈ ys) &&

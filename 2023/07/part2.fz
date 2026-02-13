@@ -5,9 +5,9 @@
     LM : mutate is
     o := LM ! ()->io.stdin.reader LM ! ()->
       for
-        r0 Sequence u8 := [], r0++n
+        r0 Sequence u8 := [], r0++n.val
         n := (io.buffered LM .read_bytes 10000)
-      while n.count > 0 else
+      while n.ok && n.val.count > 0 else
         r0
     o
   bytes := bytes0

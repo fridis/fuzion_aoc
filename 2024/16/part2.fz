@@ -22,7 +22,7 @@ dec16 =>
   lm : mutate is
   costs := lm ! ()->
     mcosts := array2 4 h s,y->
-      (mutate.array i32).type.new lm w.as_i64 i32.max
+      (lm.array i32).type.new w.as_i64 i32.max
 
     trace(d, p, cost) =>
       if cost < mcosts[d,p.y][p.x.as_i64] then
@@ -47,7 +47,7 @@ dec16 =>
   part1 => cost 3 s
   part2 =>
     lm ! ()->
-      paths := (mutate.array2 bool).type.new lm h.as_i64 w.as_i64 false
+      paths := (lm.array2 bool).type.new h.as_i64 w.as_i64 false
       mark(d, p) =>
         if !paths[p.y.as_i64, p.x.as_i64] then
           paths[  p.y.as_i64, p.x.as_i64] := true

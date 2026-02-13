@@ -13,7 +13,7 @@ dec15_part2 is
       entry(is_add bool, s Sequence String) is
         k => s[0]
         val  => s[1].trim.parse_i32.val
-      hm := (lm.array (Sequence entry)).type.new lm 256 []
+      hm := (lm.array (Sequence entry)).type.new 256 []
       for e in input.split ","
                     .map (e -> if e.contains "=" then e.split "=" |> entry true
                                                  else e.split "-" |> entry false)

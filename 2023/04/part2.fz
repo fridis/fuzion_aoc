@@ -24,7 +24,7 @@ dec4_part2 is
 
   lm : mutate is
   part2 := lm ! ()->
-    a := (lm.array i32).type.new lm cards.count.as_i64 1
+    a := (lm.array i32).type.new cards.count.as_i64 1
     for i in cards.indices do
       m := cards[i].matches
       for j in i+1..i+m do
