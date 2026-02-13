@@ -4,9 +4,9 @@ dec8_part2 is
     LM : mutate is
     o := LM ! ()->io.stdin.reader LM ! ()->
       for
-        r Sequence u8 := [], r++n
+        r Sequence u8 := [], r++n.val
         n := (io.buffered LM .read_bytes 10000)
-      while n.count > 0 else
+      while n.ok && n.val.count > 0 else
         r
     o
   bytes := bytes0
@@ -66,7 +66,7 @@ dec8_part2 is
       for res := u64 1, prod / gcd
           s in start
       do
-        visited := (lm.array i32).type.new lm (lrscnt*names.length).as_i64 (-1)
+        visited := (lm.array i32).type.new (lrscnt*names.length).as_i64 (-1)
         visited_index(n i32, cell i32) => (n % lrscnt) * names.length + cell
         period := for cur := s, next
                       n in 0..

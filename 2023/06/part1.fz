@@ -4,9 +4,9 @@ dec6_part1 is
     LM : mutate is
     o := LM ! ()->io.stdin.reader LM ! ()->
       for
-        r Sequence u8 := [], r++n
+        r Sequence u8 := [], r++n.val
         n := (io.buffered LM .read_bytes 10000)
-      while n.count > 0 else
+      while n.ok && n.val.count > 0 else
         r
     _ : String is
       public redef utf8 Sequence u8 => o

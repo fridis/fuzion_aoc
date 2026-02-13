@@ -22,8 +22,8 @@ dec20 =>
 
   M : mutate is
   M ! ()->
-    track := (mutate.array point).type.empty M
-    picos := (mutate.array2 i32).type.new M w.as_i64 h.as_i64 -1
+    track := (M.array point).type.empty
+    picos := (M.array2 i32).type.new w.as_i64 h.as_i64 -1
     pico(p) => picos[p.xl,p.yl]
     for p := s, p.neighbors.filter (.on_track)
                            .filter (q -> pico q < 0)
