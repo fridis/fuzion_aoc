@@ -6,7 +6,7 @@ dec8_part2 =>
              .filter !="" .map (.codepoints.as_array) .as_array
     h := arr.length   .as_i64
     w := arr[0].length.as_i64
-    area := (mutate.array2 i64).type.new LM w h 0
+    area := (LM.array2 i64).type.new w h 0
     area.indices0.pairs area.indices1
         .for_each ||>x,y->
           area[x,y] := arr[y.as_i32][x.as_i32].val.as_i64
@@ -14,10 +14,10 @@ dec8_part2 =>
     location_count(antinode_pos Sequence i64) =>
 
       # for each antenna kind, the list of antennas found so far
-      antennas  := (mutate.array (list (i64,i64))).type.new LM 128 nil
+      antennas  := (LM.array (list (i64,i64))).type.new 128 nil
 
       # for each position: has an antinode been found here?
-      antinodes := (mutate.array2 bool).type.new LM w h false
+      antinodes := (LM.array2 bool).type.new w h false
 
       area.indices0.for_each x->
         area.indices1.for_each y->

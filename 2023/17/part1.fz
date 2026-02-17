@@ -15,7 +15,7 @@ dec17_part1 is
     lm : mutate is
     lm ! ()->
       ix(y, x, dir, str8) => ((y*area.length1+x)*4+dir)*3+str8
-      la := (lm.array i32).type.new lm (area.length0*area.length1*4*3).as_i64 -1
+      la := (lm.array i32).type.new (area.length0*area.length1*4*3).as_i64 -1
       modified := lm.env.new false
       res := lm.env.new i32.type.max
 

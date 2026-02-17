@@ -20,7 +20,7 @@ dec16 =>
       say "starting..."
       steps := lm.env.new 0
       costs := array2 4 h s,y->
-        (mutate.array i32).type.new lm w.as_i64 i32.max
+        (lm.array i32).type.new w.as_i64 i32.max
 
 #      (0..3).for_each (d -> a := costs[d,e.y]; a[e.x.as_i64] := 0 )
 
