@@ -26,12 +26,12 @@ dec9_part2 =>
     part2 =>
       sz := disk.count
       rev Sequence i64 := disk.reverse.as_array
-      mdisk := (mutate.array i64).type.new LM sz.as_i64 0
+      mdisk := (LM.array i64).type.new sz.as_i64 0
       for i in disk.indices do
         mdisk[i.as_i64] := disk[i]
 
       # length of free/allocated ranges at each index
-      free := (mutate.array i32).type.new LM sz.as_i64 0
+      free := (LM.array i32).type.new sz.as_i64 0
       for p i64 := -1, disk[i]
           pl := 0, l
           i in (sz-1)..0:(-1)

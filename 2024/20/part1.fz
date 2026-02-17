@@ -20,7 +20,7 @@ dec20 =>
   M : mutate is
   M ! ()->
     part1 =>
-      picos := (mutate.array2 i32).type.new M w.as_i64 h.as_i64 -1
+      picos := (M.array2 i32).type.new w.as_i64 h.as_i64 -1
       for p := s, p.neighbors.filter (.on_track)
                              .filter q->picos[q.xl,q.yl]<0
                              .first.val

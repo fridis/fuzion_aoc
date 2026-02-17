@@ -12,8 +12,8 @@ dec8_part1 =>
     dot := ".".val.as_i32
 
     part(n) =>
-      antennas := (mutate.array (list (i32,i32))).type.new LM 128 nil
-      antinodes := (mutate.array2 bool).type.new LM wl hl false
+      antennas := (LM.array (list (i32,i32))).type.new 128 nil
+      antinodes := (LM.array2 bool).type.new  wl hl false
       antinode(xi,yi) =>
         x := xi.as_i64; y := yi.as_i64
         if 0 <= x < wl && 0 <= y < hl && !antinodes[x,y] then

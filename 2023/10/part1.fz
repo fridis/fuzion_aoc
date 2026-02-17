@@ -40,7 +40,7 @@ dec10_part1 is
   loup =>
     lm : mutate is
     lm.instate_self (array2 String) ()->
-      lp := array map.length0 i->((lm.array String).type.new lm map.length1.as_i64 ".")
+      lp := array map.length0 i->((lm.array String).type.new map.length1.as_i64 ".")
 
       i,j := start
       for d in dirs

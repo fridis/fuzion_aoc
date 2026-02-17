@@ -5,7 +5,7 @@ hash(s String) => s.utf8.reduce 0 (h,c -> (h + c.as_i32) * 17 % 256)
 say "part1 {(input.map hash) .sum}"
 lm : mutate is
 lm ! ()->
-  hm := (lm.array (Sequence (tuple String i32))).type.new lm 256 []
+  hm := (lm.array (Sequence (tuple String i32))).type.new 256 []
   input.for_each e->
     k := e.substring 0 ((e.find "=").get) # (e.find "-").get)
     p := (k, (e.split "=").last.get.parse_i32.val -1)
