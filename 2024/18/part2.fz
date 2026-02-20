@@ -12,7 +12,7 @@ dec18 =>
     part1 =>
       area := array2 wi wi (x,y -> (input1 ∃ t -> t.0=x && t.1=y))
       corrupt(x,y) => area[_,x.as_i32,y.as_i32]
-      mcost := (mutate.array2 i32).type.new lm w w i32.max
+      mcost := (lm.array2 i32).type.new w w i32.max
       trace(x,y i64, cost i32) =>
         if inside x && inside y && cost < mcost[x, y] && !corrupt x y
           mcost[x, y] := cost
@@ -22,9 +22,9 @@ dec18 =>
       mcost[w-1, w-1]
 
     part2 =>
-      area    := (mutate.array2 bool).type.new lm w w false
-      leftbot := (mutate.array2 bool).type.new lm w w false
-      toprite := (mutate.array2 bool).type.new lm w w false
+      area    := (lm.array2 bool).type.new w w false
+      leftbot := (lm.array2 bool).type.new w w false
+      toprite := (lm.array2 bool).type.new w w false
       for cor in input2 do
         x,y := cor
         area[i64,x,y] := true

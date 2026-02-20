@@ -9,7 +9,7 @@ dec12 =>
     lm : mutate is
     lm ! ()->
       tot := lm.env.new 0
-      done := (mutate.array2 bool).new lm (w+2).as_i64 (h+2).as_i64 false
+      done := (lm.array2 bool).new (w+2).as_i64 (h+2).as_i64 false
       for xx in 1..w do
         for yy in 1..h do
           kind := data[_,xx,yy]

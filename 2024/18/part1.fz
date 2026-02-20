@@ -12,7 +12,7 @@ dec18 =>
     area := array2 w w (x,y -> (input ∃ t -> t.0=x && t.1=y))
     corrupt(x,y) => area[_,x.as_i32,y.as_i32]
     lm ! ()->
-      mcosts := (mutate.array2 i32).type.new lm wl wl i32.max
+      mcosts := (lm.array2 i32).type.new wl wl i32.max
 
       trace(x,y i64, cost i32) =>
         if (0 <= x < wl &&
