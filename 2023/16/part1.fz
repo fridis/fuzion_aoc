@@ -19,7 +19,7 @@ dec16_part1 is
         if ((x ∈ xs) && (y ∈ ys) &&
             (visited[ix x y .as_i64] & (1 << w)) = 0) then
           visited[ix x y .as_i64] := visited[ix x y .as_i64] | (1 << w)
-          c := area[y,x]
+          c := area[_,y,x]
           if (["\\|", "/|" , "xx"  , ".|" ][w].find c).exists then trace x   y+1 d
           if (["/|" , "\\|", ".|"  , "xx" ][w].find c).exists then trace x   y-1 u
           if (["xx" , ".-" , "\\-" , "/-" ][w].find c).exists then trace x-1 y   l

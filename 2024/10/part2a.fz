@@ -13,13 +13,13 @@ dec10_part2 =>
   area  := array2 w+2 h+2 x,y->(1 <= x < w-1 && 1 <= y < h-1 ? arr[y-1][x-1] : 99)
 
   join1(a,x,y) =>
-    container.set_of_ordered (a[x-1,y] ++ (a[x+1,y] ++ (a[x,y-1] ++ a[x,y+1])))
+    container.set_of_ordered (a[_,x-1,y] ++ (a[_,x+1,y] ++ (a[_,x,y-1] ++ a[_,x,y+1])))
              .as_array
-  join2(a,x,y) => a[x-1,y] + a[x+1,y] + a[x,y-1] + a[x,y+1]
+  join2(a,x,y) => a[_,x-1,y] + a[_,x+1,y] + a[_,x,y-1] + a[_,x,y+1]
 
   partn(init1 (i32,i32)->T, init2 T, join (array2 T,i32,i32)->T) =>
-    f(i,a) => i<0 ? a : f i-1 (array2 w h (x,y -> area[x,y] = i ? join a x y : init2))
-    f 8 (array2 w h (x,y -> area[x,y] = 9 ? init1 x y : init2))
+    f(i,a) => i<0 ? a : f i-1 (array2 w h (x,y -> area[_,x,y] = i ? join a x y : init2))
+    f 8 (array2 w h (x,y -> area[_,x,y] = 9 ? init1 x y : init2))
   part1 => partn x,y->[w*x*y] [] join1 .map (.count) .sum
   part2 => partn x,y->1       0  join2               .sum
 

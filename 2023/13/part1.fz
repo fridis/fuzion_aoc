@@ -16,7 +16,7 @@ dec13_part1 is
     (0..a.length0-2).flat_map i32 i->
                              for j := 0, j+1
                              while i-j >= 0 && i+j+1 < a.length0
-                             until (a.indices1 ∃ ix->a[i-j,ix]!=a[i+j+1,ix]) then []
+                             until (a.indices1 ∃ ix->a[_,i-j,ix]!=a[_,i+j+1,ix]) then []
                              else [i+1]
                     .first 0
 

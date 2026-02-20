@@ -42,7 +42,7 @@ dec15 =>
 
       for yx in a.index_pairs do
         y,x := yx
-        a[y,x] := area[y.as_i32,x.as_i32]
+        a[y,x] := area[_,y.as_i32,x.as_i32]
 
       show =>
           for syx in a.index_pairs do

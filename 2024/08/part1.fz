@@ -20,7 +20,7 @@ dec8_part1 =>
           antinodes[x,y] := true
       for xy in area.index_pairs do
         xy ||> x,y->
-          v := area[x,y]
+          v := area[_,x,y]
           vl := v.as_i64
           if v != dot then
             a := antennas[vl]

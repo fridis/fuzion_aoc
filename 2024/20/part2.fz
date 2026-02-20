@@ -12,13 +12,13 @@ dec20 =>
     neighbors   => [point x y-1, point x y+1,
                     point x-1 y, point x+1 y].filter (.valid)
     valid       => 0 <= x < w && 0 <= y < h
-    on_track    => valid && area[x,y] != "#"
+    on_track    => valid && area[_,x,y] != "#"
     inner_wall  => 1 <= x < w-1 && 1 <= y < h-1 && !on_track
     abs         => (|x|) + (|y|)
     infix + (o) => point x+o.x y+o.y
     infix - (o) => point x-o.x y-o.y
 
-  s := area.index_pairs.filter (||> y,x->area[y,x]="S") .first.val ||> point
+  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.val ||> point
 
   M : mutate is
   M ! ()->
@@ -32,7 +32,7 @@ dec20 =>
     do
       picos[p.xl,p.yl] := ps
       track.add p
-    until area[p.x,p.y] = "E"
+    until area[_,p.x,p.y] = "E"
       unit
 
     part1 =>

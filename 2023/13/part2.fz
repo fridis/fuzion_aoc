@@ -18,7 +18,7 @@ dec13_part2 is
                              for s := 0, s+sm
                                  j := 0, j+1
                              while i-j >= 0 && i+j+1 < a.length0
-                               sm := (a.indices1.filter ix->a[i-j,ix]!=a[i+j+1,ix]).count
+                               sm := (a.indices1.filter ix->a[_,i-j,ix]!=a[_,i+j+1,ix]).count
                              else
                                if s = n then [i+1] else []
                     .first 0

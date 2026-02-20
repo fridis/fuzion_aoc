@@ -11,7 +11,7 @@ dec18 =>
 
     part1 =>
       area := array2 wi wi (x,y -> (input1 ∃ t -> t.0=x && t.1=y))
-      corrupt(x,y) => area[x.as_i32,y.as_i32]
+      corrupt(x,y) => area[_,x.as_i32,y.as_i32]
       mcost := (mutate.array2 i32).type.new lm w w i32.max
       trace(x,y i64, cost i32) =>
         if inside x && inside y && cost < mcost[x, y] && !corrupt x y
@@ -27,19 +27,19 @@ dec18 =>
       toprite := (mutate.array2 bool).type.new lm w w false
       for cor in input2 do
         x,y := cor
-        area[x,y] := true
+        area[i64,x,y] := true
         fill leftbot x y (x=0 || y=w-1)
         fill toprite x y (y=0 || x=w-1)
 
-        get(a,xx,yy) => inside xx && inside yy && a[xx,yy]
+        get(a,xx,yy) => inside xx && inside yy && a[i64,xx,yy]
         get(a,xy) => xy ||> get a
 
         box(xx,yy) => ((xx-1)..(xx+1)) .combine (yy-1)..(yy+1) x0,y0->(x0,y0)
 
         fill(a,xx,yy,touches) =>
           if ((touches || (box x y ∃ get a)) &&
-              get area xx yy && !a[xx,yy])
-            a[xx,yy] := true
+              get area xx yy && !a[i64,xx,yy])
+            a[i64,xx,yy] := true
             box xx yy .for_each (||> dx,dy -> fill a dx dy true)
 
       until leftbot[x,y] && toprite[x,y] then "$x,$y"

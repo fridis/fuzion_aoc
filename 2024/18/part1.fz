@@ -10,7 +10,7 @@ dec18 =>
 
   part1 =>
     area := array2 w w (x,y -> (input ∃ t -> t.0=x && t.1=y))
-    corrupt(x,y) => area[x.as_i32,y.as_i32]
+    corrupt(x,y) => area[_,x.as_i32,y.as_i32]
     lm ! ()->
       mcosts := (mutate.array2 i32).type.new lm wl wl i32.max
 
@@ -22,7 +22,7 @@ dec18 =>
           if false
             for yy in area.indices1 do
               for xx in area.indices0 do
-                s := if (area[xx,yy]) then "xx" else $(min mcosts[xx.as_i64,yy.as_i64] 99)
+                s := if (area[_,xx,yy]) then "xx" else $(min mcosts[xx.as_i64,yy.as_i64] 99)
                 yak (s.pad_center 6)
               else
                 say ""

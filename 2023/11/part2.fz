@@ -9,10 +9,10 @@ dec11_part2 is
   part12(f u64) =>
     xs := image.indices0
     ys := image.indices1
-    expand_rows := ys.map (y -> ys ∀ (x -> !image[y,x]))
-    expand_cols := xs.map (x -> xs ∀ (y -> !image[y,x]))
+    expand_rows := ys.map (y -> ys ∀ (x -> !image[_,y,x]))
+    expand_cols := xs.map (x -> xs ∀ (y -> !image[_,y,x]))
 
-    galaxies => image.index_pairs.filter yx->{y,x := yx; image[y,x]}
+    galaxies => image.index_pairs.filter yx->{y,x := yx; image[_,y,x]}
 
     dist1(exp, s, e) => ((s..e-1).map i->(if exp[i] then f else u64 1)).sum
     dist(a,b) =>

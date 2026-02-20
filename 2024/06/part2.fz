@@ -16,9 +16,9 @@ dec6_part2 =>
     area := (mutate.array2 codepoint).type.new LM h w "0"
     area.index_pairs
         .for_each ||>y,x->
-          area[y,x] := data[y.as_i32, x.as_i32]
+          area[y,x] := data[_,y.as_i32, x.as_i32]
 
-    start := data.index_pairs.filter (yx -> data[yx.0,yx.1] = "^")
+    start := data.index_pairs.filter (yx -> data[_,yx.0,yx.1] = "^")
                              .first.val ||> y,x -> pos y.as_i64 x.as_i64
 
     # direction, bit gives a unique bit 1, 2, 4, 8
