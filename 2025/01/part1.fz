@@ -18,7 +18,7 @@ dec1 =>
     input.foldf (50,0) e,x->
             n := (e.0 + x) % 100
             x1 := if e.0*n<0 then 1 else 0
-            x2 := |x| / 100
+            x2 := (|x|) / 100
             c := e.1 + x1 + x2 + if n=0 then 1 else 0
             (n,c)
          .1

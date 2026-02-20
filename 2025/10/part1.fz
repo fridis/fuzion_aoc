@@ -15,7 +15,8 @@ dec10 =>
       else if n=0 then false
       else
         for b in buttons
-        until try l^b n-1 then
+        until try l^b n-1 then true
+        else false
         #          say "press {b.bin}"
 #    say "READ: {data.this} from $s"
     public redef as_string String => "{lights.bin} {buttons.map (.bin)}"
