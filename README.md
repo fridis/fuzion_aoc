@@ -12,7 +12,7 @@ Fuzion in the repositories as a reminder for what to fix.  The clean versions
 might get improved over time as Fuzion gets improved.
 
 To run the code, you will first have to check out and build
-[Fuzion](https://github.com/tokiwa.software/fuzion) and set `$FUNION` to the
+[Fuzion](https://github.com/tokiwa.software/fuzion) and set `$FUZION_HOME` to the
 build directory.  Then change to the corresponding directory in this repository
 and do
 ```
