@@ -11,11 +11,11 @@ dec20 =>
     neighbors => [point x+1 y, point x-1 y, point x y+1, point x y-1]
       .filter (.valid)
     valid => 0 <= x < w && 0 <= y < h
-    on_track => area[x,y] != "#"
-    inner_wall => 1 <= x < w-1 && 1 <= y < h-1 && area[x,y] = "#"
+    on_track => area[_,x,y] != "#"
+    inner_wall => 1 <= x < w-1 && 1 <= y < h-1 && area[_,x,y] = "#"
 
-  s := area.index_pairs.filter (||> y,x->area[y,x]="S") .first.val ||> point
-  e := area.index_pairs.filter (||> y,x->area[y,x]="E") .first.val ||> point
+  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.val ||> point
+  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.val ||> point
 
   M : mutate is
   M ! ()->

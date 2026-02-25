@@ -11,7 +11,7 @@ dec4_part1 =>
   get(y,x) =>
     if (0 <= y < area.length0 &&
         0 <= x < area.length1    )
-      area[y,x]
+      area[_,y,x]
     else
       "."
 

@@ -12,16 +12,16 @@ dec3 =>
         d1*10+d2
       .sum
 
-  doit(n i32, i64 v, Sequence i32 l) =>
+  doit(n i32, v i64, l Sequence i32) =>
     if n=0 then
       v
     else
       d1 := l.take (l.count-n+1) .as_array.sort.reverse[0]
       i := l.index_of d1 .val
-      doit n+1 v*10+d1.as_i64 l.drop i+1
+      doit n+1 v*10+d1.as_i64 (l.drop i+1)
 
   part2 =>
-    input.map (doit 12)
+    input.map (doit 12 0)
          .sum
 
   say "$part1:part2"

@@ -15,14 +15,14 @@ dec14_part2 is
     a2 (a.indices0.map x->
        nd, nl := a.indices1.reduce (0,(list String).type.empty) t,y->
          ndots, l := t
-         if      a[y,x] = "O" then (ndots  , (l ++ ["O"]).as_list)
-         else if a[y,x] = "." then (ndots+1, l)
+         if      a[_,y,x] = "O" then (ndots  , (l ++ ["O"]).as_list)
+         else if a[_,y,x] = "." then (ndots+1, l)
          else                      (0      , (l ++ dots ndots ++ ["#"]).as_list)
        nl ++ dots nd)
 
-  turn (a) => array2 a.length1 a.length0 y,x->a[a.length1-x-1,y]
+  turn (a) => array2 a.length1 a.length0 y,x->a[_,a.length1-x-1,y]
 
-  weight(a) => a.index_pairs.map (||> y,x -> if a[y,x] = "O" then a.length0-y else 0) .sum
+  weight(a) => a.index_pairs.map (||> y,x -> if a[_,y,x] = "O" then a.length0-y else 0) .sum
 
   part1 => tilt area |> weight
 

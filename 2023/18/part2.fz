@@ -31,15 +31,15 @@ dec18_part2 is
           d := (dirs.find a.dir).get
       do
         for i in 0..(a.len-1) do
-          area[px+i*dx[d],py+i*dy[d]].n <- "#"
+          area[_,px+i*dx[d],py+i*dy[d]].n <- "#"
         nx := px + a.len*dx[d]
         ny := py + a.len*dy[d]
       else
         fill(x,y i32) unit =>
           if (min_x <= x <= max_x &&
               min_y <= y <= max_y) then
-            if area[x,y].n.get = "." then
-              area[x,y].n <- "_"
+            if area[_,x,y].n.get = "." then
+              area[_,x,y].n <- "_"
               fill x-1 y
               fill x+1 y
               fill x y-1
@@ -48,7 +48,7 @@ dec18_part2 is
         res := lm.env.new 0 # (max_x-min_x+1)*(max_y-min_y+1)
         for y in min_y..max_y do
           for x in min_x..max_x do
-            c := area[x,y].n.get
+            c := area[_,x,y].n.get
             if c = "#" || c = "."
               res <- res.get + 1
         res.get
@@ -157,14 +157,14 @@ dec18_part2 is
                   for al := l, al - ws[pnx]
                       pnx := p1x, pnx+1
                   while al > 0 do
-                    area[pnx+size,p1y+size].n <- "#"
+                    area[_,pnx+size,p1y+size].n <- "#"
                   else
                     pnx
                 else if d = "L"
                   for al := l, al - ws[pnx-1]
                       pnx := p1x, pnx-1
                   while al > 0 do
-                    area[pnx+size,p1y+size].n <- "#"
+                    area[_,pnx+size,p1y+size].n <- "#"
                   else
                     pnx
                 else
@@ -173,14 +173,14 @@ dec18_part2 is
                   for al := l, al - hs[pny]
                       pny := p1y, pny+1
                   while al > 0 do
-                    area[p1x+size,pny+size].n <- "#"
+                    area[_,p1x+size,pny+size].n <- "#"
                   else
                     pny
                 else if d = "U"
                   for al := l, al - hs[pny-1]
                       pny := p1y, pny-1
                   while al > 0 do
-                    area[p1x+size,pny+size].n <- "#"
+                    area[_,p1x+size,pny+size].n <- "#"
                     pny
                 else
                   p1y
@@ -188,8 +188,8 @@ dec18_part2 is
           fill(x,y i32) unit =>
             if (min_x <= x <= max_x &&
                 min_y <= y <= max_y)
-              if area[x,y].n.get = "."
-                area[x,y].n <- "_"
+              if area[_,x,y].n.get = "."
+                area[_,x,y].n <- "_"
                 fill x-1 y
                 fill x+1 y
                 fill x y-1
@@ -197,7 +197,7 @@ dec18_part2 is
           fill min_x min_y
           (min_y..max_y).reduce (i64 0) s1,y->
             (min_x..max_x).reduce s1 s2,x->
-              c := area[x,y].n.get
+              c := area[_,x,y].n.get
               if c = "#" || c = "."
                 ww := ws[x-size]
                 hh := hs[y-size]

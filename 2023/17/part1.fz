@@ -21,7 +21,7 @@ dec17_part1 is
 
       put(x, y, dir, str8, loss0 i32) =>
         if  (x ∈ xs) && (y ∈ ys) then
-          loss := loss0 + area[y,x]
+          loss := loss0 + area[_,y,x]
           ol := la[ix y x dir str8 .as_i64];
           if ol < 0 || ol > loss then
             la[ix y x dir str8 .as_i64] := loss

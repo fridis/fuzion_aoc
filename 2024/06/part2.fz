@@ -13,12 +13,12 @@ dec6_part2 =>
     w := arr[0].length.as_i64
 
     data := array2 arr.length arr[0].length y,x->arr[y][x]
-    area := (mutate.array2 codepoint).type.new LM h w "0"
+    area := (LM.array2 codepoint).type.new h w "0"
     area.index_pairs
         .for_each ||>y,x->
-          area[y,x] := data[y.as_i32, x.as_i32]
+          area[y,x] := data[_,y.as_i32, x.as_i32]
 
-    start := data.index_pairs.filter (yx -> data[yx.0,yx.1] = "^")
+    start := data.index_pairs.filter (yx -> data[_,yx.0,yx.1] = "^")
                              .first.val ||> y,x -> pos y.as_i64 x.as_i64
 
     # direction, bit gives a unique bit 1, 2, 4, 8
@@ -56,7 +56,7 @@ dec6_part2 =>
           dd
 
     # candidate positions  that should be checked in part2, filled in part1
-    cand := (mutate.array2 bool).type.new LM h w false
+    cand := (LM.array2 bool).type.new h w false
 
     # perform part1 and fill cand
     part1_res := LM.env.new 0
@@ -74,7 +74,7 @@ dec6_part2 =>
           .map (c -> c ||> pos)
           .filter (p -> p.get cand && p.get area != "#")
           .filter cp->
-              visited := (mutate.array2 u8).type.new LM h w 0
+              visited := (LM.array2 u8).type.new h w 0
               for d := up, p.change_dir d q->(q.get area = "#" || q = cp)
                   p := start, p + d
                   loup := false, (v & d.bit) != 0

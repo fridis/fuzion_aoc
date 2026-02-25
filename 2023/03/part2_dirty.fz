@@ -11,7 +11,7 @@ dec3_part2 is
     w => a.length1
     h => a.length0
     index [](l,c) =>
-      if 0 <= l < h && 0 <= c < w then a[l,c] else "."
+      if 0 <= l < h && 0 <= c < w then a[_,l,c] else "."
 
     number(l, c i32) is
       len := for res := 1, res+1 while scheme.this[l,c+res].is_ascii_digit else res

@@ -9,8 +9,8 @@ dec16 =>
   area := array2 codepoint h w y,x->input[y][x]
   point(y,x) is
   #  say "$area"
-  e := area.index_pairs.filter (yx -> yx ||> y,x->area[y,x]="E") .first.or_else (panic "E not found") ||> point
-  s := area.index_pairs.filter (yx -> yx ||> y,x->area[y,x]="S") .first.or_else (panic "S not found") ||> point
+  e := area.index_pairs.filter (yx -> yx ||> y,x->area[_,y,x]="E") .first.or_else (panic "E not found") ||> point
+  s := area.index_pairs.filter (yx -> yx ||> y,x->area[_,y,x]="S") .first.or_else (panic "S not found") ||> point
 
   lm : mutate is
 
@@ -26,15 +26,15 @@ dec16 =>
 
       (0..3).for_each (d -> trace d e 0)
 
-      cur_cost(d,p) => costs[d,p.y][p.x.as_i64];
-      set_cost(d,p,cost) => costs[d,p.y][p.x.as_i64] := cost
+      cur_cost(d,p) => costs[_,d,p.y][p.x.as_i64];
+      set_cost(d,p,cost) => costs[_,d,p.y][p.x.as_i64] := cost
 
       move(d,p,cost) =>
         p2 := if      d = 0 then point p.y+1 p.x   # up backwards, i.e., down
               else if d = 1 then point p.y   p.x+1 # left backwards, i.e., right
               else if d = 2 then point p.y-1 p.x   # down backwards, i.e., up
               else               point p.y   p.x-1 # right backwards, i.e. left
-        if (".S".contains area[p2.y,p2.x] &&
+        if (".S".contains area[_,p2.y,p2.x] &&
             cost+1 < cur_cost d p2 &&
             cost+1 < cur_cost 3 s)
         then
@@ -62,7 +62,7 @@ dec16 =>
           if c < i32.max then
             yak (((c > 10000000) ? "XX" : ((c > 99999) ? ("*"+(c/1000)+"*") : $c).pad_center 6))
           else
-            yak area[y,x]*6
+            yak area[_,y,x]*6
         else
           say ""
 

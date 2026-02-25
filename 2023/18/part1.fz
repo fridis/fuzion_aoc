@@ -29,22 +29,22 @@ dec18_part1 is
           d := (dirs.find a.dir).get
       do
         for i in 0..(a.len-1) do
-          area[px+i*dx[d],py+i*dy[d]].n <- "#"
+          area[_,px+i*dx[d],py+i*dy[d]].n <- "#"
         nx := px + a.len*dx[d]
         ny := py + a.len*dy[d]
       else
         show =>
           for y in min_y..max_y do
             for x in min_x..max_x do
-              yak area[x,y].n.get
+              yak area[_,x,y].n.get
             say ""
         show
         say "fill: "
         fill(x,y i32) unit =>
           if (min_x <= x <= max_x &&
               min_y <= y <= max_y) then
-            if area[x,y].n.get = "." then
-              area[x,y].n <- "_"
+            if area[_,x,y].n.get = "." then
+              area[_,x,y].n <- "_"
               fill x-1 y
               fill x+1 y
               fill x y-1
@@ -55,7 +55,7 @@ dec18_part1 is
         res := lm.env.new 0 # (max_x-min_x+1)*(max_y-min_y+1)
         for y in min_y..max_y do
           for x in min_x..max_x do
-            c := area[x,y].n.get
+            c := area[_,x,y].n.get
             if c = "#" || c = "." then
               res <- res.get + 1
 #          else say "$y: $res"

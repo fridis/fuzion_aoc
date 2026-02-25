@@ -48,7 +48,7 @@ dec15 =>
 
       for yx in a.index_pairs do
         y,x := yx
-        a[y,x] := area[y.as_i32,x.as_i32]
+        a[y,x] := area[_,y.as_i32,x.as_i32]
 
       for yx in a.index_pairs do
       until yx ||> y,x->a[y,x] = "@"
@@ -115,7 +115,7 @@ dec15 =>
 
       for yx in a.index_pairs do
         y,x := yx
-        v := area[y.as_i32,x.as_i32/2]
+        v := area[_,y.as_i32,x.as_i32/2]
         v1 := if      v = "O" then ["[","]"]
               else if v = "@" then ["@","."]
               else                 [v  ,v  ]
