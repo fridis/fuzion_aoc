@@ -45,7 +45,7 @@ dec12 =>
               a2,s2 := if kind = data[_,x,y] then fill x   y+1 else (0,1)
               a3,s3 := if kind = data[_,x,y] then fill x-1 y   else (0,1)
               a4,s4 := if kind = data[_,x,y] then fill x   y-1 else (0,1)
-              (1+a1+a2+a3+a4, s1+s2+s3+s4+ sides_started x y)
+              (1+a1+a2+a3+a4, s1+s2+s3+s4 + sides_started x y)
 
           sides_started(x,y) =>
             tl := data[_,x-1,y-1] = kind

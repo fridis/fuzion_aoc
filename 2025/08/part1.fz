@@ -11,8 +11,8 @@ dec8 =>
   n := input.length
 
   dist(i,j) : property.orderable is
-    d := ((input[i].0-input[j].0)**2+
-          (input[i].1-input[j].1)**2+
+    d := ((input[i].0-input[j].0)**2 +
+          (input[i].1-input[j].1)**2 +
           (input[i].2-input[j].2)**2)
     public redef fixed type.lteq(a,b dec8.dist.this) bool => a.d <= b.d
     public redef as_string String => "$i-$j($d)"
