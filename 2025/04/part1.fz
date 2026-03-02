@@ -16,11 +16,11 @@ dec4 =>
             if is_roll x y then
               if (((y-1 .. y+1).flat_map yy->
                      (x-1 .. x+1).filter (xx -> is_roll xx yy)
-                   .count) <=4) then
+                   .count) <= 4) then
                 say "yea $x $y"
               ((y-1 .. y+1).flat_map yy->
                    (x-1 .. x+1).filter (xx -> is_roll xx yy)
-                 .count) <=4
+                 .count) <= 4
             else
               false
           .count id
