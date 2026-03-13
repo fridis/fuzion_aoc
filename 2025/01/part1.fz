@@ -5,7 +5,7 @@ dec1 =>
              .replace "L" "-"
              .split "\n"
              .filter !=""
-             .map (.parse_i32.val)
+             .map (.parse_i32.or_panic)
 
   part1 =>
     input.foldf (50,0) e,x->

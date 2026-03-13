@@ -124,8 +124,8 @@ dec15 =>
       for yx in a.index_pairs until yx ||> y,x->a[y,x] = "@"
         ryx <- yx
         input2.codepoints.for_each s->
-          f => if      "^v".contains s then d := ("^-v".find s).val.as_i64-1; moveV d
-               else if "<>".contains s then d := ("<->".find s).val.as_i64-1; moveH ryx.get d
+          f => if      "^v".contains s then d := ("^-v".find s).or_panic.as_i64-1; moveV d
+               else if "<>".contains s then d := ("<->".find s).or_panic.as_i64-1; moveH ryx.get d
                else panic "dir unknown $s"
 
           match f

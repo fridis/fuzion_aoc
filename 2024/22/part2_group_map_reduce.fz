@@ -1,12 +1,12 @@
 dec22 is
 
-  input := io.stdin.read_lines.filter !="" .map (.parse_i64.val) .as_array
+  input := io.stdin.read_lines.filter !="" .map (.parse_i64.or_panic) .as_array
 
   i64.mixAndPrune(f i64->i64) => (val ^ f val) % 16777216
   i64.secrets => val :: .mixAndPrune *64 .mixAndPrune /32 .mixAndPrune *2048
 
   part1 =>
-    input.map (.secrets.drop 2000 .first.val)
+    input.map (.secrets.drop 2000 .first.or_panic)
          .sum
 
   # Part 2 is based on a solution in Scala by Karl Bielefeldt (@kbielefe)
@@ -17,7 +17,7 @@ dec22 is
                  .take 2001
                  .map %10
                  .sliding 5
-                 .group_map_reduce (.map_pairs (-) .as_array) (.last.val) x,_->x
+                 .group_map_reduce (.map_pairs (-) .as_array) (.last.or_panic) x,_->x
                  .items)
       .group_map_reduce x->x.0 x->x.1 (+)
       .values

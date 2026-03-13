@@ -11,7 +11,7 @@ dec4_part2 is
     o.as_array
 
   card(s String) is
-    wy(i) => ((s.split ":")[1].split "|")[i].split.map (.parse_i32.val)
+    wy(i) => ((s.split ":")[1].split "|")[i].split.map (.parse_i32.or_panic)
     win => wy 0
     you => wy 1
     matches => ((win.combine you (=)).filter x->x).count

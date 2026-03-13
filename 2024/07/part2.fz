@@ -3,9 +3,9 @@ dec7_part2 =>
   LM : mutate is
   input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines.filter !=""
 
-  total(s) => s.split ":" .first.val.parse_i64.val
-  nums(s) => s.split " " .drop 1 .map (.parse_i64.val)
-  num0(s) => nums s .first.val
+  total(s) => s.split ":" .first.or_panic.parse_i64.or_panic
+  nums(s) => s.split " " .drop 1 .map (.parse_i64.or_panic)
+  num0(s) => nums s .first.or_panic
   numr(s) => nums s .drop 1
 
   test1(t, v, n) =>
@@ -23,7 +23,7 @@ dec7_part2 =>
 
   integer.infix || (o integer.this) =>
     "{integer.this}$o".parse_integer (integer.this.from_u32 10)
-                      .val
+                      .or_panic
 
   part1 => input.filter (s -> test1 (total s) (num0 s) (numr s))
                 .map total

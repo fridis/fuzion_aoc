@@ -6,7 +6,7 @@ dec1_part1 is
 
   data := input.map s->
     n := s.split "   "
-    (n[0].parse_i32.val, n[1].parse_i32.val)
+    (n[0].parse_i32.or_panic, n[1].parse_i32.or_panic)
 
   l := data.map x->x.0
   r := data.map x->x.1

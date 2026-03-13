@@ -1,9 +1,9 @@
 dec18 =>
 
-  w := envir.args[1].parse_i32.val
+  w := envir.args[1].parse_i32.or_panic
   wl := w.as_i64
-  l := envir.args[2].parse_i32.val
-  input := io.stdin.read_lines.filter !="" .map (.split "," .map s->s.parse_i32.val) .map s->(s[0],s[1])
+  l := envir.args[2].parse_i32.or_panic
+  input := io.stdin.read_lines.filter !="" .map (.split "," .map s->s.parse_i32.or_panic) .map s->(s[0],s[1])
                 .take l
 
   lm : mutate is

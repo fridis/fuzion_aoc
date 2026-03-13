@@ -14,7 +14,7 @@ dec12_part1 is
              .codepoints)
             (s.split[1]
               .split ","
-              .map (.parse_i32.val)))
+              .map (.parse_i32.or_panic)))
 
   record(springs Sequence codepoint, groups Sequence i32) is
 

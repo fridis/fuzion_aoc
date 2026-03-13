@@ -5,9 +5,9 @@
     LM : mutate is
     o := LM ! ()->io.stdin.reader LM ! ()->
       for
-        r0 Sequence u8 := [], r0++n.val
+        r0 Sequence u8 := [], r0++n.or_panic
         n := (io.buffered LM .read_bytes 10000)
-      while n.ok && n.val.count > 0 else
+      while n.ok && n.or_panic.count > 0 else
         r0
     o
   bytes := bytes0
@@ -27,11 +27,11 @@
   handbid(s) =>
     s2 := s.split
     say s2
-    handbid (hand s2[0]) s2[1].parse_i32.val
+    handbid (hand s2[0]) s2[1].parse_i32.or_panic
   handbid2(s) =>
     s2 := s.split
     say s2
-    handbid2 (hand s.codepoints[0]) s2[1].parse_i32.val
+    handbid2 (hand s.codepoints[0]) s2[1].parse_i32.or_panic
 
   handbid(h hand, bid i32) : property.orderable is
     public redef as_string String => "{h.s} $bid"
@@ -80,14 +80,14 @@
   r     := "omlkj98765432".codepoints
 
   hand(s String) : property.orderable is
-    rankedl := s.codepoints.map String x->{r[(ranks.find x).get] /* (codepoint (65+(ranks.find x).get).as_u32)*/}
+    rankedl := s.codepoints.map String x->{r[(ranks.find x).or_panic] /* (codepoint (65+(ranks.find x).or_panic).as_u32)*/}
     ranked := rankedl.fold String.type.concat
     sortedr := container.sorted_array String rankedl String.lteq
     sorted := sortedr.fold String.type.concat
     sa := sorted.codepoints.as_array
 
-    j2 String := r[(ranks2.find "J").get]
-    rankedl2 := s.codepoints.map String x->r[(ranks2.find x).get]
+    j2 String := r[(ranks2.find "J").or_panic]
+    rankedl2 := s.codepoints.map String x->r[(ranks2.find x).or_panic]
     ranked2 := rankedl2.fold String.type.concat
     sortedr2 := container.sorted_array String rankedl2 String.lteq
     sorted2 := sortedr2.fold String.type.concat

@@ -1,14 +1,14 @@
 LM : mutate is
 input := LM ! ()->
-  io.stdin.reader LM ! ()->io.buffered LM .read_line .val.split ","
+  io.stdin.reader LM ! ()->io.buffered LM .read_line .or_panic.split ","
 hash(s String) => s.utf8.reduce 0 (h,c -> (h + c.as_i32) * 17 % 256)
 say "part1 {(input.map hash) .sum}"
 lm : mutate is
 lm ! ()->
   hm := (lm.array (Sequence (tuple String i32))).type.new 256 []
   input.for_each e->
-    k := e.substring 0 ((e.find "=").get) # (e.find "-").get)
-    p := (k, (e.split "=").last.get.parse_i32.val -1)
+    k := e.substring 0 ((e.find "=").or_panic) # (e.find "-").or_panic)
+    p := (k, (e.split "=").last.or_panic.parse_i32.or_panic-1)
     b := hm[hash k .as_i64]
     hm[hash k .as_i64] :=
        if      e.contains "-"        then b.filter (x -> x.values.0 != k)

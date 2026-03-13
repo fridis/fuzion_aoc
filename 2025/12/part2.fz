@@ -11,8 +11,8 @@ dec12 =>
 
     input.lines.filter (.contains "x")
          .map (.split ": " .as_tuple)
-         .count ||>a,p->(a.split "x" .map (.parse_i32.val) .product >=
-                         p.split " " .map (.parse_i32.val) .zip presents (*) .sum)
+         .count ||>a,p->(a.split "x" .map (.parse_i32.or_panic) .product >=
+                         p.split " " .map (.parse_i32.or_panic) .zip presents (*) .sum)
 
   part2 =>
     "Merry Christmas"

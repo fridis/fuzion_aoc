@@ -1,8 +1,8 @@
 LM : mutate is
 input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines.filter !=""
 
-total(s) => s.split ":" .first.val.parse_i64.val
-nums(s) => s.split " " .drop 1 .map (.parse_i64.val)
+total(s) => s.split ":" .first.or_panic.parse_i64.or_panic
+nums(s) => s.split " " .drop 1 .map (.parse_i64.or_panic)
 
 test(ops, t, v, n) =>
   t >= v && match n.as_list
@@ -15,4 +15,4 @@ partn(ops Sequence (i64,i64)->i64) =>
        .sum
 
 say (partn [*, +])
-say (partn [*, +, (a,b)->"$a$b".parse_i64.val])
+say (partn [*, +, (a,b)->"$a$b".parse_i64.or_panic])

@@ -2,12 +2,12 @@ dec3 =>
 
   input := io.stdin.read_string.trim
              .split "\n"
-             .map (.codepoints.map (.parse_i32.val))
+             .map (.codepoints.map (.parse_i32.or_panic))
 
   part1 =>
     input.map l->
         d1 := l.take (l.count-1) .as_array.sort.reverse[0]
-        i := l.index_of d1 .val
+        i := l.index_of d1 .or_panic
         d2 := l.drop i+1 .sort.reverse[0]
         d1*10+d2
       .sum
@@ -17,7 +17,7 @@ dec3 =>
       v
     else
       d1 := l.take (l.count-n+1) .as_array.sort.reverse[0]
-      i := l.index_of d1 .val
+      i := l.index_of d1 .or_panic
       doit n+1 v*10+d1.as_i64 (l.drop i+1)
 
   part2 =>

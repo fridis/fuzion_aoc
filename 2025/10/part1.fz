@@ -7,7 +7,7 @@ dec10 =>
     lights := s[0].substring 1 s[0].byte_length-1 .codepoints.foldf (i32,i32) (0,1) e,c->
                 (e.0|(c="#"?e.1:0),2*e.1)
                .0
-    buttons := (s.drop 1 .take s.count-2).map (b->b.substring 1 b.byte_length-1 .split "," .foldf 0 e,c->e|1<<c.parse_i32.val)
+    buttons := (s.drop 1 .take s.count-2).map (b->b.substring 1 b.byte_length-1 .split "," .foldf 0 e,c->e|1<<c.parse_i32.or_panic)
 #    say buttons
 #    say "{lights.bin} {buttons.map (.bin)}"
     try(l,n) =>

@@ -19,7 +19,7 @@ dec6_part2 =>
           area[y,x] := data[_,y.as_i32, x.as_i32]
 
     start := data.index_pairs.filter (yx -> data[_,yx.0,yx.1] = "^")
-                             .first.val ||> y,x -> pos y.as_i64 x.as_i64
+                             .first.or_panic ||> y,x -> pos y.as_i64 x.as_i64
 
     # direction, bit gives a unique bit 1, 2, 4, 8
     dir(dy, dx i64) is

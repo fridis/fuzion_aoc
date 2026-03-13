@@ -4,7 +4,7 @@ dec11_part2 is
   input := LM ! ()->
     io.stdin.reader LM ! ()->io.buffered LM .read_lines .filter !=""
      .map s->(s.codepoints.map (="#"))
-  image := array2 input.count input.first.val.count i,j->input[i][j]
+  image := array2 input.count input.first.or_panic.count i,j->input[i][j]
 
   part12(f u64) =>
     xs := image.indices0

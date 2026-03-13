@@ -32,7 +32,7 @@ dec3_part1 is
                   !(-1..len+1).filter x->s1[l+y,c+x].is_symbol
                               .is_empty
                .is_empty
-    val => str.parse_i32.val
+    val => str.parse_i32.or_panic
 
   find_numbers(s1) =>
     for
@@ -58,7 +58,7 @@ dec3_part1 is
 
   s := read_scheme
   n := find_numbers s
-  r := n.filter x->x.ok
-        .map x->x.val
+  r := n.filter (.ok)
+        .map (.val)
         .fold i32.type.sum
   say r
