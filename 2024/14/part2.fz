@@ -5,11 +5,11 @@ dec14 =>
              .replace "\n" " "
              .codepoints .filter (c -> "0" <= c <= "9" || c = " " || c = "-") .as_string ""
              .split " " .as_array
-             .map (.parse_i32.val)
+             .map (.parse_i32.or_panic)
              .as_4tuples.map ||||>robot
 
-  w := envir.args[1].parse_i32.val
-  h := envir.args[2].parse_i32.val
+  w := envir.args[1].parse_i32.or_panic
+  h := envir.args[2].parse_i32.or_panic
 
   robot(x,y,vx,vy) is
     move(n) =>

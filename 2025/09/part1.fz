@@ -1,7 +1,7 @@
 dec9 =>
 
   input := io.stdin.read_string.trim.split "\n"
-             .map (.split "," .map (.parse_i64.val) .as_tuple) .as_array
+             .map (.split "," .map (.parse_i64.or_panic) .as_tuple) .as_array
 
   part1 =>
     input.foldf (i64 0) e,a->

@@ -8,7 +8,7 @@ dec13 =>
              .replace "Prize: X=" ""
              .replace ", Y=" " "
              .replace "\n" " "
-             .split "  " .map (.split " " .map (.parse_i64.val))
+             .split "  " .map (.split " " .map (.parse_i64.or_panic))
              .map (x -> claw x[0] x[1] x[2] x[3] x[4] x[5])
 
   claw(ax,ay,bx,by,px,py) is

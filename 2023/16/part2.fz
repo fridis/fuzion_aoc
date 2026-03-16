@@ -27,8 +27,8 @@ dec16_part2 is
 
   part1 => start 0 0 r
   part2 => (xs.map (x -> start x        0        d) ++
-            xs.map (x -> start x        ys.max.val u) ++
+            xs.map (x -> start x        ys.max.or_panic u) ++
             ys.map (y -> start 0        y        r) ++
-            ys.map (y -> start xs.max.val y        l)    ).reduce 0 max
+            ys.map (y -> start xs.max.or_panic y        l)    ).reduce 0 max
 
   say "part1 $part1 part2 $part2"

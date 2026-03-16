@@ -1,6 +1,6 @@
 dec20 =>
 
-  min_saving := envir.args.count > 1 ? envir.args[1].parse_i32.val : 100
+  min_saving := envir.args.count > 1 ? envir.args[1].parse_i32.or_panic : 100
   input := io.stdin.read_lines.filter !="" .map (.codepoints)
   w := input[0].count
   h := input.count
@@ -18,7 +18,7 @@ dec20 =>
     infix + (o) => point x+o.x y+o.y
     infix - (o) => point x-o.x y-o.y
 
-  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.val ||> point
+  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> point
 
   M : mutate is
   M ! ()->
@@ -27,7 +27,7 @@ dec20 =>
     pico(p) => picos[p.xl,p.yl]
     for p := s, p.neighbors.filter (.on_track)
                            .filter (q -> pico q < 0)
-                           .first.val
+                           .first.or_panic
         ps := 0, ps+1
     do
       picos[p.xl,p.yl] := ps

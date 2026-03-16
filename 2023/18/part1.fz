@@ -6,7 +6,7 @@ dec18_part1 is
   data := input.map action
   action(s String) =>
     s3 := s.split " "
-    action s3[0] s3[1].parse_i32.val (s3[2].substring 2 8).parse_i32_hex.val
+    action s3[0] s3[1].parse_i32.or_panic (s3[2].substring 2 8).parse_i32_hex.or_panic
   action(dir String, len i32, col i32) is
 
   dirs := "UDLR"
@@ -26,7 +26,7 @@ dec18_part1 is
           max_x := px+1, max max_x px+1
           max_y := py+1, max max_y py+1
           a in data
-          d := (dirs.find a.dir).get
+          d := (dirs.find a.dir).or_panic
       do
         for i in 0..(a.len-1) do
           area[_,px+i*dx[d],py+i*dy[d]].n <- "#"

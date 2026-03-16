@@ -53,6 +53,6 @@ dec23 is
     part2 =>
       two_cliques := edges.map (e -> clique [e.v,e.w])
       largest two_cliques
-        .first.val.vs.map (.s) .sort.as_string ","
+        .first.or_panic.vs.map (.s) .sort.as_string ","
 
     say "$part1:$part2"

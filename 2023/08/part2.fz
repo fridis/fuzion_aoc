@@ -4,9 +4,9 @@ dec8_part2 is
     LM : mutate is
     o := LM ! ()->io.stdin.reader LM ! ()->
       for
-        r Sequence u8 := [], r++n.val
+        r Sequence u8 := [], r++n.or_panic
         n := (io.buffered LM .read_bytes 10000)
-      while n.ok && n.val.count > 0 else
+      while n.ok && n.or_panic.count > 0 else
         r
     o
   bytes := bytes0
@@ -42,11 +42,11 @@ dec8_part2 is
       if s  then l else r
   forks := tuples.map t->
                    _,l,r := t
-                   fork name_to_num[l].get name_to_num[r].get
+                   fork name_to_num[l].or_panic name_to_num[r].or_panic
                  .as_array
   part1 =>
-    start := name_to_num["AAA"].get
-    end   := name_to_num["ZZZ"].get
+    start := name_to_num["AAA"].or_panic
+    end   := name_to_num["ZZZ"].or_panic
     count := for i := start, next
                  lr in lrs.cycle
                  n in 1..
@@ -58,7 +58,7 @@ dec8_part2 is
     count
 
   part2 =>
-    start := (names.filter s->(s.ends_with "A")).map s->name_to_num[s].get
+    start := (names.filter s->(s.ends_with "A")).map s->name_to_num[s].or_panic
     end   := (names.map s->(s.ends_with "Z")).as_array
 
     lm : mutate is
@@ -90,7 +90,7 @@ dec8_part2 is
   # this crashed my whole Linux system while running in a JVM due to memory exhaustion...
   #
   part2_retired =>
-    start := (names.filter s->(s.ends_with "A")).map s->name_to_num[s].get
+    start := (names.filter s->(s.ends_with "A")).map s->name_to_num[s].or_panic
     say start.count
     end   := (names.map s->(s.ends_with "Z")).as_array
     #    say "$start -> $end"

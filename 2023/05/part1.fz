@@ -10,7 +10,7 @@ dec5_part1 is
   ls := lines.as_array
 
   seeds := ls[0].split.drop 1
-                .map (.parse_i64.val)
+                .map (.parse_i64.or_panic)
                 .as_array
   range(start, len i64) is
     r => start + len
@@ -34,9 +34,9 @@ dec5_part1 is
       n.get
 
   conv(li Sequence String) is
-    to   := li[0].parse_i64.val
-    from := li[1].parse_i64.val
-    len  := li[2].parse_i64.val
+    to   := li[0].parse_i64.or_panic
+    from := li[1].parse_i64.or_panic
+    len  := li[2].parse_i64.or_panic
     l => from
     r => from+len
     convert(i i64) =>

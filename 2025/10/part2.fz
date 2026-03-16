@@ -11,13 +11,13 @@ dec10 =>
     buttons := (s.drop 1 .take s.count-2).map (.replace "(" ""
                                                .replace ")" ""
                                                .split ","
-                                               .map c->1<<c.parse_i32.val
+                                               .map c->1<<c.parse_i32.or_panic
                                                .fold1 (|))
                                          .as_array
-    joltage := s.last.val.replace "\{" ""
+    joltage := s.last.or_panic.replace "\{" ""
                          .replace "\}" ""
                          .split ","
-                         .map (.parse_i32.val)
+                         .map (.parse_i32.or_panic)
 
     try(l,n) =>
       l=lights || n!=0 && (buttons ∃ b->try l^b n-1)
@@ -35,7 +35,7 @@ dec10 =>
                 j2 := j.indexed.map ||>i,jo->(jo - (pr.map b->(b>>i)%2 .sum))/2
                 m.ones_count + 2 * solve j2                 # recurse with halved joltage
               else 1000000
-            .min.val
+            .min.or_panic
       solve joltage
 
   part1 =>

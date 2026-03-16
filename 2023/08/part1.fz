@@ -4,9 +4,9 @@ dec8_part1 is
     LM : mutate is
     o := LM ! ()->io.stdin.reader LM ! ()->
       for
-        r1 Sequence u8 := [], r1++n.val
+        r1 Sequence u8 := [], r1++n.or_panic
         n := (io.buffered LM .read_bytes 10000)
-      while n.ok && n.val.count > 0
+      while n.ok && n.or_panic.count > 0
       else r1
     o
   bytes := bytes0
@@ -45,12 +45,12 @@ dec8_part1 is
                    _,l,r := t
                    fork name_to_num[l] name_to_num[r]
                  .as_array
-  start := name_to_num["AAA"].get
-  end   := name_to_num["ZZZ"].get
+  start := name_to_num["AAA"].or_panic
+  end   := name_to_num["ZZZ"].or_panic
   count := for i := start, next
                lr in lrs.cycle
                n in 1..
-               next := (forks[i].get lr).get
+               next := (forks[i].get lr).or_panic
            until next = end
              n
            else

@@ -11,8 +11,8 @@ dec1 is
     while l != ""  do
       digits := l.codepoints
                 .filter x->(codepoint.type.ascii_digit.contains x.val)
-      first := digits.first.val.parse_i32.val
-      last  := digits.last .val.parse_i32.val
+      first := digits.first.or_panic.parse_i32.or_panic
+      last  := digits.last .or_panic.parse_i32.or_panic
     else
       sum
 
@@ -48,8 +48,8 @@ dec1 is
       d := text_to_digit l
       digits := d.codepoints
                 .filter x->(codepoint.type.ascii_digit.contains x.val)
-      first := digits.first.val.parse_i32.val
-      last  := digits.last .val.parse_i32.val
+      first := digits.first.or_panic.parse_i32.or_panic
+      last  := digits.last .or_panic.parse_i32.or_panic
     else
       sum
 

@@ -4,9 +4,9 @@ dec6_part1 is
     LM : mutate is
     o := LM ! ()->io.stdin.reader LM ! ()->
       for
-        r Sequence u8 := [], r++n.val
+        r Sequence u8 := [], r++n.or_panic
         n := (io.buffered LM .read_bytes 10000)
-      while n.ok && n.val.count > 0 else
+      while n.ok && n.or_panic.count > 0 else
         r
     _ : String is
       public redef utf8 Sequence u8 => o
@@ -15,9 +15,9 @@ dec6_part1 is
 
   l1 := lines[0].split.drop 1
   l2 := lines[1].split.drop 1
-  races := l1.zip l2 t,d->(race t.parse_i64.val d.parse_i64.val)
-  race2 := (race ((lines[0].split ":")[1].replace " " "").parse_i64.val
-                 ((lines[1].split ":")[1].replace " " "").parse_i64.val)
+  races := l1.zip l2 t,d->(race t.parse_i64.or_panic d.parse_i64.or_panic)
+  race2 := (race ((lines[0].split ":")[1].replace " " "").parse_i64.or_panic
+                 ((lines[1].split ":")[1].replace " " "").parse_i64.or_panic)
   race(t, d) is
     public redef as_string String => "Race {t}ms {d}mm"
     wins =>

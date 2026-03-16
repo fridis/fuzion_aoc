@@ -19,7 +19,7 @@ dec3_part2 is
       val := (0..len-1).map i->scheme.this[l,c+i].as_string
                        .fold String.type.concat
                        .parse_i32
-                       .val
+                       .or_panic
       adj (i,j i32) => (l-1 <= i <= l+1   &&
                         c-1 <= j <= c+len   )
 
@@ -39,8 +39,8 @@ dec3_part2 is
       else res
 
     parts =>
-      numbers.filter x->x.ok
-             .map x->x.val
+      numbers.filter (.ok)
+             .map (.val)
              .fold i32.type.sum
 
     gears =>
@@ -52,7 +52,7 @@ dec3_part2 is
             if scheme.this[i,j] = "*"
               k := numbers.filter (x->x.adj i j)
               if k.count = 2
-                res <- res.get + k.map x->x.val
+                res <- res.get + k.map (.val)
                                   .fold i32.type.product
         res.get
 

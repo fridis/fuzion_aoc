@@ -15,17 +15,17 @@ dec5_part1 =>
 
   is_less_than(a,b) =>
     input1.map (e -> e.split "|"
-                      .map (.parse_i32.val)
+                      .map (.parse_i32.or_panic)
                       .as_array)
           .filter (e -> e[0] = b && e[1] = a)
           .is_empty
 
-  mid(s) => s.drop s.count/2 .first.val
+  mid(s) => s.drop s.count/2 .first.or_panic
 
   part1 =>
     (input2.map s->
       n := s.split ","
-            .map (.parse_i32.val)
+            .map (.parse_i32.or_panic)
 #      say "$s {is_ordered n}"
 #      m := is_ordered n ? mid n : 0
 #      say m

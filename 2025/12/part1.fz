@@ -2,8 +2,8 @@ dec12 =>
 
   input := io.stdin.read_string.trim.split "\n\n" .as_array
   grids := input[6].split "\n" .map (.split ": ")
-  areas := grids.map (g->g[0].split "x" .map (.parse_i32.val))
-  pcnts := grids.map (g->g[1].split " " .map (.parse_i32.val))
+  areas := grids.map (g->g[0].split "x" .map (.parse_i32.or_panic))
+  pcnts := grids.map (g->g[1].split " " .map (.parse_i32.or_panic))
 
   part1 =>
     # just stupidly count if the number of #s would fit, ignoring the

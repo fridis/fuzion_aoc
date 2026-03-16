@@ -1,13 +1,13 @@
 dec3 =>
 
   input := io.stdin.read_string.trim.split "\n"
-             .map (.codepoints.map (.parse_i64.val))
+             .map (.codepoints.map (.parse_i64.or_panic))
 
   joltage(n,v,l) =>
     if n=0 then
       v
     else
-      d := l.take (l.count-n+1) .max.val
+      d := l.take (l.count-n+1) .max.or_panic
       joltage n-1 v*10+d (l.drop_while !=d .drop 1)
 
   part1 =>

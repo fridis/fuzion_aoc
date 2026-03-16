@@ -2,10 +2,10 @@ dec2 =>
 
   input := io.stdin.read_string
              .split "\n"
-             .first.val
+             .first.or_panic
              .split ","
              .flat_map (.split "-"
-                        .map (.parse_i64.val)
+                        .map (.parse_i64.or_panic)
                         .as_tuples)
 
   part1 =>
