@@ -5,9 +5,9 @@
     LM : mutate is
     o := LM ! ()->io.stdin.reader LM ! ()->
       for
-        r1 Sequence u8 := [], r1++n.val
+        r1 Sequence u8 := [], r1++n.or_panic
         n := (io.buffered LM .read_bytes 10000)
-      while n.ok && n.val.count > 0
+      while n.ok && n.or_panic.count > 0
       else r1
     o
   bytes := bytes0
@@ -27,7 +27,7 @@
   handbid(str) =>
     s := str.split
     say s
-    handbid (hand s[0]) s[1].parse_i32.val
+    handbid (hand s[0]) s[1].parse_i32.or_panic
 
   handbid(h hand, bid i32) : property.orderable is
     public redef as_string String => "{h.s} $bid"
@@ -69,7 +69,7 @@
   r     := "omlkj987654321".codepoints
 
   hand(s String) : property.orderable is
-    rankedl := s.codepoints.map String x->{r[(ranks.find x).get] /* (codepoint (65+(ranks.find x).get).as_u32)*/}
+    rankedl := s.codepoints.map String x->{r[(ranks.find x).or_panic] /* (codepoint (65+(ranks.find x).or_panic).as_u32)*/}
     ranked := rankedl.fold String.type.concat
     sorted2 := container.sorted_array String rankedl (<=)
     sorted := sorted2.fold String.type.concat

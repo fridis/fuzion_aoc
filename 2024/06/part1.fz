@@ -14,11 +14,11 @@ dec6_part1 =>
   starty, startx := arr.indices.reduce (option (i32,i32) nil) a1,y->
      row := arr[y]
      row.indices.reduce a1 (a2,x -> row[x] = "^" ? (y,x) : a2)
-   .val
+   .or_panic
 
   part1 =>
     LM ! ()->
-      state := (mutate.array2 codepoint).type.new LM h w "\0"
+      state := (LM.array2 codepoint).type.new h w "\0"
       for y in state.indices0 do
         for x in state.indices1 do
           state[y,x] := arr[y.as_i32][x.as_i32]

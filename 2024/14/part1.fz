@@ -15,14 +15,14 @@ dec14 =>
              .split " " .as_array
   say "4: "+input4.count
   input5  := input4
-             .map (.parse_i64.val)
+             .map (.parse_i64.or_panic)
   say "5: "+input5.count
   input  := input5
              .as_4tuples.map ||||>robot
   say "6: "+input.count
 
-  w := envir.args[1].parse_i64.val
-  h := envir.args[2].parse_i64.val
+  w := envir.args[1].parse_i64.or_panic
+  h := envir.args[2].parse_i64.or_panic
 
   product(T type : numeric, l Sequence T) => l.fold T.product
 

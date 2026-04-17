@@ -18,10 +18,10 @@ dec21 is
       dx1 := y=3 && dx < 0 ? min dx -y+1 : dx;
       dx2 := dx - dx1;
       ((dx > 0 ? ">" * dx  : "") +
-       (dx1 < 0 ? "<" *(-dx1): "") +
+       (dx1 < 0 ? "<" * (-dx1): "") +
        (dy < 0 ? "^"*(-dy) : "") +
        (dx2 < 0 ? "<"*(-dx2) : "") +
-       (dy > 0 ? "v"*  dy  : "")   )
+       (dy > 0 ? "v" *  dy  : "")   )
     fixed move_to_all(target key) Sequence String =>
       dx := target.x-x
       dy := target.y-y
@@ -59,14 +59,14 @@ dec21 is
       dx := target.x-x
       dy := target.y-y
   #    say "move $v ($x,$y) -> {target.v} ({target.x},{target.y}) $dx $dy"
-      ((dy > 0 ? "v"*  dy  : "") +
+      ((dy > 0 ? "v" *  dy  : "") +
        (dx > 0 ? ">" * dx  : "") +
        (dx < 0 ? "<"*(-dx) : "") +
        (dy < 0 ? "^"*(-dy) : "")   )
 
 
   fixed codepoint.as_key =>
-    if codepoint.ascii_digit.contains val then dec21.key parse_i32.val
+    if codepoint.ascii_digit.contains val then dec21.key parse_i32.or_panic
     else if "A" = codepoint.this then dec21.key dec21.a
     else panic "as_key for {codepoint.this}"
 
@@ -76,7 +76,7 @@ dec21 is
   fixed part1 =>
     lens := input.map (l -> shortest1 l (key a))
 
-    numparts := input.map (l->l.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i32.val)
+    numparts := input.map (l->l.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i32.or_panic)
     say "$lens \n $numparts"
     lens.zip numparts (*) .sum
 

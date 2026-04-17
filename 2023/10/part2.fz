@@ -10,7 +10,7 @@ dec10_part2 is
   map := array2 cp.count cp[0].count i,j->cp[i][j]
 
   # element at i,j on map extended with "." in all directions
-  at(i,j) => if map.indices0.contains i && map.indices1.contains j then map[i,j] else "."
+  at(i,j) => if map.indices0.contains i && map.indices1.contains j then map[_,i,j] else "."
 
   # a direction
   dir(di, dj i32,   # delta to move one step in this direction
@@ -31,7 +31,7 @@ dec10_part2 is
 
   # find the start tile coordinates
   start =>
-    map.index_pairs.filter ||>(i,j -> map[i,j] = "S")
+    map.index_pairs.filter ||>(i,j -> map[_,i,j] = "S")
       .first
       .or_else (panic "no start found")
 

@@ -6,13 +6,13 @@ dec5_part2 =>
   # the relation defined by input as an array
   rel := input.filter (.contains "|")
               .map (.split "|"
-                    .map (.parse_i32.val)
+                    .map (.parse_i32.or_panic)
                     .as_array)
               .as_array
 
   # the page number sequences defined by input
   nums := input.filter (.contains ",")
-               .map (.split "," .map (.parse_i32.val))
+               .map (.split "," .map (.parse_i32.or_panic))
 
   # infix operator for rel
   infix <? (a,b) => rel ∀ (e -> e[0] != b || e[1] != a)
@@ -21,7 +21,7 @@ dec5_part2 =>
   is_ordered(s) => s.first ∀ (v -> t := s.drop 1; (t ∀ v<?) && is_ordered t)
 
   # middle element
-  mid(s) => s.drop s.count/2 .first.val
+  mid(s) => s.drop s.count/2 .first.or_panic
 
   part1 => nums.map (n -> is_ordered n ? mid n : 0)
                .sum

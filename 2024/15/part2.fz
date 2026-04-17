@@ -48,7 +48,7 @@ dec15 =>
 
       for yx in a.index_pairs do
         y,x := yx
-        a[y,x] := area[y.as_i32,x.as_i32]
+        a[y,x] := area[_,y.as_i32,x.as_i32]
 
       for yx in a.index_pairs do
       until yx ||> y,x->a[y,x] = "@"
@@ -115,7 +115,7 @@ dec15 =>
 
       for yx in a.index_pairs do
         y,x := yx
-        v := area[y.as_i32,x.as_i32/2]
+        v := area[_,y.as_i32,x.as_i32/2]
         v1 := if      v = "O" then ["[","]"]
               else if v = "@" then ["@","."]
               else                 [v  ,v  ]
@@ -124,8 +124,8 @@ dec15 =>
       for yx in a.index_pairs until yx ||> y,x->a[y,x] = "@"
         ryx <- yx
         input2.codepoints.for_each s->
-          f => if      "^v".contains s then d := ("^-v".find s).val.as_i64-1; moveV d
-               else if "<>".contains s then d := ("<->".find s).val.as_i64-1; moveH ryx.get d
+          f => if      "^v".contains s then d := ("^-v".find s).or_panic.as_i64-1; moveV d
+               else if "<>".contains s then d := ("<->".find s).or_panic.as_i64-1; moveH ryx.get d
                else panic "dir unknown $s"
 
           match f

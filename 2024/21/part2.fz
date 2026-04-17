@@ -3,8 +3,8 @@ dec21 is
   input := io.stdin.read_lines.filter !=""
 
   # overlapping both layouts, put ` ` at (0,0)
-  codepoint.x => "741  <8520^v963AA>"  .find codepoint.this .val / 6
-  codepoint.y => "789#456#123# 0^A<v>#".find codepoint.this .val / 4 - 3
+  codepoint.x => "741  <8520^v963AA>"  .find codepoint.this .or_panic / 6
+  codepoint.y => "789#456#123# 0^A<v>#".find codepoint.this .or_panic / 4 - 3
 
   move(cur, next) =>
     dx := next.x - cur.x
@@ -32,7 +32,7 @@ dec21 is
 
   shortest(n) =>
     lengths := input.map (find_shortest n)
-    numeric_ := input.map (.codepoints.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.val)
+    numeric_ := input.map (.codepoints.filter (c -> "0" <= c <= "9") .reduce "" (+) .parse_i64.or_panic)
     lengths.zip numeric_ (*)
            .sum
 

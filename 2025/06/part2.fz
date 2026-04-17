@@ -7,12 +7,12 @@ dec6 =>
     a := input.map (.split.as_array) .as_array
     a[0].indices.map x->
                   op := a[h][x]
-                  (0..h-1).map y->a[y][x].parse_i64.val
+                  (0..h-1).map y->a[y][x].parse_i64.or_panic
                           .fold1 (if op="*" then * else +)
                 .sum
 
   part2 =>
-    w := input.map (.trim.byte_count) .max.val
+    w := input.map (.trim.byte_count) .max.or_panic
     i := input.map_to_array (.codepoints.as_array)
     next(c) =>
       if c<w && (0..h ∃ y->i[y][c]!=" ") then next c+1
@@ -22,7 +22,7 @@ dec6 =>
                  op := i[h][c]
                  (c..(next c)-2).map x->
                                   (0..h-1).foldf "" e,y->e+i[y][x]
-                                          .trim.parse_i64.val
+                                          .trim.parse_i64.or_panic
                                 .fold1 (op="*" ? * : +)
                .sum
 

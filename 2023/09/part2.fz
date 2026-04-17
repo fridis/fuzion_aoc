@@ -4,7 +4,7 @@ dec9_part2 is
   ls := LM ! ()->(io.stdin.reader LM ! ()->io.buffered LM .read_lines)
 
   # parse input into sequence of sequence of i32
-  seqs := ls.map s->(s.split.map (.parse_i32.val)).as_array
+  seqs := ls.map s->(s.split.map (.parse_i32.or_panic)).as_array
 
   # find new first and last elements to extend given sequence at both ends
   #
@@ -13,7 +13,7 @@ dec9_part2 is
       (0,0)                                               # 0..0 is easy, just add 0 on both ends
     else
       di := extend (sq.map_pairs a,b->b-a).as_array       # extend diffs
-      (sq.first.val - di.0, sq.last.val + di.1)     # use diffs to determine first + last
+      (sq.first.or_panic - di.0, sq.last.or_panic + di.1)     # use diffs to determine first + last
 
   ex := (seqs.map (s -> extend s)).as_array
   part1 => (ex.map (.values.1)).fold i32.type.sum

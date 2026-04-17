@@ -3,15 +3,15 @@ dec7_part1 =>
   LM : mutate is
   input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines.filter !=""
 
-  total(s) => s.split ":" .first.val.parse_i64.val
-  nums(s) => s.split " " .drop 1 .map (.parse_i64.val) .as_array
+  total(s) => s.split ":" .first.or_panic .parse_i64.or_panic
+  nums(s) => s.split " " .drop 1 .map (.parse_i64.or_panic) .as_array
 
   test2(t, v, r) =>
     match r.as_list
       nil => t = v
       c Cons => (test2 t v*c.head c.tail ||
                  test2 t v+c.head c.tail    )
-  test(t, r) => test2 t r.first.val (r.drop 1)
+  test(t, r) => test2 t r.first.or_panic (r.drop 1)
 
   part1 =>
     input.filter (s -> test (total s) (nums s))

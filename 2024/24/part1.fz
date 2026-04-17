@@ -25,14 +25,14 @@ dec24 is
     iws := in_wires.map (s -> s.split ": " |> (iw -> input_wire iw[0] iw[1]="1"))
     igs := in_gates.map (s -> s.split " "  |> (ig -> input_gate ig[0] ig[1] ig[2] ig[4]))
     ignore iws
-    bits := igs.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i32.val) .fold1 max
+    bits := igs.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i32.or_panic) .fold1 max
     ignore bits
     wires := iws.map (w -> id Wire w) ++ igs.map (w -> id Wire w)
     names := wires.map (.name)
     all_wires := (container.ps_map String Wire).new names wires
 
     get_state(name) =>
-      all_wires[name].val.state get_state
+      all_wires[name].or_panic.state get_state
     say bits
     for r := i64 0, r | ((get_state "z"+(i.as_string 2 10) ? i64 1 : i64 0) << i.as_i64) # NYI: CLEANUP: explicit type should not be necessary when type inference improves, see #5866
         i in 0..bits

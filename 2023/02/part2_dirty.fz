@@ -24,15 +24,15 @@ dec2 is
 
   draw(s String) is
     cubes := s.split ","
-    b := (bag ((cubes.map c->(c.ends_with "red"   ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum)
-              ((cubes.map c->(c.ends_with "green" ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum)
-              ((cubes.map c->(c.ends_with "blue"  ? (c.split " ")[1].parse_i32.val : 0)).fold i32.type.sum))
+    b := (bag ((cubes.map c->(c.ends_with "red"   ? (c.split " ")[1].parse_i32.or_panic: 0)).fold i32.type.sum)
+              ((cubes.map c->(c.ends_with "green" ? (c.split " ")[1].parse_i32.or_panic: 0)).fold i32.type.sum)
+              ((cubes.map c->(c.ends_with "blue"  ? (c.split " ")[1].parse_i32.or_panic: 0)).fold i32.type.sum))
     public redef as_string String => $b
 
   game(s String) is
     s1 := s.split(":")
     game := s1[0]
-    num := (game.split " ")[1].parse_i32.val
+    num := (game.split " ")[1].parse_i32.or_panic
     draws := (s1[1].split ";").map (x->draw x)   # NYI: partial `draw` did not work?
     min => (draws.map (.b)).fold bag_min_monoid
     public redef as_string String => "$game: {draws.as_string "; "}"

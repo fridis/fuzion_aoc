@@ -3,7 +3,7 @@ dec8 =>
   say "start"
   input0 := io.stdin.read_string.trim.split "\n" .flat_map (.split ",") .as_array
   say "start1"
-  input1 := input0.map (.parse_i64.val) .as_array
+  input1 := input0.map (.parse_i64.or_panic) .as_array
   say "start2"
   input2 := input1.as_3tuples .as_array
   say "start3"
@@ -11,8 +11,8 @@ dec8 =>
   n := input.length
 
   dist(i,j) : property.orderable is
-    d := ((input[i].0-input[j].0)**2+
-          (input[i].1-input[j].1)**2+
+    d := ((input[i].0-input[j].0)**2 +
+          (input[i].1-input[j].1)**2 +
           (input[i].2-input[j].2)**2)
     public redef fixed type.lteq(a,b dec8.dist.this) bool => a.d <= b.d
     public redef as_string String => "$i-$j($d)"
@@ -62,7 +62,7 @@ dec8 =>
           .product
 
     classes := array input.length x->(1,x)
-    join 0 envir.args[1].parse_i32.val classes
+    join 0 envir.args[1].parse_i32.or_panic classes
 
 
 #    input

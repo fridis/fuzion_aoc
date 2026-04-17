@@ -14,13 +14,13 @@ dec3_part2 is
     w => a.length1
     h => a.length0
     at(l,c) =>
-      if 0 <= l < h && 0 <= c < w then a[l,c] else "."
+      if 0 <= l < h && 0 <= c < w then a[_,l,c] else "."
 
     number(l, c i32) is
-      len := (0.. .filter (x -> !(at l c+x).is_ascii_digit)).first.val
+      len := (0.. .filter (x -> !(at l c+x).is_ascii_digit)).first.or_panic
       ok bool := (-1..1) ∃ y -> (-1..len) ∃ x -> (at l+y c+x) .is_symbol
       val i32 := ls[l].substring c c+len
-                      .parse_i32.val
+                      .parse_i32.or_panic
       adj (i,j i32) => (l-1 <= i <= l+1   &&
                         c-1 <= j <= c+len   )
 
@@ -40,7 +40,7 @@ dec3_part2 is
          i,j := ij
          if at i j = "*"
            k := numbers.filter (x -> x.adj i j)
-           if k.count = 2 then k.first.val.val * k.last.val.val else 0
+           if k.count = 2 then k.first.or_panic.val * k.last.or_panic.val else 0
          else
            0
        .fold i32.type.sum

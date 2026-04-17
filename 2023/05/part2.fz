@@ -12,9 +12,9 @@ dec5_part2 is
     LM : mutate is
     o := LM ! ()->io.stdin.reader LM ! ()->
       for
-        r Sequence u8 := [], r++n.val
+        r Sequence u8 := [], r++n.or_panic
         n := (io.buffered LM .read_bytes 10000)
-      while n.ok && n.val.count > 0 else
+      while n.ok && n.or_panic.count > 0 else
         r
     _ : String is
       public redef utf8 Sequence u8 => o
@@ -23,7 +23,7 @@ dec5_part2 is
   ls := lines.as_array
 
   seeds := ls[0].split.drop 1
-                .map (.parse_i64.val)
+                .map (.parse_i64.or_panic)
                 .as_array
   seeds2 := array seeds.length/2 i->(range seeds[2*i] seeds[2*i+1])
   range(start, len i64) is
@@ -31,7 +31,7 @@ dec5_part2 is
     l => start
 
   maps => maps (ls.drop 2)
-  maps(ml) list map => if ml.is_empty || ml.first.val = "" then nil
+  maps(ml) list map => if ml.is_empty || ml.first.or_panic = "" then nil
                        else
                          h := (ml.drop 1).take_while !=""
                          r := ml.drop h.count+2
@@ -61,9 +61,9 @@ dec5_part2 is
       rs.flat_map range convert2
 
   conv(li Sequence String) is
-    to   := li[0].parse_i64.val
-    from := li[1].parse_i64.val
-    len  := li[2].parse_i64.val
+    to   := li[0].parse_i64.or_panic
+    from := li[1].parse_i64.or_panic
+    len  := li[2].parse_i64.or_panic
     l => from
     r => from+len
     convert(i i64) =>

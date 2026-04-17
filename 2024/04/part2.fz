@@ -10,7 +10,7 @@ dec4_part1 =>
 
   get(y,x) =>
     if (y ∈ area.indices0) && (x ∈ area.indices1)
-      area[y,x]
+      area[_,y,x]
     else
       "."
   is_string(y,x,dy,dx,str) =>

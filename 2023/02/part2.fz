@@ -17,13 +17,13 @@ dec2 is
 
   draw(s) =>
     color(col) => s.split ","
-                   .map c->(c.ends_with col ? (c.split " ")[1].parse_i32.val : 0)
+                   .map c->(c.ends_with col ? (c.split " ")[1].parse_i32.or_panic: 0)
                    .fold i32.type.sum
     bag (color "red") (color "green") (color "blue")
 
   game(s) is
     s1 := s.split ":"
-    num   := (s1[0].split " ")[1].parse_i32.val
+    num   := (s1[0].split " ")[1].parse_i32.or_panic
     draws := (s1[1].split ";").map (x->draw x)
     min => draws.fold bag_min
 

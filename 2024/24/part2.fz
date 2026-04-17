@@ -3,7 +3,7 @@ dec24 =>
   input := io.stdin.read_string.split "\n\n" .map (.split "\n" .filter !="")
   wires := (input[0].map (s -> s.split ": " |> (iw -> inpt iw[0] iw[1]="1"))         .map Wire id ++
             input[1].map (s -> s.split " "  |> (ig -> gate ig[0] ig[1] ig[2] ig[4])) .map Wire id   )
-  bits := wires.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i64.val) .fold1 max
+  bits := wires.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i64.or_panic) .fold1 max
   device := container.ps_map String Wire .new (wires.map (.name)) wires
 
   # any wire coming from input or gate
@@ -20,7 +20,7 @@ dec24 =>
       if x < 0 then
         state
       else
-        b := name.substring 1 .parse_i64.val
+        b := name.substring 1 .parse_i64.or_panic
         v := if      name.starts_with "x" then x
              else if name.starts_with "y" then y
              else panic "x y expected $name"
@@ -52,7 +52,7 @@ dec24 =>
          [gate.this])
 
   i64.z => "z"+(val.as_string 2 10)
-  wire(name) => device[name].val
+  wire(name) => device[name].or_panic
 
   # check if state of wire `name` is defined.
   # swap gives wires to swap,
@@ -95,14 +95,14 @@ dec24 =>
       until r0?? then r0 else nil
 
   part1 =>
-    for r := i64 0, r | (try_state [] 0 -1 -1 i.z .val ? (i64 1) : (i64 0)) << i # NYI: CLEANUP: explicit type should not be necessary when type inference improves, see #5866
+    for r := i64 0, r | (try_state [] 0 -1 -1 i.z .or_panic ? (i64 1) : (i64 0)) << i # NYI: CLEANUP: explicit type should not be necessary when type inference improves, see #5866
         i in (i64 0)..bits
     else
       $r
 
   part2 =>
     find_swap 0 []
-      .get
+      .or_panic
       .flat_map (t -> id (Sequence String) [t.0,t.1])
       .sort
       .as_string ","

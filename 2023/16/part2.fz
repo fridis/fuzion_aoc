@@ -17,7 +17,7 @@ dec16_part2 is
         if ((x ∈ xs) && (y ∈ ys) &&
             (visited[ix x y .as_i64] & (1 << w)) = 0) then
           visited[ix x y .as_i64] := visited[ix x y .as_i64] | (1 << w)
-          c := area[y,x]
+          c := area[_,y,x]
           if (["\\|", "/|" , "xx"  , ".|" ][w].find c).exists then trace x   y+1 d
           if (["/|" , "\\|", ".|"  , "xx" ][w].find c).exists then trace x   y-1 u
           if (["xx" , ".-" , "\\-" , "/-" ][w].find c).exists then trace x-1 y   l
@@ -27,8 +27,8 @@ dec16_part2 is
 
   part1 => start 0 0 r
   part2 => (xs.map (x -> start x        0        d) ++
-            xs.map (x -> start x        ys.max.val u) ++
+            xs.map (x -> start x        ys.max.or_panic u) ++
             ys.map (y -> start 0        y        r) ++
-            ys.map (y -> start xs.max.val y        l)    ).reduce 0 max
+            ys.map (y -> start xs.max.or_panic y        l)    ).reduce 0 max
 
   say "part1 $part1 part2 $part2"
