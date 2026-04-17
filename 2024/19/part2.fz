@@ -4,7 +4,7 @@ dec19 =>
   towels := input[0].split ", " .as_array
   designs := input.drop 2 .filter !=""
 
-  String.suffix(prfx) => substring prfx.byte_length
+  String.suffix(prfx) => substring prfx.byte_count
 
   M : mutate is
   M ! ()->

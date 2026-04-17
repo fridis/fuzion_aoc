@@ -20,7 +20,7 @@ dec21 is
 
   find_shortest(d, l) i64 : memoize => keep "$d$l" _->
     if d < 0 then
-      l.byte_length.as_i64
+      l.byte_count.as_i64
     else
       for res := i64 0, res + s
           cur := "A", next

@@ -35,7 +35,7 @@ dec1 is
         for m in numbers do
           t0,d := m
         until s.starts_with t0
-          d + text_to_digit (s.substring (min d.codepoint_length s.codepoint_length))
+          d + text_to_digit (s.substring (min d.codepoint_count s.codepoint_count))
         else
           s.substring 0 1 + text_to_digit (s.substring 1)
       else

@@ -16,7 +16,7 @@
   input :=
     _ : String is
       public redef utf8 Sequence u8 => bytes
-  say "got input {input.byte_length}"
+  say "got input {input.byte_count}"
   lines := input.split "\n"
                  .map s->(String.type.from s.utf8.as_array)
                  .filter !=""

@@ -9,7 +9,7 @@ dec2 =>
                         .as_tuples)
 
   ten := i64 10
-  i64.strlen => ($val).byte_length.as_i64
+  i64.strlen => ($val).byte_count.as_i64
 
   part1 =>
     input.flat_map ||>a,b->
