@@ -11,10 +11,10 @@ dec2 =>
   part1 =>
     say input.as_string_all
     input.map (||> a,b->
-        a0 := if ($a).byte_length %% 2 then a
-                                       else (i64 10)**(($a).byte_length.as_i64)
+        a0 := if ($a).byte_count %% 2 then a
+                                       else (i64 10)**(($a).byte_count.as_i64)
         say "$a-$b\t$a0"
-        hl := ($a0).byte_length / 2
+        hl := ($a0).byte_count / 2
         f := (i64 10)**hl.as_i64
         for
           n := i64 0, n+w

@@ -105,7 +105,7 @@ dec21 is
              k2:= c.as_key2
              k1,str := s
              (k2,str + k1.move_to k2 + "A")
-        .values.1.byte_length
+        .values.1.byte_count
 
 
   part2 =>

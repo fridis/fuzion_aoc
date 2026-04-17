@@ -12,7 +12,7 @@ dec6 =>
                 .sum
 
   part2 =>
-    w := input.map (.trim.byte_length) .max.or_panic
+    w := input.map (.trim.byte_count) .max.or_panic
     i := input.map_to_array (.codepoints.as_array)
     next(c) =>
       if c<w && (0..h ∃ y->i[y][c]!=" ") then next c+1

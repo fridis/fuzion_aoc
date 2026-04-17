@@ -1,16 +1,16 @@
 dec14 =>
 
   input0 := ((((io.stdin.read_string.trim.utf8.as_array |> (s->String.type.from s)) )))
-  say "0: "+input0.byte_length
+  say "0: "+input0.byte_count
   input1 := (input0
              .replace "," " " |> (s->String.type.from s.utf8.as_array))
-  say "1: "+input1.byte_length
+  say "1: "+input1.byte_count
   input2 := (input1
              .replace "\n" " " |> (s->String.type.from s.utf8.as_array))
-  say "2: "+input2.byte_length
+  say "2: "+input2.byte_count
   input3 := (input2
              .codepoints .as_array .filter (c -> { { if c = "p" then yak "." }; "0" <= c <= "9" || c = " " || c = "-"})) .as_array .as_string ""
-  say "3: "+input3.byte_length
+  say "3: "+input3.byte_count
   input4  := input3
              .split " " .as_array
   say "4: "+input4.count

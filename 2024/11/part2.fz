@@ -11,7 +11,7 @@ dec11 =>
       count(i, n) i64 ! M =>
         k := i << 50 | n;
         match cache[k]
-          nil => l := ($n).byte_length.as_i64
+          nil => l := ($n).byte_count.as_i64
                  res := if      i=0    then 1
                         else if n=0    then count i-1 1
                         else if l %% 2 then f := (i64 10)**(l/2);

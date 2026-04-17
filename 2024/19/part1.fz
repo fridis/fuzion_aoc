@@ -5,7 +5,7 @@ dec19 =>
   input2 := input.drop 2 .filter !="" .map sarr
   sarr(s) => String.from s.utf8.as_array
 
-  sorted := input1.sort_by a,b->a.byte_length<=b.byte_length
+  sorted := input1.sort_by a,b->a.byte_count<=b.byte_count
 
   say "sorted: {sorted.as_string ", "}"
 
@@ -14,11 +14,11 @@ dec19 =>
   say "no_dups: {no_dups.as_string ", "}"
 
   possible2(s, ts) =>
-    !ts.filter (p -> p!=s && s.starts_with p && possible0 (s.substring p.byte_length) ts)
+    !ts.filter (p -> p!=s && s.starts_with p && possible0 (s.substring p.byte_count) ts)
                    .is_empty
 
   possible0(s, ts) =>
-    s="" || !ts.filter (p -> s.starts_with p && possible0 (s.substring p.byte_length) ts)
+    s="" || !ts.filter (p -> s.starts_with p && possible0 (s.substring p.byte_count) ts)
                    .is_empty
 
   possible(s) => possible0 s no_dups

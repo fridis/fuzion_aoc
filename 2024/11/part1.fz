@@ -4,7 +4,7 @@ dec11 =>
   data := input.trim.split " " .map (.parse_i64.or_panic)
 
   f(n) Sequence i64 =>
-    l := ($n).byte_length.as_i64
+    l := ($n).byte_count.as_i64
     if      n=0    then [i64 1]
     else if l %% 2 then f := (i64 10)**(l/2); [n/f,n%f]
     else                [n*2024]
