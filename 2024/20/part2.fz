@@ -1,6 +1,6 @@
 dec20 =>
 
-  min_saving := envir.args.count > 1 ? envir.args[1].parse_i32.or_panic : 100
+  min_saving := envir.args.env.count > 1 ? envir.args.env[1].parse_i32.or_panic : 100
   input := io.stdin.read_lines.filter !="" .map (.codepoints)
   w := input[0].count
   h := input.count
