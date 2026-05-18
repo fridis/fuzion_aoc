@@ -62,7 +62,7 @@ dec8 =>
           .product
 
     classes := array input.length x->(1,x)
-    join 0 envir.args[1].parse_i32.or_panic classes
+    join 0 envir.args.env[1].parse_i32.or_panic classes
 
 
 #    input
