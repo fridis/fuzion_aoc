@@ -21,8 +21,8 @@ dec14 =>
              .as_4tuples.map ||||>robot
   say "6: "+input.count
 
-  w := envir.args[1].parse_i64.or_panic
-  h := envir.args[2].parse_i64.or_panic
+  w := envir.args.env[1].parse_i64.or_panic
+  h := envir.args.env[2].parse_i64.or_panic
 
   product(T type : numeric, l Sequence T) => l.fold T.product
 

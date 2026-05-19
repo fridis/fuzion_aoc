@@ -8,8 +8,8 @@ dec14 =>
              .map (.parse_i32.or_panic)
              .as_4tuples.map ||||>robot
 
-  w := envir.args[1].parse_i32.or_panic
-  h := envir.args[2].parse_i32.or_panic
+  w := envir.args.env[1].parse_i32.or_panic
+  h := envir.args.env[2].parse_i32.or_panic
 
   robot(x,y,vx,vy) is
     move(n) =>
