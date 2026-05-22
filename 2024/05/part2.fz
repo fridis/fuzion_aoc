@@ -25,7 +25,7 @@ dec5_part2 =>
 
   part1 => nums.map (n -> is_ordered n ? mid n : 0)
                .sum
-  part2 => nums.map (n -> is_ordered n ? 0 : n.sort_by (<?) |> mid)
+  part2 => nums.map (n -> is_ordered n ? 0 : n.sort |> mid)
                .sum
 
   say part1
