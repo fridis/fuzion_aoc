@@ -30,7 +30,7 @@ dec14 =>
             r in f
             n := x=r.x && y=r.y ? 1 : 0
         else
-          yak (c=0?".":"M")
+          yap (c=0?".":"M")
       else
         say ""
     else

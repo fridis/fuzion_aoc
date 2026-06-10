@@ -60,9 +60,9 @@ dec16 =>
           p := point y x
           c := min (min (min (cur_cost 0 p) (cur_cost 1 p)) (cur_cost 2 p)) (cur_cost 3 p)
           if c < i32.max then
-            yak (((c > 10000000) ? "XX" : ((c > 99999) ? ("*"+(c/1000)+"*") : $c).pad_center 6))
+            yap (((c > 10000000) ? "XX" : ((c > 99999) ? ("*"+(c/1000)+"*") : $c).pad_center 6))
           else
-            yak area[_,y,x]*6
+            yap area[_,y,x]*6
         else
           say ""
 
