@@ -19,7 +19,7 @@ dec15 =>
 
   show(a mutate.array2 String) =>
     for syx in a.index_pairs do
-      yak (syx ||> sy,sx->a[sy,sx])
+      yap (syx ||> sy,sx->a[sy,sx])
       if syx.1 = a.length1-1 then say ""
 
   part1 =>

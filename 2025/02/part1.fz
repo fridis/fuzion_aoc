@@ -22,7 +22,7 @@ dec2 =>
           v := hi * f + hi
           w := if v>=a then v else 0
         while v <= b && hi<f do
-          yak "$v "
+          yap "$v "
         else
           say " ($a0-$b) --> $n"
           n)
