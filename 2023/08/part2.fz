@@ -97,7 +97,7 @@ dec8_part2 is
     t0 := time.nano.env.read
     show(n i32) =>
       t1 := time.nano.env.read
-      say "..$n..{time.duration.ns ((t1-t0)/(time.duration.ns n.as_u64))}/it"
+      say "..$n..$(time.duration.ns ((t1-t0)/(time.duration.ns n.as_u64)))/it"
     if start.count = 6
       s0 := start[0]
       s1 := start[1]

@@ -9,11 +9,11 @@ dec2 is
 
   bag_min_monoid : Monoid bag is
     public redef infix ∙ (a, b bag) bag =>
-      say "min of $a AND $b => {
+      say "min of $a AND $b => $(
         (bag (min a.r b.r)
              (min a.g b.g)
              (min a.b b.b))
-          }"
+        )"
       (bag (max a.r b.r)
            (max a.g b.g)
            (max a.b b.b))
@@ -35,7 +35,7 @@ dec2 is
     num := (game.split " ")[1].parse_i32.or_panic
     draws := (s1[1].split ";").map (x->draw x)   # NYI: partial `draw` did not work?
     min => (draws.map (.b)).fold bag_min_monoid
-    public redef as_string String => "$game: {draws.as_string "; "}"
+    public redef as_string String => "$game: $(draws.as_string "; ")"
 
   LM : mutate is
   res := LM ! ()->io.stdin.reader LM ! ()->

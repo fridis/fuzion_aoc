@@ -19,7 +19,7 @@ dec2 is
     game := s1[0]
     num := (game.split " ")[1].parse_i32.or_panic
     draws := (s1[1].split ";").map (x->draw x)   # NYI: partial `draw` did not work?
-    public redef as_string String => "$game: {draws.as_string "; "}"
+    public redef as_string String => "$game: $(draws.as_string "; ")"
 
   LM : mutate is
   r := LM ! ()->io.stdin.reader LM ! ()->

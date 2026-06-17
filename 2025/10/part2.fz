@@ -14,8 +14,8 @@ dec10 =>
                                                .map c->1<<c.parse_i32.or_panic
                                                .fold1 (|))
                                          .as_array
-    joltage := s.last.or_panic.replace "\{" ""
-                         .replace "\}" ""
+    joltage := s.last.or_panic.replace "{" ""
+                         .replace "}" ""
                          .split ","
                          .map (.parse_i32.or_panic)
 
