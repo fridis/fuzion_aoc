@@ -10,7 +10,7 @@ dec10_part2 is
   map := array2 cp.count cp[0].count i,j->cp[i][j]
 
   # element at i,j on map extended with "." in all directions
-  at(i,j) => if map.indices0.contains i && map.indices1.contains j then map[_,i,j] else "."
+  at(i,j) => if map.indices0.contains i.as_i64 && map.indices1.contains j.as_i64 then map[_,i,j] else "."
 
   # a direction
   dir(di, dj i32,   # delta to move one step in this direction
@@ -41,7 +41,9 @@ dec10_part2 is
     lm ! ()->
       lp := array map.length0 i->((lm.array String).type.new map.length1.as_i64 ".")
 
-      i,j := start
+      ij := start
+      i := ij.0.as_i32
+      j := ij.1.as_i32
       for first := true, !first && !d.connects i j
           d in dirs
       do

@@ -5,8 +5,8 @@ dec20 =>
   h := input.count
   area := array2 w h x,y->input[y][x]
   point(x,y) : property.equatable is
-    xl => x.as_i64
-    yl => y.as_i64
+    xl => x
+    yl => y
     public redef type.equality(a,b point.this) bool => a.x=b.x && a.y=b.y
     neighbors => [point x+1 y, point x-1 y, point x y+1, point x y-1]
       .filter (.valid)
@@ -14,8 +14,8 @@ dec20 =>
     on_track => area[_,x,y] != "#"
     inner_wall => 1 <= x < w-1 && 1 <= y < h-1 && area[_,x,y] = "#"
 
-  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> point
-  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.or_panic ||> point
+  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> x,y->point x.as_i32 y.as_i32
+  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.or_panic ||> x,y->point x.as_i32 y.as_i32
 
   M : mutate is
   M ! ()->
@@ -39,7 +39,7 @@ dec20 =>
         if      t>=0 && b>=0 then (|t-b|)-2
         else if l>=0 && r>=0 then (|l-r|)-2
         else                      0
-      area.index_pairs.map (||> xx,yy -> point xx yy)
+      area.index_pairs.map (||> xx,yy -> point xx.as_i32 yy.as_i32)
           .filter (.inner_wall)
           .map saving
           .filter >=100 .count

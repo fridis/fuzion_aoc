@@ -11,8 +11,8 @@ dec3_part2 is
   scheme(ls Sequence String) is
     cp := ls.map (.codepoints)
     a := array2 cp.count cp[0].count i,j->cp[i][j]
-    w => a.length1
-    h => a.length0
+    w => a.length1.as_i32
+    h => a.length0.as_i32
     at(l,c) =>
       if 0 <= l < h && 0 <= c < w then a[_,l,c] else "."
 
@@ -26,7 +26,8 @@ dec3_part2 is
 
     numbers =>
       a.index_pairs.flat_map number ij->
-        i,j := ij
+        i := ij.0.as_i32
+        j := ij.1.as_i32
         (!(at i j-1).is_ascii_digit &&
           (at i j  ).is_ascii_digit   ).as_option number (number i j)
 
@@ -37,7 +38,8 @@ dec3_part2 is
     gears i32 =>
       a.index_pairs
        .map ij->
-         i,j := ij
+         i := ij.0.as_i32
+         j := ij.1.as_i32
          if at i j = "*"
            k := numbers.filter (x -> x.adj i j)
            if k.count = 2 then k.first.or_panic.val * k.last.or_panic.val else 0

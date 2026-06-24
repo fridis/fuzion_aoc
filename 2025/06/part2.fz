@@ -1,7 +1,7 @@
 dec6 =>
 
   input := io.stdin.read_string.trim.split "\n" .as_array
-  h := input.length-1
+  h := input.length.as_i32-1
 
   part1 =>
     a := input.map (.split.as_array) .as_array

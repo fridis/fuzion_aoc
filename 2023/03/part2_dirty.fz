@@ -8,8 +8,8 @@ dec3_part2 is
   scheme(ls) is
     cp := ls.map x->x.codepoints
     a := array2 cp.count cp[0].count i,j->cp[i][j]
-    w => a.length1
-    h => a.length0
+    w => a.length1.as_i32
+    h => a.length0.as_i32
     index [](l,c) =>
       if 0 <= l < h && 0 <= c < w then a[_,l,c] else "."
 
@@ -25,10 +25,10 @@ dec3_part2 is
 
     numbers =>
       for res list number := nil, (res ++ f).as_list
-          i in a.indices0
+          i in a.indices0.map (.as_i32)
       do # NYI: BUG: fails without the `do`, see #4528
           f := for found list number := nil, (found ++ new).as_list  # NYI: PR #2291: `.as_list` not needed if option is a Sequence
-                   j in a.indices1
+                   j in a.indices1.map (.as_i32)
                    p := scheme.this[i,j-1]
                    c := scheme.this[i,j  ]
                    new option number := if !p.is_ascii_digit && c.is_ascii_digit  # NYI: #2292: some syntax sugar `bool.as_option(v Lazy T)` might help
@@ -47,8 +47,8 @@ dec3_part2 is
       lm : mutate is
       lm ! ()->
         res := lm.env.new 0
-        for i in a.indices0 do
-          for j in a.indices1 do
+        for i in a.indices0.map (.as_i32) do
+          for j in a.indices1.map (.as_i32) do
             if scheme.this[i,j] = "*"
               k := numbers.filter (x->x.adj i j)
               if k.count = 2

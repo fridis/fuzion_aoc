@@ -9,7 +9,7 @@ dec10_part1 is
   # our map
   map := array2 cp.count cp[0].count i,j->cp[i][j]
 
-  at(i,j) => if map.indices0.contains i && map.indices1.contains j then map[_,i,j] else "."
+  at(i,j) => if map.indices0.contains i.as_i64 && map.indices1.contains j.as_i64 then map[_,i,j] else "."
 
   # a direction
   dir(di, dj i32,   # delta to move one step in this direction
@@ -32,7 +32,7 @@ dec10_part1 is
     for ij in map.index_pairs do
       i,j := ij
     until map[_,i,j] = "S"
-      ij
+      (i.as_i32, j.as_i32)
     else
       panic "no start found"
 

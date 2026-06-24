@@ -114,7 +114,7 @@
     _ :=
       for i := 0 , i+1
           r1 := 0, r1+w
-      while i<sa.length do
+      while i<sa.length.as_i32 do
         w := (i+1)*sa[i].bid
         say "{sa[i]} {i>sa.length-2 || sa[i] >= sa[i+1]} {sa[i].bid} $w {r1+w}"
 

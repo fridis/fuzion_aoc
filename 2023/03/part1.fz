@@ -8,8 +8,8 @@ dec3_part1 is
   scheme(ls) is
     cp := ls.map x->x.codepoints
     a := array2 cp.count cp[0].count i,j->cp[i][j]
-    w => a.length1
-    h => a.length0
+    w => a.length1.as_i32
+    h => a.length0.as_i32
     at(l,c i32) =>
       if 0 <= l < h && 0 <= c < w then a[_,l,c] else "."
 
@@ -21,7 +21,8 @@ dec3_part1 is
 
     numbers =>
       a.index_pairs.flat_map number ij->
-        i,j := ij
+        i := ij.0.as_i32
+        j := ij.1.as_i32
         (!(at i j-1).is_ascii_digit &&
           (at i j  ).is_ascii_digit   ).as_option number (number i j)
 

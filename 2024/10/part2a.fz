@@ -8,8 +8,8 @@ dec10_part2 =>
     .as_array
 
 
-  h := arr.length    + 2
-  w := arr[0].length + 2
+  h := arr.length.as_i32    + 2
+  w := arr[0].length.as_i32 + 2
   area  := array2 w+2 h+2 x,y->(1 <= x < w-1 && 1 <= y < h-1 ? arr[y-1][x-1] : 99)
 
   join1(a,x,y) =>

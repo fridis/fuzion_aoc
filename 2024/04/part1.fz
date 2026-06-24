@@ -6,11 +6,11 @@ dec4_part1 =>
     .filter !=""
     .map (.codepoints)
 
-  area := array2 String input.count input[0].count i,j->input[i][j]
+  area := array2 String _ input.count input[0].count i,j->input[i][j]
 
   get(y,x) =>
-    if (0 <= y < area.length0 &&
-        0 <= x < area.length1    )
+    if (0 <= y < area.length0.as_i32 &&
+        0 <= x < area.length1.as_i32    )
       area[_,y,x]
     else
       "."
@@ -25,10 +25,10 @@ dec4_part1 =>
 
   part1 =>
     for sy := 0, sy+cy
-        y in area.indices0
+        y in area.indices0.map (.as_i32)
     do
       cy := for sx := 0, sx+cx1+cx2+cx3+cx4+cx5+cx6+cx7+cx8
-                x in area.indices1
+                x in area.indices1.map (.as_i32)
                 cx1 := count y x 0 +1
                 cx2 := count y x 0 -1
                 cx3 := count y x +1 0

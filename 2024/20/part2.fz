@@ -18,7 +18,7 @@ dec20 =>
     infix + (o) => point x+o.x y+o.y
     infix - (o) => point x-o.x y-o.y
 
-  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> point
+  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> x,y->point x.as_i32 y.as_i32
 
   M : mutate is
   M ! ()->
@@ -41,7 +41,7 @@ dec20 =>
         if      t>=0 && b>=0 then (|t-b|)-2
         else if l>=0 && r>=0 then (|l-r|)-2
         else                      0
-      area.index_pairs.map ||>point
+      area.index_pairs.map (||> x,y->point x.as_i32 y.as_i32)
           .filter (.inner_wall)
           .map saving
           .filter >=min_saving
