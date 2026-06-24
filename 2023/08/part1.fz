@@ -21,7 +21,7 @@ dec8_part1 is
   lrs := ls[0].codepoints
   tuples := for i i32 := 1, i+1
                 t list (tuple String String String) := nil, (t ++ nl).as_list
-            while i < ls.length
+            while i < ls.length.as_i32
               ns := ls[i]
               nl :=
                 if ns != ""
@@ -34,7 +34,7 @@ dec8_part1 is
             else
               t
   names := (tuples.map t->t.values.0).as_array
-  nums  := (0..names.length-1).as_array
+  nums  := (0..names.length.as_i32-1).as_array
   name_to_num := container.map_of names nums
   fork(l,r) is
     get(s) =>

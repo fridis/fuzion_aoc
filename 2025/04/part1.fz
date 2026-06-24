@@ -4,8 +4,8 @@ dec4 =>
              .map (l -> l.codepoints.map ="@" .as_array)
              .as_array
 
-  w := input[0].length
-  h := input.length
+  w := input[0].length.as_i32
+  h := input.length.as_i32
 
   is_roll(x,y) =>
     0 <= y < h && 0 <= x < w && input[y][x]

@@ -25,7 +25,7 @@ dec5_part2 is
   seeds := ls[0].split.drop 1
                 .map (.parse_i64.or_panic)
                 .as_array
-  seeds2 := array seeds.length/2 i->(range seeds[2*i] seeds[2*i+1])
+  seeds2 := array seeds.length/2 i->(range seeds[i*2] seeds[i*2+1])
   range(start, len i64) is
     r => start + len
     l => start

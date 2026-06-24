@@ -6,11 +6,11 @@ dec16 =>
              .map (.codepoints)
   h := input.count
   w := input[0].count
-  area := array2 codepoint h w y,x->input[y][x]
-  point(y,x) is
+  area := array2 codepoint i32 h w y,x->input[y][x]
+  point(y,x i32) is
   #  say "$area"
-  e := area.index_pairs.filter (yx -> yx ||> y,x->area[_,y,x]="E") .first.or_else (panic "E not found") ||> point
-  s := area.index_pairs.filter (yx -> yx ||> y,x->area[_,y,x]="S") .first.or_else (panic "S not found") ||> point
+  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.or_else (panic "E not found") ||> x,y->point x.as_i32 y.as_i32
+  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_else (panic "S not found") ||> x,y->point x.as_i32 y.as_i32
 
   lm : mutate is
 

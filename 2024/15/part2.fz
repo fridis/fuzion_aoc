@@ -6,7 +6,7 @@ dec15 =>
   input2 := input[1].replace "\n" ""
   h := input1.count
   w := input1[0].count
-  area := array2 codepoint h w y,x->input1[y][x]
+  area := array2 codepoint _ h w y,x->input1[y][x]
 
   dir(s) =>
     if      s = "^" then (i64  0, i64 -1)

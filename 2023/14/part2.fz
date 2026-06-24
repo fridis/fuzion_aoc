@@ -5,9 +5,9 @@ dec14_part2 is
     .read_lines
     .filter !=""
     .map (.codepoints)
-  area := array2 String input.count input[0].count i,j->input[i][j]
+  area := array2 String _ input.count input[0].count i,j->input[i][j]
 
-  a2(a) => array2 String a.count a[0].count i,j->a[j][i]
+  a2(a) => array2 String _ a.count a[0].count i,j->a[j][i]
   infix == (a1,a2) => a1.zip a2 x,y->x=y ∀ x->x
   dots(n) => [$"."].cycle.take n
 

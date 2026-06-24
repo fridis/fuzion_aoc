@@ -18,7 +18,7 @@ dec8_part1 =>
         x := xi.as_i64; y := yi.as_i64
         if 0 <= x < wl && 0 <= y < hl && !antinodes[x,y] then
           antinodes[x,y] := true
-      for xy in area.index_pairs do
+      for xy in area.index_pairs.map (||>a,b->(a.as_i32,b.as_i32)) do
         xy ||> x,y->
           v := area[_,x,y]
           vl := v.as_i64
@@ -26,7 +26,7 @@ dec8_part1 =>
             a := antennas[vl]
             for axy in a do
               axy ||> ax, ay ->
-                for i in 1 .. (n=1 ? 1 : max w h) do
+                for i in 1 .. (n=1 ? 1 : max w h .as_i32) do
                   antinode  x+i*(x-ax)  y+i*(y-ay)
                   antinode ax+i*(ax-x) ay+i*(ay-y)
 

@@ -4,15 +4,15 @@ dec16 =>
              .map (.codepoints) .as_array
   h := input.count
   w := input[0].count
-  area := array2 codepoint h w y,x->input[y][x]
+  area := array2 codepoint _ h w y,x->input[y][x]
   point(y,x) is
     mov(d) =>
       if      d=0 then point y-1 x
       else if d=1 then point y   x-1
       else if d=2 then point y+1 x
       else             point y   x+1
-  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.or_panic ||> point
-  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> point
+  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.or_panic ||> x,y->point x.as_i32 y.as_i32
+  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> x,y->point x.as_i32 y.as_i32
 
   cost_of_turns(d1,d2) =>
     if      (d1 = d2)       then 0

@@ -6,10 +6,10 @@ dec4_part1 =>
     .filter !=""
     .map (.codepoints)
 
-  area := array2 String input.count input[0].count i,j->input[i][j]
+  area := array2 String _ input.count input[0].count i,j->input[i][j]
 
   get(y,x) =>
-    if (y ∈ area.indices0) && (x ∈ area.indices1)
+    if (y.as_i64 ∈ area.indices0) && (x.as_i64 ∈ area.indices1)
       area[_,y,x]
     else
       "."
@@ -24,7 +24,7 @@ dec4_part1 =>
         yx, dd := v
         yy, xx := yx
         dy, dx := dd
-        is_string yy xx dy dx "XMAS".codepoints
+        is_string yy.as_i32 xx.as_i32 dy.as_i32 dx.as_i32 "XMAS".codepoints
       .count
 
   is_x(y, x) =>
@@ -34,7 +34,7 @@ dec4_part1 =>
      ((get y-1 x+1) = "M" && (get y+1 x-1) = "S" ||
       (get y-1 x+1) = "S" && (get y+1 x-1) = "M"    )    )
 
-  part2 => area.index_pairs.filter (yx -> is_x yx.0 yx.1)
+  part2 => area.index_pairs.filter (yx -> is_x yx.0.as_i32 yx.1.as_i32)
                            .count
 
   say part1

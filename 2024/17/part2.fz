@@ -28,7 +28,7 @@ dec17 =>
      s -> regs s.a   s.b       s.div       s.pc+2             s.out             ]
 
   run(s) =>
-    if 0 <= s.pc < code.length then run (exec[s.ins].call s)
+    if 0 <= s.pc < code.length.as_i32 then run (exec[s.ins].call s)
     else                            s.out
   runa(a) => run (regs a initial_B initial_C 0 (id (Sequence i64) []))
 

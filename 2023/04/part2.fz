@@ -26,9 +26,9 @@ dec4_part2 is
   part2 := lm ! ()->
     a := (lm.array i32).type.new cards.count.as_i64 1
     for i in cards.indices do
-      m := cards[i].matches
+      m := cards[i].matches.as_i64
       for j in i+1..i+m do
-        a[j.as_i64] := a[j.as_i64] + a[i.as_i64]
+        a[j] := a[j] + a[i]
     a.as_array.fold i32.type.sum
 
   say "dec 4: $part1 $part2"

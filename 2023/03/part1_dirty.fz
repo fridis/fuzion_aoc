@@ -13,7 +13,7 @@ dec3_part1 is
     scheme a2 a1
 
   scheme(a,ls) is
-    w => a.length0
+    w => a.length0.as_i32
     h => ls.count
     index [](i,j) =>
       if 0 <= i < h && 0 <= j < w then a[_,i,j] else "."
@@ -37,12 +37,12 @@ dec3_part1 is
   find_numbers(s1) =>
     for
       li list number := nil, (li ++ f).as_list
-      i in s1.a.indices0
+      i in s1.a.indices0.map (.as_i32)
     do # NYI: BUG: fails without the `do`, see #4528
       f :=
         for
           found list number := nil, (found ++ new).as_list
-          j in s1.a.indices1
+          j in s1.a.indices1.map (.as_i32)
           p := s1[i,j-1]
           c := s1[i,j  ]
           prev_is_num := "0" <= p <= "9"

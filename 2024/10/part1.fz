@@ -21,9 +21,9 @@ dec10_part1 =>
       res.as_array.sort
 
   part1 =>
-    a9 := array2 (Sequence i32) w+2 h+2 (x,y -> area[_,x,y] = 9 ? [w*y+x] : (Sequence i32).type.empty)
+    a9 := array2 (Sequence i32) i64 w+2 h+2 (x,y -> area[_,x,y] = 9 ? [(w*y+x).as_i32] : (Sequence i32).type.empty)
     for i := 9, i-1
-        a := a9, array2 (Sequence i32) w+2 h+2 (x,y -> area[_,x,y] = i ? join a[_,x-1,y] a[_,x+1,y] a[_,x,y-1] a[_,x,y+1] : (Sequence i32).type.empty)
+        a := a9, array2 (Sequence i32) _ w+2 h+2 (x,y -> area[_,x,y] = i ? join a[_,x-1,y] a[_,x+1,y] a[_,x,y-1] a[_,x,y+1] : (Sequence i32).type.empty)
     while i>0
 #        say a
     else
