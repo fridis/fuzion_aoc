@@ -29,7 +29,7 @@ dec10 =>
         if j ∀ =0 then 0                                    # all 0, nothing more to do
         else
           l := j.indexed.map ||>i,jo->jo%2<<i .fold1 (|)    # desired lights = odd joltages
-          (0..(2**buttons.length-1)).map m->                # for all button combinations
+          (0..(2**buttons.length.as_i32-1)).map m->                # for all button combinations
               pr := buttons.zip (m :: (/2)) b,mb->mb%2*b    # pressed buttons
               if l = pr.fold1 (^) then                      # resulting lights ok?
                 j2 := j.indexed.map ||>i,jo->(jo - (pr.map b->(b>>i)%2 .sum))/2
