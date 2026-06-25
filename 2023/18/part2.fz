@@ -20,7 +20,7 @@ dec18_part2 is
     lm : mutate is
     lm.instate_self i32 ()->
       cell(n lm.new String) ref is
-      area := array2 cell _ 1000 1000 _,_->(cell (lm.env.new $"."))
+      area := array2 1000 1000 _,_->(cell (lm.env.new $"."))
       for px := 500, nx
           py := 500, ny
           min_x := px-1, min min_x px-1
@@ -59,7 +59,7 @@ dec18_part2 is
       cell(n lm.new String) ref is
       icell(n lm.new i32) ref is
       size => 2000
-      area := array2 cell 2*size 2*size _,_->(cell (lm.env.new $"."))
+      area := array2 2*size 2*size _,_->(cell (lm.env.new $"."))
       for p0x := 1, nx
           p0y := 1, ny
           ws Sequence i64 := [i64.type.max,i64.type.max], nws.as_array
