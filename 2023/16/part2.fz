@@ -4,8 +4,8 @@ dec16_part2 is
              .filter !=""
              .map (.codepoints)
   area := array2 String _ input.count input[0].count i,j->input[i][j]
-  xs => area.indices1.map (.as_i32)
-  ys => area.indices0.map (.as_i32)
+  xs => area.indices1
+  ys => area.indices0
 
   r => {0}; l => {1}; u => {2}; d => {3}
   start(x0,y0,w0 i32) =>
@@ -14,7 +14,7 @@ dec16_part2 is
       visited := (lm.array i32).type.new area.length.as_i64 0
       ix(x,y) => y+x*area.length1.as_i32
       trace(x,y,w i32) unit =>
-        if ((xs.contains x) && (ys.contains y) &&
+        if ((x.as_i64 ∈ xs) && (y.as_i64 ∈ ys) &&
             (visited[ix x y .as_i64] & (1 << w)) = 0) then
           visited[ix x y .as_i64] := visited[ix x y .as_i64] | (1 << w)
           c := area[_,y,x]
@@ -26,9 +26,9 @@ dec16_part2 is
       (visited.as_array.filter !=0).count
 
   part1 => start 0 0 r
-  part2 => (xs.map (x -> start x        0        d) ++
-            xs.map (x -> start x        ys.max.or_panic u) ++
-            ys.map (y -> start 0        y        r) ++
-            ys.map (y -> start xs.max.or_panic y        l)    ).reduce 0 max
+  part2 => (xs.map (x -> start x.as_i32               0                      d) ++
+            xs.map (x -> start x.as_i32               ys.max.or_panic.as_i32 u) ++
+            ys.map (y -> start 0                      y.as_i32               r) ++
+            ys.map (y -> start xs.max.or_panic.as_i32 y.as_i32               l)).reduce 0 max
 
   say "part1 $part1 part2 $part2"
