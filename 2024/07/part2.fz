@@ -22,7 +22,7 @@ dec7_part2 =>
                  test2 t (v || c.head) c.tail   )
 
   integer.infix || (o integer.this) =>
-    "{integer.this}$o".parse_integer (integer.this.from_u32 10)
+    "$(integer.this)$o".parse_integer (integer.this.from_u32 10)
                       .or_panic
 
   part1 => input.filter (s -> test1 (total s) (num0 s) (numr s))

@@ -7,11 +7,11 @@ dec19 =>
 
   sorted := input1.sort_by (.byte_count)
 
-  say "sorted: {sorted.as_string ", "}"
+  say "sorted: $(sorted.as_string ", ")"
 
   no_dups Sequence String := sorted.filter s->(!possible2 s sorted) .as_array
 
-  say "no_dups: {no_dups.as_string ", "}"
+  say "no_dups: $(no_dups.as_string ", ")"
 
   possible2(s, ts) =>
     !ts.filter (p -> p!=s && s.starts_with p && possible0 (s.substring p.byte_count) ts)
