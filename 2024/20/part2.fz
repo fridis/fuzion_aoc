@@ -1,6 +1,6 @@
 dec20 =>
 
-  min_saving := envir.args.env.count > 1 ? envir.args.env[1].parse_i32.or_panic : 100
+  min_saving := envir.Args.env.count > 1 ? envir.Args.env[1].parse_i32.or_panic : 100
   input := io.stdin.read_lines.filter !="" .map (.codepoints)
   w := input[0].count
   h := input.count
@@ -22,7 +22,7 @@ dec20 =>
 
   M : mutate is
   M ! ()->
-    track := (M.array point).type.empty
+    track := (container.Dynamic_Array M point).empty
     picos := (M.array2 i32).type.new w.as_i64 h.as_i64 -1
     pico(p) => picos[p.xl,p.yl]
     for p := s, p.neighbors.filter (.on_track)
