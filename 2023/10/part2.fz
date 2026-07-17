@@ -39,7 +39,7 @@ dec10_part2 is
   loup =>
     lm : mutate is
     lm ! ()->
-      lp := array map.length0 i->((lm.array String).type.new map.length1.as_i64 ".")
+      lp := array map.length0 i->((lm.array String).type.new map.length1.as_i64 _->".")
 
       ij := start
       i := ij.0.as_i32
