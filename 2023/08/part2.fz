@@ -66,7 +66,7 @@ dec8_part2 is
       for res := u64 1, prod / gcd
           s in start
       do
-        visited := (lm.array i32).type.new (lrscnt.as_i64*names.length) (-1)
+        visited := (lm.array i32).type.new (lrscnt.as_i64*names.length) _->(-1)
         visited_index(n i32, cell i32) => (n % lrscnt) * names.length.as_i32 + cell
         period := for cur := s, next
                       n in 0..

@@ -22,7 +22,7 @@ dec16 =>
   lm : mutate is
   costs := lm ! ()->
     mcosts := array2 4 h s,y->
-      (lm.array i32).type.new w.as_i64 i32.max
+      (lm.array i32).type.new w.as_i64 _->i32.max
 
     trace(d, p, cost) =>
       if cost < mcosts[_,d,p.y][p.x.as_i64] then

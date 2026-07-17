@@ -13,7 +13,7 @@ dec16_part1 is
   part1 =>
     lm : mutate is
     lm ! ()->
-      visited := (lm.array i32).type.new area.length.as_i64 0
+      visited := (lm.array i32).type.new area.length.as_i64 _->0
       ix(x,y) => y+x*area.length1.as_i32
       trace(x,y,w i32) unit =>
         if ((x.as_i64 ∈ xs) && (y.as_i64 ∈ ys) &&
