@@ -33,14 +33,14 @@ dec1 is
     else
       s
 
-  LM : mutate is
-  res := LM ! ()->io.stdin.reader LM ! ()->
+  lm : mutate is
+  res := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     for
 
       prev_sum := u32 0, sum
       # NYI: #2282: would be nice if `u32` would be inferred and not needed explicitly here
 
-      l := io.buffered LM .read_line ? s String => s | * => ""
+      l := io.buffered lm .read_line ? s String => s | * => ""
       # NYI: #2284: read_line should return a choice of String | end_of_file or similar
       l1 := num_to_digit l
 

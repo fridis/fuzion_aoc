@@ -1,7 +1,8 @@
 dec2_part1 is
 
-  LM : mutate is
-  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines.filter !=""
+  lm : mutate is
+  input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm .read_lines.filter !=""
 
   data := input.map (s -> (s.split " ").map (.parse_i32.or_panic))
 

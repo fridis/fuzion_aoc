@@ -1,11 +1,12 @@
 dec4_part2 is
 
+  lm : mutate is
+
   lines =>
-    LM : mutate is
-    o := LM ! ()->io.stdin.reader LM ! ()->
+    o := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
       for
         li Sequence String := [], li ++ [l]
-        l := io.buffered LM .read_line ? str String => str | * => ""
+        l := io.buffered lm .read_line ? str String => str | * => ""
       while l != ""  else
         li
     o.as_array
@@ -22,7 +23,6 @@ dec4_part2 is
   part1 := cards.map (.winning)
                 .fold i32.type.sum
 
-  lm : mutate is
   part2 := lm ! ()->
     a := (lm.array i32).type.new cards.count.as_i64 _->1
     for i in cards.indices do

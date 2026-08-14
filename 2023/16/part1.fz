@@ -1,17 +1,17 @@
 dec16_part1 is
 
-  LM : mutate is
-  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM
-    .read_lines
-    .filter !=""
-    .map (.codepoints)
+  lm : mutate is
+  input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm
+      .read_lines
+      .filter !=""
+      .map (.codepoints)
   area := array2 String _ input.count input[0].count i,j->input[i][j]
   xs => area.indices1
   ys => area.indices0
 
   r => {0}; l => {1}; u => {2}; d => {3}
   part1 =>
-    lm : mutate is
     lm ! ()->
       visited := (lm.array i32).type.new area.length.as_i64 _->0
       ix(x,y) => y+x*area.length1.as_i32

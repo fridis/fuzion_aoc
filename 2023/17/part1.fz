@@ -1,10 +1,11 @@
 dec17_part1 is
 
-  LM : mutate is
-  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM
-    .read_lines
-    .filter !=""
-    .map (.codepoints)
+  lm : mutate is
+  input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm
+      .read_lines
+      .filter !=""
+      .map (.codepoints)
   area := array2 input.count input[0].count i,j->input[i][j].parse_i64.or_panic
   xs => area.indices1
   ys => area.indices0
@@ -12,7 +13,6 @@ dec17_part1 is
   r => {(i64 0)}; l => {(i64 1)}; u => {(i64 2)}; d => {(i64 3)}
 
   part1 =>
-    lm : mutate is
     lm ! ()->
       ix(y, x, dir, str8 i64) => ((y*area.length1+x)*4+dir)*3+str8
       la := (lm.array i64).type.new (area.length0*area.length1*4*3) -1

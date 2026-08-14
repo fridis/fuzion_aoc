@@ -1,5 +1,6 @@
-LM : mutate is
-input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines.filter !=""
+lm : mutate is
+input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+  io.buffered lm .read_lines.filter !=""
 
 total(s) => s.split ":" .first.or_panic.parse_i64.or_panic
 nums(s) => s.split " " .drop 1 .map (.parse_i64.or_panic)

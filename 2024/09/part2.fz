@@ -1,9 +1,10 @@
 dec9_part2 =>
 
-  LM : mutate is
-  LM ! ()->
-    data := io.stdin.reader LM ! ()->io.buffered LM .read_lines
-             .filter !="" .first.or_panic.codepoints.map (.parse_i64.or_panic) .as_array
+  lm : mutate is
+  lm ! ()->
+    data := io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+      io.buffered lm .read_lines
+        .filter !="" .first.or_panic.codepoints.map (.parse_i64.or_panic) .as_array
     disk := data.zip ((i64 0 ..).flat_map (n -> id (Sequence i64) [n,-1])) a,b->(a,b)
                 .flat_map (||> n,id_ -> id (Sequence i64) ([id_].cycle.take n.as_i32))
                 .as_array
@@ -26,12 +27,12 @@ dec9_part2 =>
     part2 =>
       sz := disk.count
       rev Sequence i64 := disk.reverse.as_array
-      mdisk := (LM.array i64).type.new sz.as_i64 _->0
+      mdisk := (lm.array i64).type.new sz.as_i64 _->0
       for i in disk.indices do
         mdisk[i.as_i64] := disk[i]
 
       # length of free/allocated ranges at each index
-      free := (LM.array i32).type.new sz.as_i64 _->0
+      free := (lm.array i32).type.new sz.as_i64 _->0
       for p i64 := -1, disk[i]
           pl := 0, l
           i in (sz-1)..0:(-1)

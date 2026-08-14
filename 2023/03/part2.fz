@@ -2,11 +2,12 @@ dec3_part2 is
 
   codepoint.is_symbol => !is_ascii_digit && (codepoint val) != "."
 
-  LM : mutate is
-  lines := LM ! ()->
-    io.stdin.reader LM ! ()->io.buffered LM .read_lines
-     .filter !=""
-     .as_array_backed
+  lm : mutate is
+  lines := lm ! ()->
+    io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+      io.buffered lm .read_lines
+        .filter !=""
+        .as_array_backed
 
   scheme(ls Sequence String) is
     cp := ls.map (.codepoints)

@@ -1,7 +1,8 @@
 dec18_part2 is
 
-  LM : mutate is
-  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines .filter !=""
+  lm : mutate is
+  input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm .read_lines .filter !=""
 
   data := input.map action
   action(s String) =>
@@ -17,7 +18,6 @@ dec18_part2 is
   dy := [-1,+1,0,0]
 
   part1 =>
-    lm : mutate is
     lm.instate_self i32 ()->
       cell(n lm.new String) ref is
       area := array2 1000 1000 _,_->(cell (lm.env.new $"."))
@@ -54,7 +54,6 @@ dec18_part2 is
         res.get
 
   part2 =>
-    lm : mutate is
     lm.instate_self i64 ()->
       cell(n lm.new String) ref is
       icell(n lm.new i32) ref is

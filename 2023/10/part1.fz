@@ -1,10 +1,11 @@
 dec10_part1 is
 
-  LM : mutate is
-  cp := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM
-    .read_lines
-    .filter !=""
-    .map s->s.codepoints
+  lm : mutate is
+  cp := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm
+      .read_lines
+      .filter !=""
+      .map s->s.codepoints
 
   # our map
   map := array2 cp.count cp[0].count i,j->cp[i][j]
@@ -38,7 +39,6 @@ dec10_part1 is
 
   # find the loop:
   loup =>
-    lm : mutate is
     lm.instate_self (array2 String) ()->
       lp := array map.length0 i->((lm.array String).type.new map.length1.as_i64 _->".")
 

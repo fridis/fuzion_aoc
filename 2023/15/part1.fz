@@ -1,7 +1,8 @@
 dec15_part1 is
 
-  LM : mutate is
-  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_fully
+  lm : mutate is
+  input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm .read_fully
   comma := ",".utf8.first
   part1 =>
     for s := 0, s + (if c=comma then h else 0)

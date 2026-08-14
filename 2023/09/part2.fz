@@ -1,7 +1,8 @@
 dec9_part2 is
 
-  LM : mutate is
-  ls := LM ! ()->(io.stdin.reader LM ! ()->io.buffered LM .read_lines)
+  lm : mutate is
+  ls := lm ! ()->(io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm .read_lines)
 
   # parse input into sequence of sequence of i32
   seqs := ls.map s->(s.split.map (.parse_i32.or_panic)).as_array
