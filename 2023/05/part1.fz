@@ -4,8 +4,9 @@ dec5_part1 is
     public redef infix ∙ (a, b i64) i64 => if a < b then a else b
     public redef e i64 => i64.type.max
 
-  LM : mutate is
-  lines := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_lines
+  lm : mutate is
+  lines := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm .read_lines
 
   ls := lines.as_array
 

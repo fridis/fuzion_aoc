@@ -27,12 +27,12 @@ dec2 is
     draws := (s1[1].split ";").map (x->draw x)
     min => draws.fold bag_min
 
-  LM : mutate is
-  say <| LM ! ()->io.stdin.reader LM ! ()->
+  lm : mutate is
+  say <| lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     for
       score1 := 0, score1 + (ok ? g.num : 0)
       score2 := 0, score2 + g.min.power
-      l := io.buffered LM .read_line ? s String => s | * => ""
+      l := io.buffered lm .read_line ? s String => s | * => ""
     while l != ""
       g := game l
       ok := g.draws ∀ bag.ok

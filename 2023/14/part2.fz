@@ -1,10 +1,11 @@
 dec14_part2 is
 
-  LM : mutate is
-  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM
-    .read_lines
-    .filter !=""
-    .map (.codepoints)
+  lm : mutate is
+  input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm
+      .read_lines
+      .filter !=""
+      .map (.codepoints)
   area := array2 String _ input.count input[0].count i,j->input[i][j]
 
   a2(a) => array2 String _ a.count a[0].count i,j->a[j][i]

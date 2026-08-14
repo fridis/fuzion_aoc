@@ -1,8 +1,9 @@
 dec6_part2 =>
 
-  LM : mutate is
-  LM ! ()->
-    input := io.stdin.reader LM ! (() -> io.buffered LM .read_lines)
+  lm : mutate is
+  lm ! ()->
+    input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+      io.buffered lm .read_lines
 
     # the relation defined by input as an array
     arr := input.filter !=""
@@ -13,7 +14,7 @@ dec6_part2 =>
     w := arr[0].length.as_i64
 
     data := array2 arr.length arr[0].length y,x->arr[y][x]
-    area := (LM.array2 codepoint).type.new h w "0"
+    area := (lm.array2 codepoint).type.new h w "0"
     area.index_pairs
         .for_each ||>y,x->
           area[y,x] := data[_,y.as_i32, x.as_i32]
@@ -39,8 +40,8 @@ dec6_part2 =>
       ok => 0 <= y < h && 0 <= x < w
 
       # get or set value in given mutable array2
-      get(a container.Mutable_Array2 X LM) => a[y,x]
-      put(a container.Mutable_Array2 X LM, v X) => a[y,x] := v
+      get(a container.Mutable_Array2 X lm) => a[y,x]
+      put(a container.Mutable_Array2 X lm, v X) => a[y,x] := v
 
       # is this equal to o?
       infix =(o) => y=o.y && x=o.x
@@ -56,16 +57,16 @@ dec6_part2 =>
           dd
 
     # candidate positions  that should be checked in part2, filled in part1
-    cand := (LM.array2 bool).type.new h w false
+    cand := (lm.array2 bool).type.new h w false
 
     # perform part1 and fill cand
-    part1_res := LM.env.new 0
-    _ := for d := up, p.change_dir d q->{q.put cand true; q.get area = "#"}
-             p := start, p + d
-         while p.ok
-           if p.get area != "X"
-             p.put area "X"
-             part1_res <- 1 + part1_res
+    part1_res := lm.env.new 0
+    for d := up, p.change_dir d q->{q.put cand true; q.get area = "#"}
+        p := start, p + d
+    while p.ok
+      if p.get area != "X"
+        p.put area "X"
+        part1_res <- 1 + part1_res
 
     part1 => part1_res.get
 
@@ -74,7 +75,7 @@ dec6_part2 =>
           .map (c -> c ||> pos)
           .filter (p -> p.get cand && p.get area != "#")
           .filter cp->
-              visited := (LM.array2 u8).type.new h w 0
+              visited := (lm.array2 u8).type.new h w 0
               for d := up, p.change_dir d q->(q.get area = "#" || q = cp)
                   p := start, p + d
                   loup := false, (v & d.bit) != 0

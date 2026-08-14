@@ -1,10 +1,10 @@
 dec1 is
 
-  LM : mutate is
-  r := LM ! ()->io.stdin.reader LM ! ()->
+  lm : mutate is
+  r := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     for
       sum := 0, sum + 10 * first + last
-      l := io.buffered LM .read_line ? s String => s | * => ""
+      l := io.buffered lm .read_line ? s String => s | * => ""
     while l != ""  do
       digits := l.codepoints
                  .filter x->(codepoint.type.ascii_digit.contains x.val)

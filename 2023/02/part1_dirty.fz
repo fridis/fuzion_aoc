@@ -21,11 +21,11 @@ dec2 is
     draws := (s1[1].split ";").map (x->draw x)   # NYI: partial `draw` did not work?
     public redef as_string String => "$game: $(draws.as_string "; ")"
 
-  LM : mutate is
-  r := LM ! ()->io.stdin.reader LM ! ()->
+  lm : mutate is
+  r := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     for
       score := 0, score + (ok ? g.num : 0)
-      l := io.buffered LM .read_line ? s String => s | * => ""
+      l := io.buffered lm .read_line ? s String => s | * => ""
     while l != ""
       g := game l
       #  ok := (g.draws.map bag1.ok).fold bool_and_monoid  # NYI: partial does not work here, why?

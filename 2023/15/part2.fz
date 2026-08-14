@@ -1,14 +1,14 @@
 dec15_part2 is
 
-  LM : mutate is
-  input := LM ! ()->io.stdin.reader LM ! ()->io.buffered LM .read_line .or_panic
+  lm : mutate is
+  input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm .read_line .or_panic
 
   hash(s String) => s.utf8.reduce 0 (h,c -> (h + c.as_i32) * 17 % 256)
 
   part1 => input.split "," .map (s->hash s) .sum
 
   part2 i32 =>
-    lm : mutate is
     lm ! ()->
       entry(is_add bool, s Sequence String) is
         k => s[0]

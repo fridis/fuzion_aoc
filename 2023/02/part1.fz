@@ -20,11 +20,11 @@ dec2 is
     num   := (s1[0].split " ")[1].parse_i32.or_panic
     draws := (s1[1].split ";").map (x->draw x)
 
-  LM : mutate is
-  r := LM ! ()->io.stdin.reader LM ! ()->
+  lm : mutate is
+  r := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     for
       score := 0, score + (ok ? g.num : 0)
-      l := io.buffered LM .read_line ? s String => s | * => ""
+      l := io.buffered lm .read_line ? s String => s | * => ""
     while l != ""
       g := game l
       ok := g.draws ∀ bag.ok

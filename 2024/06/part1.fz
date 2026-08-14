@@ -1,7 +1,8 @@
 dec6_part1 =>
 
-  LM : mutate is
-  input := LM ! ()->(io.stdin.reader LM ! ()->io.buffered LM .read_lines)
+  lm : mutate is
+  input := lm ! ()->(io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm .read_lines)
 
   # the relation defined by input as an array
   arr := input.filter !=""
@@ -17,13 +18,13 @@ dec6_part1 =>
    .or_panic
 
   part1 =>
-    LM ! ()->
-      state := (LM.array2 codepoint).type.new h w "\0"
+    lm ! ()->
+      state := (lm.array2 codepoint).type.new h w "\0"
       for y in state.indices0 do
         for x in state.indices1 do
           state[y,x] := arr[y.as_i32][x.as_i32]
 
-      res := LM.env.new 0
+      res := lm.env.new 0
       for dy i64 := -1, dy2
           dx i64 :=  0, dx2
           y := starty.as_i64, y + dy

@@ -2,11 +2,11 @@
 
   say "start"
   bytes0 =>
-    LM : mutate is
-    o := LM ! ()->io.stdin.reader LM ! ()->
+    lm : mutate is
+    o := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
       for
         r1 Sequence u8 := [], r1++n.or_panic
-        n := (io.buffered LM .read_bytes 10000)
+        n := (io.buffered lm .read_bytes 10000)
       while n.ok && n.or_panic.count > 0
       else r1
     o
@@ -111,12 +111,11 @@
 #    (container.sorted_array_of a).zip (1..) a,b->a.bid*b
 #    (container.sorted_array_of a).zip [1,2,3,4,5] a,b->a.bid*b
     sa := container.sorted_array a (<=)
-    _ :=
-      for i := 0 , i+1
-          r1 := 0, r1+w
-      while i<sa.length.as_i32 do
-        w := (i+1)*sa[i].bid
-        say "{sa[i]} {i>sa.length-2 || sa[i] >= sa[i+1]} {sa[i].bid} $w {r1+w}"
+    for i := 0 , i+1
+        r1 := 0, r1+w
+    while i<sa.length.as_i32 do
+      w := (i+1)*sa[i].bid
+      say "{sa[i]} {i>sa.length-2 || sa[i] >= sa[i+1]} {sa[i].bid} $w {r1+w}"
 
     r2 := sa.zip ints a1,b1->a1.bid*b1
     r2.fold i32.type.sum

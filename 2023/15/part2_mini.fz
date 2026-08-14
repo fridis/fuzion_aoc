@@ -1,9 +1,9 @@
-LM : mutate is
-input := LM ! ()->
-  io.stdin.reader LM ! ()->io.buffered LM .read_line .or_panic.split ","
+lm : mutate is
+input := lm ! ()->
+  io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
+    io.buffered lm .read_line .or_panic.split ","
 hash(s String) => s.utf8.reduce 0 (h,c -> (h + c.as_i32) * 17 % 256)
 say "part1 {(input.map hash) .sum}"
-lm : mutate is
 lm ! ()->
   hm := (lm.array (Sequence (tuple String i32))).type.new 256 _->[]
   input.for_each e->
