@@ -61,7 +61,8 @@ dec10_part1 is
       array2 map.length0 map.length1 i1,j1->lp[i1][j1.as_i64]
 
   part1 =>
-    loup.filter !="."     # count the tiles in the loop and divide by 2
+    loup.base
+        .filter !="."     # count the tiles in the loop and divide by 2
         .count / 2
 
   say "part1 $part1"

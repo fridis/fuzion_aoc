@@ -13,7 +13,7 @@ dec16_part1 is
   r => {0}; l => {1}; u => {2}; d => {3}
   part1 =>
     lm ! ()->
-      visited := (lm.array i32).type.new area.length.as_i64 _->0
+      visited := (lm.array i32).type.new area.base.length.as_i64 _->0
       ix(x,y) => y+x*area.length1.as_i32
       trace(x,y,w i32) unit =>
         if ((x.as_i64 ∈ xs) && (y.as_i64 ∈ ys) &&
