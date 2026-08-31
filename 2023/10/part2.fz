@@ -67,7 +67,8 @@ dec10_part2 is
       # collect the resulting path as an array
       array2 map.length0 map.length1 i2,j2->lp[i2][j2.as_i64]
 
-  part1 => loup.filter !="."     # count the tiles in the loop and divide by 2
+  part1 => loup.base
+               .filter !="."     # count the tiles in the loop and divide by 2
                .count / 2
 
   part2 =>
@@ -82,6 +83,6 @@ dec10_part2 is
         flip := t = "|" || p = "F" && t = "J" || p = "L" && t = "7"  # flip inside
         state cnt1 p1 inside^flip
 
-    (loup.reduce (state 0 "" false) s,t->(s.next t)).cnt
+    (loup.base.reduce (state 0 "" false) s,t->(s.next t)).cnt
 
   say "part1 $part1 part2 $part2"

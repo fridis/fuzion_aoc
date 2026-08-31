@@ -19,8 +19,8 @@ dec4 =>
   # count of recursively inaccessible rolls
   inaccessible(o) =>
     i := inaccessible1 o
-    co := o.count id
-    ci := i.count id
+    co := o.base.count id
+    ci := i.base.count id
     co = ci ? ci : inaccessible i
 
   part1 =>
@@ -29,6 +29,6 @@ dec4 =>
        a[_,x,y] && !i[_,x,y]
 
   part2 =>
-    a.count id - inaccessible a
+    a.base.count id - inaccessible a
 
   say "$part1:$part2"
