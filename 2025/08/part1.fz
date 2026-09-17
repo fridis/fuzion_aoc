@@ -8,7 +8,7 @@ dec8 =>
   input2 := input1.as_3tuples .as_array
   say "start3"
   input := input2
-  n := input.length.as_i32
+  n := input.length
 
   dist(i,j) : property.orderable is
     d := ((input[i].0-input[j].0)**2 +
@@ -31,7 +31,7 @@ dec8 =>
       if r<i then class cl r
              else r
 
-    join(c,l,cl) i32 =>
+    join(c,l,cl) i64 =>
 #      say "join $c $l $cl"
       if l > 0 then
         for
@@ -61,8 +61,8 @@ dec8 =>
           .sort.reverse.take 3
           .product
 
-    classes := array input.length.as_i32 x->(1,x)
-    join 0 envir.Args.env[1].parse_i32.or_panic classes
+    classes := array input.length x->(1,x)
+    join 0 envir.Args.env[1].parse_i64.or_panic classes
 
 
 #    input

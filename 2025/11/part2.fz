@@ -10,7 +10,7 @@ dec11 =>
 
   cnts(n,d,f,b u64) is  # counts (n)one, (d)ac, (f)ft, (b)oth
 
-  count(n i32) cnts : memoize => keep n _->
+  count(n i64) cnts : memoize => keep n _->
     if n < 0 then cnts 1 0 0 0
     else
       r := succs[n].map count

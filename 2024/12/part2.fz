@@ -13,7 +13,7 @@ dec12 =>
       done := (lm.array2 bool).new (w+2).as_i64 (h+2).as_i64 false
       for xx in 1..w do
         for yy in 1..h do
-          kind := data[i32,xx,yy]
+          kind := data[i64,xx,yy]
           a,l := fill xx yy
           fill(x,y) =>
             if      kind != data[_,x,y]       then (0, 1)

@@ -10,7 +10,7 @@ dec8_part2 =>
     area := (lm.array2 i64).type.new w h 0
     area.indices0.pairs area.indices1
         .for_each ||>x,y->
-          area[x,y] := arr[y.as_i32][x.as_i32].val.as_i64
+          area[x,y] := arr[y][x].val.as_i64
 
     location_count(antinode_pos Sequence i64) =>
 

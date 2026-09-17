@@ -27,18 +27,18 @@
   handbid(s) =>
     s2 := s.split
     say s2
-    handbid (hand s2[0]) s2[1].parse_i32.or_panic
+    handbid (hand s2[0]) s2[1].parse_i64.or_panic
   handbid2(s) =>
     s2 := s.split
     say s2
-    handbid2 (hand s.codepoints[0]) s2[1].parse_i32.or_panic
+    handbid2 (hand s.codepoints[0]) s2[1].parse_i64.or_panic
 
-  handbid(h hand, bid i32) : property.orderable is
+  handbid(h hand, bid i64) : property.orderable is
     public redef as_string String => "{h.s} $bid"
     public redef type.lteq(a, b handbid.this) bool =>
       cmp a.h b.h
 
-  handbid2(h hand, bid i32) : property.orderable is
+  handbid2(h hand, bid i64) : property.orderable is
     public redef as_string String => "{h.s} $bid"
     public redef type.lteq(a, b handbid2.this) bool =>
       cmp2 a.h b.h
@@ -164,7 +164,7 @@
      a.sorted2 <= b.sorted2
 
 
-  ints Sequence i32 := (1..2000).as_array
+  ints Sequence i64 := (1..i64 2000).as_array
   part1 =>
     a := ls.map x->(handbid x)
 #    (container.sorted_array_of a).zip (1..) a,b->a.bid*b
@@ -172,11 +172,11 @@
     sa := container.sorted_array a handbid.type.lteq
     for i := 0 , i+1
         r0 := 0, r0+w
-    while i<sa.length.as_i32 do
+    while i<sa.length do
       w := (i+1)*sa[i].bid
       say "{sa[i]} {i>sa.length-2 || sa[i] >= sa[i+1]} {sa[i].bid} $w {r0+w}"
     r1 := sa.zip ints x,y->x.bid*y
-    r1.fold i32.type.sum
+    r1.fold i64.type.sum
 
   part2 =>
     a := ls.map x->(handbid2 x)
@@ -184,7 +184,7 @@
 #    (container.sorted_array_of a).zip [1,2,3,4,5] a,b->a.bid*b
     sa := container.sorted_array a handbid2.type.lteq
     r := sa.zip ints x,y->x.bid*y
-    part2.this.r.fold i32.type.sum
+    part2.this.r.fold i64.type.sum
 
 
 

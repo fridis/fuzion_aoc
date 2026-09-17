@@ -9,7 +9,7 @@ dec13 =>
              .replace ", Y=" " "
              .replace "\n" " "
 #             .split "  " .map (.split " " .map (x->">"+x+"<"))
-             .split "  " .map (.split " " .filter !="" .map (.parse_i32.or_panic))
+             .split "  " .map (.split " " .filter !="" .map (.parse_i64.or_panic))
              .map (x -> claw x[0] x[1] x[2] x[3] x[4] x[5])
 
   claw(ax,ay,bx,by,px,py) is
@@ -21,7 +21,7 @@ dec13 =>
        a*3+b
      else
        1000000
-   mini(m i32, s Sequence i32) i32 =>
+   mini(m i64, s Sequence i64) i64 =>
      match s.as_list
        nil => m
        x Cons => min x.head (mini m x.tail)

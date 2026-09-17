@@ -48,7 +48,7 @@ dec15 =>
 
       for yx in a.index_pairs do
         y,x := yx
-        a[y,x] := area[_,y.as_i32,x.as_i32]
+        a[y,x] := area[_,y,x]
 
       for yx in a.index_pairs do
       until yx ||> y,x->a[y,x] = "@"
@@ -108,18 +108,18 @@ dec15 =>
           move_ixs xxs .for_each (nx -> a[yy+d,nx.as_i64] := a[yy,nx.as_i64]; a[yy,nx.as_i64] := ".")
 
       moveV(d) option (i64,i64) =>
-        xxs := array 2*w =ryx.get.1.as_i32
+        xxs := array 2*w =ryx.get.1
         y,x := ryx.get
         if can_moveV xxs y d then  do_moveV xxs y d; (y+d, x)
         else                                         nil
 
       for yx in a.index_pairs do
         y,x := yx
-        v := area[_,y.as_i32,x.as_i32/2]
+        v := area[_,y,x/2]
         v1 := if      v = "O" then ["[","]"]
               else if v = "@" then ["@","."]
               else                 [v  ,v  ]
-        a[y,x] := v1[x.as_i32 % 2]
+        a[y,x] := v1[x % 2]
 
       for yx in a.index_pairs until yx ||> y,x->a[y,x] = "@"
         ryx <- yx

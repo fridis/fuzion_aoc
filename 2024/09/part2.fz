@@ -6,7 +6,7 @@ dec9_part2 =>
       io.buffered lm .read_lines
         .filter !="" .first.or_panic.codepoints.map (.parse_i64.or_panic) .as_array
     disk := data.zip ((i64 0 ..).flat_map (n -> id (Sequence i64) [n,-1])) a,b->(a,b)
-                .flat_map (||> n,id_ -> id (Sequence i64) ([id_].cycle.take n.as_i32))
+                .flat_map (||> n,id_ -> id (Sequence i64) ([id_].cycle.take n))
                 .as_array
 
     part1 =>
@@ -32,7 +32,7 @@ dec9_part2 =>
         mdisk[i.as_i64] := disk[i]
 
       # length of free/allocated ranges at each index
-      free := (lm.array i32).type.new sz.as_i64 _->0
+      free := (lm.array i64).type.new sz.as_i64 _->0
       for p i64 := -1, disk[i]
           pl := 0, l
           i in (sz-1)..0:(-1)

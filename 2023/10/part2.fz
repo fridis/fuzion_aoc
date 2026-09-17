@@ -13,12 +13,12 @@ dec10_part2 is
   at(i,j) => if map.indices0.contains i.as_i64 && map.indices1.contains j.as_i64 then map[_,i,j] else "."
 
   # a direction
-  dir(di, dj i32,   # delta to move one step in this direction
+  dir(di, dj i64,   # delta to move one step in this direction
       next String,  # possible next tiles
       cur  String)  # possible current tiles
   is
     # get next direction using given tile, nil if that tile is not connected
-    next(i,j i32) => next.find (at i j) .bind dir ix->dirs[ix]
+    next(i,j i64) => next.find (at i j) .bind dir ix->dirs[ix]
 
     # move one step from i,j and check if that tile connects to i,j
     connects(i,j) => (next i+di j+dj).exists
@@ -41,8 +41,8 @@ dec10_part2 is
       lp := array map.length0 i->((lm.array String).type.new map.length1.as_i64 _->".")
 
       ij := start
-      i := ij.0.as_i32
-      j := ij.1.as_i32
+      i := ij.0
+      j := ij.1
       for first := true, !first && !d.connects i j
           d in dirs
       do
@@ -56,7 +56,7 @@ dec10_part2 is
                                 .as_string ""
 
       # recursively go along the pipe
-      go(d dir, i0, j0 i32) =>
+      go(d dir, i0, j0 i64) =>
         ii := i0 + d.di
         jj := j0 + d.dj
         lp[ii][jj.as_i64] := at ii jj                # record path
@@ -72,7 +72,7 @@ dec10_part2 is
                .count / 2
 
   part2 =>
-    state(cnt i32,           # inside count so far
+    state(cnt i64,           # inside count so far
           p String,          # previous tile
           inside bool)       # are we currently inside?
     is

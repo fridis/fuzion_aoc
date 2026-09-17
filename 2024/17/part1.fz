@@ -2,17 +2,17 @@ dec17 =>
 
   input := io.stdin.read_lines
   get(prefx) => input.filter (.starts_with prefx) .first.or_panic.replace prefx ""
-  initial_A := get "Register A: " .parse_i32.or_panic
-  initial_B := get "Register B: " .parse_i32.or_panic
-  initial_C := get "Register C: " .parse_i32.or_panic
-  code := get "Program: " .split "," .map (.parse_i32.or_panic) .as_array
+  initial_A := get "Register A: " .parse_i64.or_panic
+  initial_B := get "Register B: " .parse_i64.or_panic
+  initial_C := get "Register C: " .parse_i64.or_panic
+  code := get "Program: " .split "," .map (.parse_i64.or_panic) .as_array
 
   regs(a,b,c,pc,out) is
     public redef as_string String => "A:$a B:$b C:$c pc:$pc out:$(out.as_string ",")"
 
   part1 =>
-    for s := regs initial_A initial_B initial_C 0 (id (Sequence i32) []), new_regs
-    while 0 <= s.pc < code.length.as_i32 do
+    for s := regs initial_A initial_B initial_C 0 (id (Sequence i64) []), new_regs
+    while 0 <= s.pc < code.length do
       ins := code[s.pc]
       op  := code[s.pc+1]
       combo => if      op < 4 then op

@@ -12,7 +12,7 @@ dec4_part2 is
     o.as_array
 
   card(s String) is
-    wy(i) => ((s.split ":")[1].split "|")[i].split.map (.parse_i32.or_panic)
+    wy(i) => ((s.split ":")[1].split "|")[i].split.map (.parse_i64.or_panic)
     win => wy 0
     you => wy 1
     matches => ((win.combine you (=)).filter x->x).count
@@ -21,14 +21,14 @@ dec4_part2 is
   cards := (lines.map (s->card s)).as_array
 
   part1 := cards.map (.winning)
-                .fold i32.type.sum
+                .fold i64.type.sum
 
   part2 := lm ! ()->
-    a := (lm.array i32).type.new cards.count.as_i64 _->1
+    a := (lm.array i64).type.new cards.count _->1
     for i in cards.indices do
       m := cards[i].matches.as_i64
       for j in i+1..i+m do
         a[j] := a[j] + a[i]
-    a.as_array.fold i32.type.sum
+    a.as_array.fold i64.type.sum
 
   say "dec 4: $part1 $part2"

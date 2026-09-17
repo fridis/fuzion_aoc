@@ -2,8 +2,8 @@ dec8 =>
 
   input := io.stdin.read_string.trim.split "\n"
              .map (.split "," .map (.parse_i64.or_panic) .as_array) .as_array
-  n := input.length.as_i32
-  m := envir.Args.env.count < 2 ? 1000 : envir.Args.env[1].parse_i32.or_panic
+  n := input.length
+  m := envir.Args.env.count < 2 ? 1000 : envir.Args.env[1].parse_i64.or_panic
 
   pairs := (0..n-1).flat_map (i -> (i+1..n-1).map (pair i))
                    .sort
@@ -37,7 +37,7 @@ dec8 =>
                                              else cs[x]
 
   part1 =>
-    join(c,cs) i32 =>
+    join(c,cs) i64 =>
       if c = m then cs.sort.reverse.take 3 .product
                else join c+1 (pairs[c].connect cs)
     join 0 (array n _->1)

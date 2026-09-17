@@ -17,7 +17,7 @@ dec6_part2 =>
     area := (lm.array2 codepoint).type.new h w "0"
     area.index_pairs
         .for_each ||>y,x->
-          area[y,x] := data[_,y.as_i32, x.as_i32]
+          area[y,x] := data[_,y,x]
 
     start := data.index_pairs.filter (yx -> data[_,yx.0,yx.1] = "^")
                              .first.or_panic ||> y,x -> pos y.as_i64 x.as_i64

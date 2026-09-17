@@ -5,7 +5,7 @@ dec10_part2 =>
     io.buffered lm
       .read_lines
       .filter !=""
-      .map (.codepoints.map (.parse_i32.or_panic) .as_array)
+      .map (.codepoints.map (.parse_i64.or_panic) .as_array)
       .as_array
 
 

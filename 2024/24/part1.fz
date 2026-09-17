@@ -25,7 +25,7 @@ dec24 is
     iws := in_wires.map (s -> s.split ": " |> (iw -> input_wire iw[0] iw[1]="1"))
     igs := in_gates.map (s -> s.split " "  |> (ig -> input_gate ig[0] ig[1] ig[2] ig[4]))
     ignore iws
-    bits := igs.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i32.or_panic) .fold1 max
+    bits := igs.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i64.or_panic) .fold1 max
     ignore bits
     wires := iws.map (w -> id Wire w) ++ igs.map (w -> id Wire w)
     names := wires.map (.name)

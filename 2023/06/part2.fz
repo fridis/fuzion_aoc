@@ -42,7 +42,7 @@ dec6_part1 is
   d(l,t) => l*(t-l)
 
   p1 := races.map (.wins)
-             .fold i32.type.product
+             .fold i64.type.product
 
   p2 := race2.wins2
 

@@ -10,7 +10,7 @@ dec24 =>
   Wire(name String) ref is
     state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool => abstract
     fix := mut 0
-    fix(n i32) => fix <- n+fix
+    fix(n i64) => fix <- n+fix
     unfixed Sequence Wire => []
 
   # input wire with given initial state
@@ -38,7 +38,7 @@ dec24 =>
             else if op = "XOR" then a ^  b
             else panic "unknown $op"
 
-    redef fix(n i32) =>
+    redef fix(n i64) =>
       fix <- n+fix
       wire in1 .fix n
       wire in2 .fix n

@@ -13,11 +13,11 @@ dec10_part1 is
   at(i,j) => if map.indices0.contains i.as_i64 && map.indices1.contains j.as_i64 then map[_,i,j] else "."
 
   # a direction
-  dir(di, dj i32,   # delta to move one step in this direction
+  dir(di, dj i64,   # delta to move one step in this direction
       next String)  # possible next tiles
   is
     # get next direction using given tile, nil if that tile is not connected
-    next(i,j i32) => (next.find (at i j)).map ix->dirs[ix] .as_list
+    next(i,j i64) => (next.find (at i j)).map ix->dirs[ix] .as_list
 
     # move one step from i,j and check if that tile connects to i,j
     connects(i,j) => !(next i+di j+dj).is_empty
@@ -33,7 +33,7 @@ dec10_part1 is
     for ij in map.index_pairs do
       i,j := ij
     until map[_,i,j] = "S"
-      (i.as_i32, j.as_i32)
+      (i, j)
     else
       panic "no start found"
 
@@ -49,7 +49,7 @@ dec10_part1 is
           go d i j
 
       # recursively go along the pipe
-      go(d dir, i0, j0 i32) =>
+      go(d dir, i0, j0 i64) =>
         ii := i0 + d.di
         jj := j0 + d.dj
         lp[ii][jj.as_i64] := at ii jj                # record path

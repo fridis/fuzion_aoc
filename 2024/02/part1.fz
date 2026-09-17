@@ -4,7 +4,7 @@ dec2_part1 is
   input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     io.buffered lm .read_lines.filter !=""
 
-  data := input.map (s -> (s.split " ").map (.parse_i32.or_panic))
+  data := input.map (s -> (s.split " ").map (.parse_i64.or_panic))
 
   mono(s)  => s.map_pairs (<=)
                .map_pairs (=) ∀ id

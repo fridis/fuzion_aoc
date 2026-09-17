@@ -42,12 +42,12 @@ dec15 =>
 
       for yx in a.index_pairs do
         y,x := yx
-        a[y,x] := area[_,y.as_i32,x.as_i32]
+        a[y,x] := area[_,y,x]
 
       show =>
           for syx in a.index_pairs do
             yap (syx ||> sy,sx->a[sy,sx])
-            if syx.1.as_i32 = w-1 then say ""
+            if syx.1 = w-1 then say ""
 
       for yx in a.index_pairs do
       until yx ||> y,x->a[y,x] = "@"

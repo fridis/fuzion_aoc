@@ -1,19 +1,19 @@
 dec18 =>
 
-  wi := envir.Args.env.count > 1 ? envir.Args.env[1].parse_i32.or_panic: 71
-  w := wi.as_i64
+  wi := envir.Args.env.count > 1 ? envir.Args.env[1].parse_i64.or_panic: 71
+  w := wi
   inside(x) => 0 <= x < w
-  l :=  envir.Args.env.count > 2 ? envir.Args.env[2].parse_i32.or_panic: 1024
+  l :=  envir.Args.env.count > 2 ? envir.Args.env[2].parse_i64.or_panic: 1024
   input2 := io.stdin.read_lines.filter !="" .map (.split "," .map s->s.parse_i64.or_panic) .map s->(s[0],s[1])
-  input1 := input2.map (||>x,y->(x.as_i32,y.as_i32)) .take l .as_array
+  input1 := input2.map (||>x,y->(x,y)) .take l .as_array
   lm : mutate is
   lm ! ()->
 
     part1 =>
       area := array2 wi wi (x,y -> (input1 ∃ t -> t.0=x && t.1=y))
-      corrupt(x,y) => area[_,x.as_i32,y.as_i32]
-      mcost := (lm.array2 i32).type.new w w i32.max
-      trace(x,y i64, cost i32) =>
+      corrupt(x,y) => area[_,x,y]
+      mcost := (lm.array2 i64).type.new w w i64.max
+      trace(x,y i64, cost i64) =>
         if inside x && inside y && cost < mcost[x, y] && !corrupt x y
           mcost[x, y] := cost
           trace x+1 y cost+1; trace x y+1 cost+1

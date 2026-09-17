@@ -14,13 +14,13 @@ dec20 =>
     on_track => area[_,x,y] != "#"
     inner_wall => 1 <= x < w-1 && 1 <= y < h-1 && area[_,x,y] = "#"
 
-  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> x,y->point x.as_i32 y.as_i32
-  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.or_panic ||> x,y->point x.as_i32 y.as_i32
+  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> x,y->point x y
+  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.or_panic ||> x,y->point x y
 
   M : mutate is
   M ! ()->
     part1 =>
-      picos := (M.array2 i32).type.new w.as_i64 h.as_i64 -1
+      picos := (M.array2 i64).type.new w.as_i64 h.as_i64 -1
       for p := s, p.neighbors.filter (.on_track)
                              .filter q->picos[q.xl,q.yl]<0
                              .first.or_panic
@@ -39,7 +39,7 @@ dec20 =>
         if      t>=0 && b>=0 then (|t-b|)-2
         else if l>=0 && r>=0 then (|l-r|)-2
         else                      0
-      area.index_pairs.map (||> xx,yy -> point xx.as_i32 yy.as_i32)
+      area.index_pairs.map (||> xx,yy -> point xx yy)
           .filter (.inner_wall)
           .map saving
           .filter >=100 .count

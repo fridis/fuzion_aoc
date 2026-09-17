@@ -13,9 +13,9 @@ dec16_part1 is
   r => {0}; l => {1}; u => {2}; d => {3}
   part1 =>
     lm ! ()->
-      visited := (lm.array i32).type.new area.base.length.as_i64 _->0
-      ix(x,y) => y+x*area.length1.as_i32
-      trace(x,y,w i32) unit =>
+      visited := (lm.array i64).type.new area.base.length.as_i64 _->0
+      ix(x,y) => y+x*area.length1
+      trace(x,y,w i64) unit =>
         if ((x.as_i64 ∈ xs) && (y.as_i64 ∈ ys) &&
             (visited[ix x y .as_i64] & (1 << w)) = 0) then
           visited[ix x y .as_i64] := visited[ix x y .as_i64] | (1 << w)

@@ -21,7 +21,7 @@ dec11 =>
 
   out := nm "out"
 
-  count(n i32) i32 : memoize => keep n _->
+  count(n i64) i64 : memoize => keep n _->
     say "count: $n {names[n]}"
     if nodes[n].succs ∃ (=out) then
       1

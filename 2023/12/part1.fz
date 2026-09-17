@@ -15,9 +15,9 @@ dec12_part1 is
              .codepoints)
             (s.split[1]
               .split ","
-              .map (.parse_i32.or_panic)))
+              .map (.parse_i64.or_panic)))
 
-  record(springs Sequence codepoint, groups Sequence i32) is
+  record(springs Sequence codepoint, groups Sequence i64) is
 
     count(s, g, sr) i64 =>
       if sr > 0
