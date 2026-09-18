@@ -2,7 +2,7 @@ dec10_part2 is
 
   lm : mutate is
   cp := lm ! ()->((io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-          io.buffered lm .read_lines)
+          io.buffered lm .read_lines.or_panic)
           .filter !="")
           .map s->s.codepoints
 
@@ -21,7 +21,7 @@ dec10_part2 is
     next(i,j i64) => next.find (at i j) .bind dir ix->dirs[ix]
 
     # move one step from i,j and check if that tile connects to i,j
-    connects(i,j) => (next i+di j+dj).exists
+    connects(i,j) => (next i+di j+dj).ok
 
   # all four directions
   dirs array dir := [ dir -1  0 "|#F7" "|LJ",   # north

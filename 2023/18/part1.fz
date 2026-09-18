@@ -2,7 +2,7 @@ dec18_part1 is
 
   lm : mutate is
   input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines .filter !=""
+    io.buffered lm .read_lines.or_panic.filter !=""
 
   data := input.map action
   action(s String) =>
@@ -16,8 +16,8 @@ dec18_part1 is
 
   part1 =>
     lm.instate_self i64 ()->
-      cell(n lm.new String) ref is
-      area := array2 cell _ 1000 1000 _,_->(cell (lm.env.new $"."))
+      cell(n lm.var String) ref is
+      area := array2 cell _ 1000 1000 _,_->(cell (lm.env.var $"."))
       say "start: "
       for px := 500, nx
           py := 500, ny
@@ -52,7 +52,7 @@ dec18_part1 is
         fill min_x min_y
         say "filled: "
         show
-        res := lm.env.new 0 # (max_x-min_x+1)*(max_y-min_y+1)
+        res := lm.env.var 0 # (max_x-min_x+1)*(max_y-min_y+1)
         for y in min_y..max_y do
           for x in min_x..max_x do
             c := area[_,x,y].n.get

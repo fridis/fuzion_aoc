@@ -18,10 +18,10 @@ dec16_part2 is
             (visited[ix x y .as_i64] & (1 << w)) = 0) then
           visited[ix x y .as_i64] := visited[ix x y .as_i64] | (1 << w)
           c := area[_,y,x]
-          if (["\\|", "/|" , "xx"  , ".|" ][w].find c).exists then trace x   y+1 d
-          if (["/|" , "\\|", ".|"  , "xx" ][w].find c).exists then trace x   y-1 u
-          if (["xx" , ".-" , "\\-" , "/-" ][w].find c).exists then trace x-1 y   l
-          if ([".-" , "xx" , "/-"  , "\\-"][w].find c).exists then trace x+1 y   r
+          if (["\\|", "/|" , "xx"  , ".|" ][w].find c).ok then trace x   y+1 d
+          if (["/|" , "\\|", ".|"  , "xx" ][w].find c).ok then trace x   y-1 u
+          if (["xx" , ".-" , "\\-" , "/-" ][w].find c).ok then trace x-1 y   l
+          if ([".-" , "xx" , "/-"  , "\\-"][w].find c).ok then trace x+1 y   r
       trace x0 y0 w0
       (visited.as_array.filter !=0).count
 

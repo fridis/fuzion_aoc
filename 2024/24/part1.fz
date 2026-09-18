@@ -29,7 +29,7 @@ dec24 is
     ignore bits
     wires := iws.map (w -> id Wire w) ++ igs.map (w -> id Wire w)
     names := wires.map (.name)
-    all_wires := (container.ps_map String Wire).new names wires
+    all_wires := (container.ps_map String Wire).of names wires
 
     get_state(name) =>
       all_wires[name].or_panic.state get_state

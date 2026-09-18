@@ -4,7 +4,7 @@ dec4_part1 is
 
   lm : mutate is
   lines := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines .filter !=""
+    io.buffered lm .read_lines.or_panic.filter !=""
 
   card(s String) is
     wy(i) => ((s.split ":")[1].split "|")[i].split.map (.parse_i64.or_panic)

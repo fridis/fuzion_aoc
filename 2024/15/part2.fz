@@ -25,8 +25,8 @@ dec15 =>
   part1 =>
     lm ! ()->
       a := (lm.array2 String).type.new h.as_i64 w.as_i64 ""
-      rx := lm.env.new (i64 0)
-      ry := lm.env.new (i64 0)
+      rx := lm.env.var (i64 0)
+      ry := lm.env.var (i64 0)
       move(xx, yy, d) option (i64,i64)=>
         nx := xx + d.0
         ny := yy + d.1
@@ -70,7 +70,7 @@ dec15 =>
   part2 =>
     lm ! ()->
       a := (lm.array2 String).type.new h.as_i64 (2*w).as_i64 ""
-      ryx := lm.env.new (i64 0, i64 0)
+      ryx := lm.env.var (i64 0, i64 0)
 
       moveH(yyxx, d) option (i64,i64)=>
         yy,xx := yyxx

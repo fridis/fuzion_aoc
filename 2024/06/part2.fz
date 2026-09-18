@@ -3,7 +3,7 @@ dec6_part2 =>
   lm : mutate is
   lm ! ()->
     input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-      io.buffered lm .read_lines
+      io.buffered lm .read_lines.or_panic
 
     # the relation defined by input as an array
     arr := input.filter !=""
@@ -60,7 +60,7 @@ dec6_part2 =>
     cand := (lm.array2 bool).type.new h w false
 
     # perform part1 and fill cand
-    part1_res := lm.env.new 0
+    part1_res := lm.env.var 0
     for d := up, p.change_dir d q->{q.put cand true; q.get area = "#"}
         p := start, p + d
     while p.ok

@@ -3,7 +3,7 @@ dec10_part1 is
   lm : mutate is
   cp := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     io.buffered lm
-      .read_lines
+      .read_lines.or_panic
       .filter !=""
       .map s->s.codepoints
 

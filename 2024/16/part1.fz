@@ -18,7 +18,7 @@ dec16 =>
     lm ! ()->
 
       say "starting..."
-      steps := lm.env.new 0
+      steps := lm.env.var 0
       costs := array2 4 h s,y->
         (lm.array i64).type.new w.as_i64 _->i64.max
 

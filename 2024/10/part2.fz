@@ -3,7 +3,7 @@ dec10_part2 =>
   lm : mutate is
   arr := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     io.buffered lm
-      .read_lines
+      .read_lines.or_panic
       .filter !=""
       .map (.codepoints.map (.parse_i64.or_panic) .as_array)
       .as_array
@@ -14,7 +14,7 @@ dec10_part2 =>
   area  := array2 w+2 h+2 x,y->(1 <= x < w-1 && 1 <= y < h-1 ? arr[y-1][x-1] : 99)
 
   join1(a,x,y) =>
-    container.set_of_ordered (a[_,x-1,y] ++ (a[_,x+1,y] ++ (a[_,x,y-1] ++ a[_,x,y+1])))
+    (container.ps_set i64).new (a[_,x-1,y] ++ (a[_,x+1,y] ++ (a[_,x,y-1] ++ a[_,x,y+1])))
              .as_array
   join2(a,x,y) => a[_,x-1,y] + a[_,x+1,y] + a[_,x,y-1] + a[_,x,y+1]
 

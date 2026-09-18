@@ -5,7 +5,7 @@ dec11 =>
   input := io.stdin.read_string.trim.split "\n"
              .map (.split ": " .as_tuple)
   names := (input.map (.0) ++ ["out"]).as_array
-  nums := container.hash_map names 0..names.count-1
+  nums := container.hash_map String i64 .of names 0..names.count-1
   nm(name String) => nums[name].or_panic
   say "A"
   nodes := input.map t->(node (nm t.0) (t.1.split " " .map nm))

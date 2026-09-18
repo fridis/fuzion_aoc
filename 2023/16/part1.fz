@@ -3,7 +3,7 @@ dec16_part1 is
   lm : mutate is
   input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     io.buffered lm
-      .read_lines
+      .read_lines.or_panic
       .filter !=""
       .map (.codepoints)
   area := array2 String _ input.count input[0].count i,j->input[i][j]
@@ -20,10 +20,10 @@ dec16_part1 is
             (visited[ix x y .as_i64] & (1 << w)) = 0) then
           visited[ix x y .as_i64] := visited[ix x y .as_i64] | (1 << w)
           c := area[_,y,x]
-          if (["\\|", "/|" , "xx"  , ".|" ][w].find c).exists then trace x   y+1 d
-          if (["/|" , "\\|", ".|"  , "xx" ][w].find c).exists then trace x   y-1 u
-          if (["xx" , ".-" , "\\-" , "/-" ][w].find c).exists then trace x-1 y   l
-          if ([".-" , "xx" , "/-"  , "\\-"][w].find c).exists then trace x+1 y   r
+          if (["\\|", "/|" , "xx"  , ".|" ][w].find c).ok then trace x   y+1 d
+          if (["/|" , "\\|", ".|"  , "xx" ][w].find c).ok then trace x   y-1 u
+          if (["xx" , ".-" , "\\-" , "/-" ][w].find c).ok then trace x-1 y   l
+          if ([".-" , "xx" , "/-"  , "\\-"][w].find c).ok then trace x+1 y   r
       trace 0 0 r
       (visited.as_array.filter !=0).count
 

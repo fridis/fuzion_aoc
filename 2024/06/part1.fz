@@ -2,7 +2,7 @@ dec6_part1 =>
 
   lm : mutate is
   input := lm ! ()->(io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines)
+    io.buffered lm .read_lines.or_panic)
 
   # the relation defined by input as an array
   arr := input.filter !=""
@@ -24,7 +24,7 @@ dec6_part1 =>
         for x in state.indices1 do
           state[y,x] := arr[y][x]
 
-      res := lm.env.new 0
+      res := lm.env.var 0
       for dy i64 := -1, dy2
           dx i64 :=  0, dx2
           y := starty.as_i64, y + dy

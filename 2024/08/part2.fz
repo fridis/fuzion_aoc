@@ -3,7 +3,7 @@ dec8_part2 =>
   lm : mutate is
   lm ! ()->
     arr := io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-      io.buffered lm .read_lines
+      io.buffered lm .read_lines.or_panic
         .filter !="" .map (.codepoints.as_array) .as_array
     h := arr.length   .as_i64
     w := arr[0].length.as_i64

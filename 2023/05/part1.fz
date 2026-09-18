@@ -6,7 +6,7 @@ dec5_part1 is
 
   lm : mutate is
   lines := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines
+    io.buffered lm .read_lines.or_panic
 
   ls := lines.as_array
 

@@ -9,7 +9,7 @@ dec12 =>
   lm ! ()->
 
     part1 =>
-      tot := lm.env.new 0
+      tot := lm.env.var i64 0
       done := (lm.array2 bool).new (w+2).as_i64 (h+2).as_i64 false
       for xx in 1..w do
         for yy in 1..h do
@@ -29,7 +29,7 @@ dec12 =>
       tot.get
 
     part2 =>
-      tot := lm.env.new 0
+      tot := lm.env.var i64 0
       done := (lm.array2 bool).new (w+2).as_i64 (h+2).as_i64 false
       for xx in 1..w do
         for yy in 1..h do

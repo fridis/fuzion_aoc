@@ -2,7 +2,7 @@ dec9_part1 is
 
   lm : mutate is
   ls := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines
+    io.buffered lm .read_lines.or_panic
 
   # parse input into sequence of sequence of i64
   seqs := ls.map s->(s.split.map (.parse_i64.or_panic)).as_array

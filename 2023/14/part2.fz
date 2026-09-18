@@ -3,7 +3,7 @@ dec14_part2 is
   lm : mutate is
   input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     io.buffered lm
-      .read_lines
+      .read_lines.or_panic
       .filter !=""
       .map (.codepoints)
   area := array2 String _ input.count input[0].count i,j->input[i][j]

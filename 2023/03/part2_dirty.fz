@@ -4,7 +4,7 @@ dec3_part2 is
 
   lm : mutate is
   lines := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines .filter !=""
+    io.buffered lm .read_lines.or_panic.filter !=""
 
   scheme(ls) is
     cp := ls.map x->x.codepoints
@@ -46,7 +46,7 @@ dec3_part2 is
 
     gears =>
       lm ! ()->
-        res := lm.env.new 0
+        res := lm.env.var 0
         for i in a.indices0 do
           for j in a.indices1 do
             if scheme.this[i,j] = "*"

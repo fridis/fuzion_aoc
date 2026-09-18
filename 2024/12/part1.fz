@@ -8,7 +8,7 @@ dec12 =>
   part1 =>
     lm : mutate is
     lm ! ()->
-      tot := lm.env.new 0
+      tot := lm.env.var 0
       done := (lm.array2 bool).new (w+2).as_i64 (h+2).as_i64 false
       for xx in 1..w do
         for yy in 1..h do

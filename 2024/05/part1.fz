@@ -2,7 +2,7 @@ dec5_part1 =>
 
   lm : mutate is
   input := lm ! ()->(io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines)
+    io.buffered lm .read_lines.or_panic)
 
   input1 := input.filter (s -> (s.find "|")??)
   input2 := input.filter (s -> (s.find ",")??)

@@ -3,7 +3,7 @@ dec1 is
   lm : mutate is
   input := lm ! ()->
     io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-      io.buffered lm .read_lines .filter !=""
+      io.buffered lm .read_lines.or_panic .filter !=""
 
   part1 =>
     for
