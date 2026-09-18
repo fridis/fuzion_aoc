@@ -8,7 +8,7 @@ dec23 is
       public fixed redef type.lteq(a,b dec23.vertex) bool => a._id <= b._id
       public fixed redef type.equality(a,b dec23.vertex) bool => a._id = b._id
       public redef as_string String => "$_id[$s]"
-      edges_to := lm.env.new (container.Set vertex) (container.ps_set vertex).empty
+      edges_to := lm.env.var (container.Set vertex) (container.ps_set vertex).empty
       ignore edges_to
 
   get_edge(v,w) : memoize => keep (v._id << 16 | w._id) _->
@@ -32,8 +32,8 @@ dec23 is
                                        (get_vertex (s.substring 3 5)))
 
     part1 : memoize =>
-      res := lm.env.new 0
-      cliques := lm.env.new 0
+      res := lm.env.var 0
+      cliques := lm.env.var 0
       edges := input.reduce (container.Set edge) (container.ps_set edge).empty (s,e -> s.add e)
       for e in edges.as_array do
 #        say "edge: $e"

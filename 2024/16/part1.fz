@@ -6,11 +6,11 @@ dec16 =>
              .map (.codepoints)
   h := input.count
   w := input[0].count
-  area := array2 codepoint i32 h w y,x->input[y][x]
-  point(y,x i32) is
+  area := array2 codepoint _ h w y,x->input[y][x]
+  point(y,x i64) is
   #  say "$area"
-  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.or_else (panic "E not found") ||> x,y->point x.as_i32 y.as_i32
-  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_else (panic "S not found") ||> x,y->point x.as_i32 y.as_i32
+  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.or_else (panic "E not found") ||> x,y->point x y
+  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_else (panic "S not found") ||> x,y->point x y
 
   lm : mutate is
 
@@ -18,9 +18,9 @@ dec16 =>
     lm ! ()->
 
       say "starting..."
-      steps := lm.env.new 0
+      steps := lm.env.var 0
       costs := array2 4 h s,y->
-        (lm.array i32).type.new w.as_i64 _->i32.max
+        (lm.array i64).type.new w.as_i64 _->i64.max
 
 #      (0..3).for_each (d -> a := costs[d,e.y]; a[e.x.as_i64] := 0 )
 
@@ -59,7 +59,7 @@ dec16 =>
         for x in 0..(w-1) do
           p := point y x
           c := min (min (min (cur_cost 0 p) (cur_cost 1 p)) (cur_cost 2 p)) (cur_cost 3 p)
-          if c < i32.max then
+          if c < i64.max then
             yap (((c > 10000000) ? "XX" : ((c > 99999) ? ("*"+(c/1000)+"*") : $c).pad_center 6))
           else
             yap area[_,y,x]*6

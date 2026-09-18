@@ -3,7 +3,7 @@ dec17_part2 is
   lm : mutate is
   input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     io.buffered lm
-      .read_lines
+      .read_lines.or_panic
       .filter !=""
       .map (.codepoints)
   area := array2 input.count input[0].count i,j->input[i][j].parse_i64.or_panic
@@ -16,8 +16,8 @@ dec17_part2 is
     lm ! ()->
       ix(y, x, dir, str8) => ((y*area.length1+x)*4+dir)*max_str8+str8
       la := (lm.array i64).type.new (area.length0*area.length1*4*max_str8) -1
-      modified := lm.env.new false
-      res := lm.env.new i64.type.max
+      modified := lm.env.var false
+      res := lm.env.var i64.type.max
 
       put(x, y, dir, str8, loss0 i64) =>
         if  (x ∈ xs) && (y ∈ ys) then

@@ -2,7 +2,7 @@ dec7_part1 =>
 
   lm : mutate is
   input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines.filter !=""
+    io.buffered lm .read_lines.or_panic.filter !=""
 
   total(s) => s.split ":" .first.or_panic .parse_i64.or_panic
   nums(s) => s.split " " .drop 1 .map (.parse_i64.or_panic) .as_array

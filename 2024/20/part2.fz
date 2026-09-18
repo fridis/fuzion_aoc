@@ -1,6 +1,6 @@
 dec20 =>
 
-  min_saving := envir.Args.env.count > 1 ? envir.Args.env[1].parse_i32.or_panic : 100
+  min_saving := envir.Args.env.count > 1 ? envir.Args.env[1].parse_i64.or_panic : 100
   input := io.stdin.read_lines.filter !="" .map (.codepoints)
   w := input[0].count
   h := input.count
@@ -18,12 +18,12 @@ dec20 =>
     infix + (o) => point x+o.x y+o.y
     infix - (o) => point x-o.x y-o.y
 
-  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> x,y->point x.as_i32 y.as_i32
+  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> x,y->point x y
 
   M : mutate is
   M ! ()->
     track := (container.Dynamic_Array M point).empty
-    picos := (M.array2 i32).type.new w.as_i64 h.as_i64 -1
+    picos := (M.array2 i64).type.new w.as_i64 h.as_i64 -1
     pico(p) => picos[p.xl,p.yl]
     for p := s, p.neighbors.filter (.on_track)
                            .filter (q -> pico q < 0)
@@ -41,7 +41,7 @@ dec20 =>
         if      t>=0 && b>=0 then (|t-b|)-2
         else if l>=0 && r>=0 then (|l-r|)-2
         else                      0
-      area.index_pairs.map (||> x,y->point x.as_i32 y.as_i32)
+      area.index_pairs.map (||> x,y->point x y)
           .filter (.inner_wall)
           .map saving
           .filter >=min_saving

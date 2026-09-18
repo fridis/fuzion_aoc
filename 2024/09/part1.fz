@@ -3,7 +3,7 @@ dec9_part2 =>
   lm : mutate is
   lm ! ()->
     data := io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-      io.buffered lm .read_lines
+      io.buffered lm .read_lines.or_panic
         .filter !="" .first.or_panic.codepoints.map (.parse_i64.or_panic) .as_array
 
     Sequence.infix +++(a Sequence T) => Sequence.this.as_list.concat_eagerly a.as_list
@@ -11,14 +11,14 @@ dec9_part2 =>
     part1 =>
       say "start:"
       disk := data.zip ((i64 0 ..).flat_map (n -> id (Sequence i64) [n,-1])) a,b->(a,b)
-                  .flat_map (||> n,id -> id (Sequence i64) ([id].cycle.take n.as_i32))
+                  .flat_map (||> n,id -> id (Sequence i64) ([id].cycle.take n))
       say "rev:"
       rev Sequence i64 := disk.filter >=0 .reverse .as_array
       say "red: {disk.count}"
       compacted := disk.reduce (id (Sequence i64) [], rev, rev.count, 0) (rrv,id0 ->
                          rrv ||||> res,rv,c,n ->
                            if (n%%100) say n
-                           (id (Sequence i64,Sequence i64,i32,i32) (c = 0 ? (id (Sequence i64) (res+++[-1]),rv,c,n+1)
+                           (id (Sequence i64,Sequence i64,i64,i64) (c = 0 ? (id (Sequence i64) (res+++[-1]),rv,c,n+1)
                                                                           : id0 >= 0 ? (id (Sequence i64) (res+++[id0]),rv,c-1,n+1)
                                                                                      : (rv.is_empty ? (id (Sequence i64) (res +++ [-1]),rv,c-1,n+1)
                                                                                                     : (id (Sequence i64) (res +++ rv.take 1), id (Sequence i64) (rv.drop 1),c-1,n+1)))))
@@ -27,7 +27,7 @@ dec9_part2 =>
       say "compacted! got ca"
       for s := i64 0, s + id*n
           n in i64 0 .. ca.length.as_i64-1
-          id := max 0 ca[n.as_i32]
+          id := max 0 ca[n]
       do
         if (n%%100) say "$n $s"
 #        say "$id * $n + $s"

@@ -2,18 +2,18 @@ dec5_part2 =>
 
   lm : mutate is
   input := lm ! ()->(io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines)
+    io.buffered lm .read_lines.or_panic)
 
   # the relation defined by input as an array
   rel := input.filter (.contains "|")
               .map (.split "|"
-                    .map (.parse_i32.or_panic)
+                    .map (.parse_i64.or_panic)
                     .as_array)
               .as_array
 
   # the page number sequences defined by input
   nums := input.filter (.contains ",")
-               .map (.split "," .map (.parse_i32.or_panic))
+               .map (.split "," .map (.parse_i64.or_panic))
 
   # infix operator for rel
   infix <? (a,b) => rel ∀ (e -> e[0] != b || e[1] != a)

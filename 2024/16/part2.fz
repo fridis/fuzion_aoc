@@ -11,8 +11,8 @@ dec16 =>
       else if d=1 then point y   x-1
       else if d=2 then point y+1 x
       else             point y   x+1
-  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.or_panic ||> x,y->point x.as_i32 y.as_i32
-  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> x,y->point x.as_i32 y.as_i32
+  e := area.index_pairs.filter (||> y,x->area[_,y,x]="E") .first.or_panic ||> x,y->point x y
+  s := area.index_pairs.filter (||> y,x->area[_,y,x]="S") .first.or_panic ||> x,y->point x y
 
   cost_of_turns(d1,d2) =>
     if      (d1 = d2)       then 0
@@ -22,7 +22,7 @@ dec16 =>
   lm : mutate is
   costs := lm ! ()->
     mcosts := array2 4 h s,y->
-      (lm.array i32).type.new w.as_i64 _->i32.max
+      (lm.array i64).type.new w.as_i64 _->i64.max
 
     trace(d, p, cost) =>
       if cost < mcosts[_,d,p.y][p.x.as_i64] then
@@ -54,7 +54,7 @@ dec16 =>
           if cost 0 p != 0
             min_cst(dd) => cost dd (p.mov dd) +^ cost_of_turns dd d
             cmin := (0..3).map min_cst
-                          .reduce i32.max min
+                          .reduce i64.max min
             (0..3).for_each dd->
               if min_cst dd = cmin then
                 mark dd (p.mov dd)

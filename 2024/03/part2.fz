@@ -7,7 +7,7 @@ dec3_part2 =>
 
   lm : mutate is
   input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines.filter !=""
+    io.buffered lm .read_lines.or_panic .filter !=""
 
   data := input.reduce "" (+) .codepoints
 

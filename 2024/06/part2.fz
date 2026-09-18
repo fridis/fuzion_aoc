@@ -3,7 +3,7 @@ dec6_part2 =>
   lm : mutate is
   lm ! ()->
     input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-      io.buffered lm .read_lines
+      io.buffered lm .read_lines.or_panic
 
     # the relation defined by input as an array
     arr := input.filter !=""
@@ -17,7 +17,7 @@ dec6_part2 =>
     area := (lm.array2 codepoint).type.new h w "0"
     area.index_pairs
         .for_each ||>y,x->
-          area[y,x] := data[_,y.as_i32, x.as_i32]
+          area[y,x] := data[_,y,x]
 
     start := data.index_pairs.filter (yx -> data[_,yx.0,yx.1] = "^")
                              .first.or_panic ||> y,x -> pos y.as_i64 x.as_i64
@@ -60,7 +60,7 @@ dec6_part2 =>
     cand := (lm.array2 bool).type.new h w false
 
     # perform part1 and fill cand
-    part1_res := lm.env.new 0
+    part1_res := lm.env.var 0
     for d := up, p.change_dir d q->{q.put cand true; q.get area = "#"}
         p := start, p + d
     while p.ok

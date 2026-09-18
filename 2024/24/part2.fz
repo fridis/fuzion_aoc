@@ -4,13 +4,13 @@ dec24 =>
   wires := (input[0].map (s -> s.split ": " |> (iw -> inpt iw[0] iw[1]="1"))         .map Wire id ++
             input[1].map (s -> s.split " "  |> (ig -> gate ig[0] ig[1] ig[2] ig[4])) .map Wire id   )
   bits := wires.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i64.or_panic) .fold1 max
-  device := container.ps_map String Wire .new (wires.map (.name)) wires
+  device := container.ps_map String Wire .of (wires.map (.name)) wires
 
   # any wire coming from input or gate
   Wire(name String) ref is
     state(d,x,y i64, get (i64,i64,i64,String)->option bool) option bool => abstract
     fix := mut 0
-    fix(n i32) => fix <- n+fix
+    fix(n i64) => fix <- n+fix
     unfixed Sequence Wire => []
 
   # input wire with given initial state
@@ -38,7 +38,7 @@ dec24 =>
             else if op = "XOR" then a ^  b
             else panic "unknown $op"
 
-    redef fix(n i32) =>
+    redef fix(n i64) =>
       fix <- n+fix
       wire in1 .fix n
       wire in2 .fix n

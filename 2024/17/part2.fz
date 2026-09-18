@@ -8,7 +8,7 @@ dec17 =>
   code := get "Program: " .split "," .map (.parse_i64.or_panic) .as_array
 
   regs(a,b,c,pc,out) is
-    ins => code[pc].as_i32
+    ins => code[pc]
     op  => code[pc+1]
     combo => if      op < 4 then op
              else if op = 4 then a
@@ -21,14 +21,14 @@ dec17 =>
     [s -> regs s.div s.b       s.c         s.pc+2             s.out             ,
      s -> regs s.a   s.b^s.op  s.c         s.pc+2             s.out             ,
      s -> regs s.a   s.combo%8 s.c         s.pc+2             s.out             ,
-     s -> regs s.a   s.b       s.c   s.a=0?s.pc+2:s.op.as_i32 s.out             ,
+     s -> regs s.a   s.b       s.c   s.a=0?s.pc+2:s.op      s.out             ,
      s -> regs s.a   s.b^s.c   s.c         s.pc+2             s.out             ,
      s -> regs s.a   s.b       s.c         s.pc+2             s.out++[s.combo%8],
      s -> regs s.a   s.div     s.c         s.pc+2             s.out             ,
      s -> regs s.a   s.b       s.div       s.pc+2             s.out             ]
 
   run(s) =>
-    if 0 <= s.pc < code.length.as_i32 then run (exec[s.ins].call s)
+    if 0 <= s.pc < code.length then run (exec[s.ins].call s)
     else                            s.out
   runa(a) => run (regs a initial_B initial_C 0 (id (Sequence i64) []))
 

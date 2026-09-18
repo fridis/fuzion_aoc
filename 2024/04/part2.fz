@@ -3,7 +3,7 @@ dec4_part1 =>
   lm : mutate is
   input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
     io.buffered lm
-      .read_lines
+      .read_lines.or_panic
       .filter !=""
       .map (.codepoints)
 
@@ -25,7 +25,7 @@ dec4_part1 =>
         yx, dd := v
         yy, xx := yx
         dy, dx := dd
-        is_string yy.as_i32 xx.as_i32 dy.as_i32 dx.as_i32 "XMAS".codepoints
+        is_string yy xx dy dx "XMAS".codepoints
       .count
 
   is_x(y, x) =>
@@ -35,7 +35,7 @@ dec4_part1 =>
      ((get y-1 x+1) = "M" && (get y+1 x-1) = "S" ||
       (get y-1 x+1) = "S" && (get y+1 x-1) = "M"    )    )
 
-  part2 => area.index_pairs.filter (yx -> is_x yx.0.as_i32 yx.1.as_i32)
+  part2 => area.index_pairs.filter (yx -> is_x yx.0 yx.1)
                            .count
 
   say part1

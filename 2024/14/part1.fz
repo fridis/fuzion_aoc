@@ -26,7 +26,7 @@ dec14 =>
 
   product(T type : numeric, l Sequence T) => l.fold T.product
 
-  robot(x,y,vx,vy) is
+  robot(x,y,vx,vy i64) is
     public redef as_string String => "$x $y $vx $vy"
 #    say robot.this
     move(n i64) =>
@@ -40,7 +40,7 @@ dec14 =>
       else if r && b then 4
       else if r      then 2
       else if b      then 3
-      else             1
+      else                1
 
   show(f Sequence robot) =>
     for y in i64 0 .. (h-1) do

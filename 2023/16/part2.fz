@@ -8,27 +8,27 @@ dec16_part2 is
   ys => area.indices0
 
   r => {0}; l => {1}; u => {2}; d => {3}
-  start(x0,y0,w0 i32) =>
+  start(x0,y0,w0 i64) =>
     lm : mutate is
     lm ! ()->
-      visited := (lm.array i32).type.new area.base.length.as_i64 _->0
-      ix(x,y) => y+x*area.length1.as_i32
-      trace(x,y,w i32) unit =>
+      visited := (lm.array i64).type.new area.base.length.as_i64 _->0
+      ix(x,y) => y+x*area.length1
+      trace(x,y,w i64) unit =>
         if ((x.as_i64 ∈ xs) && (y.as_i64 ∈ ys) &&
             (visited[ix x y .as_i64] & (1 << w)) = 0) then
           visited[ix x y .as_i64] := visited[ix x y .as_i64] | (1 << w)
           c := area[_,y,x]
-          if (["\\|", "/|" , "xx"  , ".|" ][w].find c).exists then trace x   y+1 d
-          if (["/|" , "\\|", ".|"  , "xx" ][w].find c).exists then trace x   y-1 u
-          if (["xx" , ".-" , "\\-" , "/-" ][w].find c).exists then trace x-1 y   l
-          if ([".-" , "xx" , "/-"  , "\\-"][w].find c).exists then trace x+1 y   r
+          if (["\\|", "/|" , "xx"  , ".|" ][w].find c).ok then trace x   y+1 d
+          if (["/|" , "\\|", ".|"  , "xx" ][w].find c).ok then trace x   y-1 u
+          if (["xx" , ".-" , "\\-" , "/-" ][w].find c).ok then trace x-1 y   l
+          if ([".-" , "xx" , "/-"  , "\\-"][w].find c).ok then trace x+1 y   r
       trace x0 y0 w0
       (visited.as_array.filter !=0).count
 
   part1 => start 0 0 r
-  part2 => (xs.map (x -> start x.as_i32               0                      d) ++
-            xs.map (x -> start x.as_i32               ys.max.or_panic.as_i32 u) ++
-            ys.map (y -> start 0                      y.as_i32               r) ++
-            ys.map (y -> start xs.max.or_panic.as_i32 y.as_i32               l)).reduce 0 max
+  part2 => (xs.map (x -> start x               0               d) ++
+            xs.map (x -> start x               ys.max.or_panic u) ++
+            ys.map (y -> start 0               y               r) ++
+            ys.map (y -> start xs.max.or_panic y               l)).reduce 0 max
 
   say "part1 $part1 part2 $part2"

@@ -1,20 +1,20 @@
 dec18 =>
 
-  w := envir.Args.env[1].parse_i32.or_panic
-  wl := w.as_i64
-  l := envir.Args.env[2].parse_i32.or_panic
-  input := io.stdin.read_lines.filter !="" .map (.split "," .map s->s.parse_i32.or_panic) .map s->(s[0],s[1])
+  w := envir.Args.env[1].parse_i64.or_panic
+  wl := w
+  l := envir.Args.env[2].parse_i64.or_panic
+  input := io.stdin.read_lines.filter !="" .map (.split "," .map s->s.parse_i64.or_panic) .map s->(s[0],s[1])
                 .take l
 
   lm : mutate is
 
   part1 =>
     area := array2 w w (x,y -> (input ∃ t -> t.0=x && t.1=y))
-    corrupt(x,y) => area[_,x.as_i32,y.as_i32]
+    corrupt(x,y) => area[_,x,y]
     lm ! ()->
-      mcosts := (lm.array2 i32).type.new wl wl i32.max
+      mcosts := (lm.array2 i64).type.new wl wl i64.max
 
-      trace(x,y i64, cost i32) =>
+      trace(x,y i64, cost i64) =>
         if (0 <= x < wl &&
             0 <= y < wl &&
             cost < mcosts[x, y] && !corrupt x y)

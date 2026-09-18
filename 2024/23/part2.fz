@@ -5,7 +5,7 @@ dec23 is
 
   vertex(s) ref : property.orderable is
     public fixed redef type.lteq(    a,b dec23.vertex) bool => a.s <= b.s
-    edges := lm.env.new (container.Set vertex) (container.ps_set vertex).empty
+    edges := lm.env.var (container.Set vertex) (container.ps_set vertex).empty
 
   edge(v,w) : property.orderable is
     v.edges <- v.edges.get.add w

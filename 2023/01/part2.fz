@@ -3,7 +3,7 @@ dec1 is
   lm : mutate is
   input := lm ! ()->
     io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-      io.buffered lm .read_lines .filter !=""
+      io.buffered lm .read_lines.or_panic .filter !=""
 
   part1 =>
     for
@@ -12,8 +12,8 @@ dec1 is
     while l != ""  do
       digits := l.codepoints
                 .filter x->(codepoint.type.ascii_digit.contains x.val)
-      first := digits.first.or_panic.parse_i32.or_panic
-      last  := digits.last .or_panic.parse_i32.or_panic
+      first := digits.first.or_panic.parse_i64.or_panic
+      last  := digits.last .or_panic.parse_i64.or_panic
     else
       sum
 
@@ -49,8 +49,8 @@ dec1 is
       d := text_to_digit l
       digits := d.codepoints
                 .filter x->(codepoint.type.ascii_digit.contains x.val)
-      first := digits.first.or_panic.parse_i32.or_panic
-      last  := digits.last .or_panic.parse_i32.or_panic
+      first := digits.first.or_panic.parse_i64.or_panic
+      last  := digits.last .or_panic.parse_i64.or_panic
     else
       sum
 

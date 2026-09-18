@@ -2,25 +2,25 @@ dec18_part2 is
 
   lm : mutate is
   input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines .filter !=""
+    io.buffered lm .read_lines.or_panic .filter !=""
 
   data := input.map action
   action(s String) =>
     s3 := s.split " "
-    h := (s3[2].substring 2 8).parse_i32_hex.or_panic
+    h := (s3[2].substring 2 8).parse_i64_hex.or_panic
     d2 := "RDLU".substring (h % 16) (h % 16)+1
     l2 := h / 16
-    action s3[0] s3[1].parse_i32.or_panic d2 l2
-  action(dir String, len i32, dir2 String, len2 i32) is
+    action s3[0] s3[1].parse_i64.or_panic d2 l2
+  action(dir String, len i64, dir2 String, len2 i64) is
 
   dirs := "UDLR"
   dx := [0,0,-1,+1]
   dy := [-1,+1,0,0]
 
   part1 =>
-    lm.instate_self i32 ()->
-      cell(n lm.new String) ref is
-      area := array2 1000 1000 _,_->(cell (lm.env.new $"."))
+    lm.instate_self i64 ()->
+      cell(n lm.var String) ref is
+      area := array2 1000 1000 _,_->(cell (lm.env.var $"."))
       for px := 500, nx
           py := 500, ny
           min_x := px-1, min min_x px-1
@@ -35,7 +35,7 @@ dec18_part2 is
         nx := px + a.len*dx[d]
         ny := py + a.len*dy[d]
       else
-        fill(x,y i32) unit =>
+        fill(x,y i64) unit =>
           if (min_x <= x <= max_x &&
               min_y <= y <= max_y) then
             if area[_,x,y].n.get = "." then
@@ -45,7 +45,7 @@ dec18_part2 is
               fill x y-1
               fill x y+1
         fill min_x min_y
-        res := lm.env.new 0 # (max_x-min_x+1)*(max_y-min_y+1)
+        res := lm.env.var 0 # (max_x-min_x+1)*(max_y-min_y+1)
         for y in min_y..max_y do
           for x in min_x..max_x do
             c := area[_,x,y].n.get
@@ -55,17 +55,17 @@ dec18_part2 is
 
   part2 =>
     lm.instate_self i64 ()->
-      cell(n lm.new String) ref is
-      icell(n lm.new i32) ref is
+      cell(n lm.var String) ref is
+      icell(n lm.var i64) ref is
       size => 2000
-      area := array2 2*size 2*size _,_->(cell (lm.env.new $"."))
+      area := array2 2*size 2*size _,_->(cell (lm.env.var $"."))
       for p0x := 1, nx
           p0y := 1, ny
           ws Sequence i64 := [i64.type.max,i64.type.max], nws.as_array
           hs Sequence i64 := [i64.type.max,i64.type.max], nhs.as_array
           a in data
       do
-        l := a.len2.as_i64
+        l := a.len2
         nx, nws :=  if a.dir2 = "R"
                       for al := l, al-ws[ax]
                           ax := p0x, ax+1
@@ -140,8 +140,8 @@ dec18_part2 is
                     else
                        (p0y, hs)
       else
-        for p1x := p0x, nx
-            p1y := p0y, ny
+        for p1x := p0x, nx0
+            p1y := p0y, ny0
             px := p1x + size
             py := p1y + size
             min_x := px-1, min min_x px-1
@@ -150,41 +150,42 @@ dec18_part2 is
             max_y := py+1, max max_y py+1
             a in data
             d := a.dir2
-            l := a.len2.as_i64
+            l0 := a.len2
         do
-          nx := if d = "R"
-                  for al := l, al - ws[pnx]
-                      pnx := p1x, pnx+1
-                  while al > 0 do
-                    area[_,pnx+size,p1y+size].n <- "#"
-                  else
-                    pnx
-                else if d = "L"
-                  for al := l, al - ws[pnx-1]
-                      pnx := p1x, pnx-1
-                  while al > 0 do
-                    area[_,pnx+size,p1y+size].n <- "#"
-                  else
-                    pnx
-                else
-                  p1x
-          ny := if d = "D"
-                  for al := l, al - hs[pny]
-                      pny := p1y, pny+1
-                  while al > 0 do
-                    area[_,p1x+size,pny+size].n <- "#"
-                  else
-                    pny
-                else if d = "U"
-                  for al := l, al - hs[pny-1]
-                      pny := p1y, pny-1
-                  while al > 0 do
-                    area[_,p1x+size,pny+size].n <- "#"
-                    pny
-                else
-                  p1y
+          nx0 := if d = "R"
+                   for al := l0, al - ws[pnx]
+                       pnx := p1x, pnx+1
+                   while al > 0 do
+                     area[_,pnx+size,p1y+size].n <- "#"
+                   else
+                     pnx
+                 else if d = "L"
+                   for al := l0, al - ws[pnx-1]
+                       pnx := p1x, pnx-1
+                   while al > 0 do
+                     area[_,pnx+size,p1y+size].n <- "#"
+                   else
+                     pnx
+                 else
+                   p1x
+          ny0 := if d = "D"
+                   for al := l0, al - hs[pny]
+                       pny := p1y, pny+1
+                   while al > 0 do
+                     area[_,p1x+size,pny+size].n <- "#"
+                   else
+                     pny
+                 else if d = "U"
+                   for al := l0, al - hs[pny-1]
+                       pny := p1y, pny-1
+                   while al > 0 do
+                     area[_,p1x+size,pny+size].n <- "#"
+                   else
+                     pny
+                 else
+                   p1y
         else
-          fill(x,y i32) unit =>
+          fill(x,y i64) unit =>
             if (min_x <= x <= max_x &&
                 min_y <= y <= max_y)
               if area[_,x,y].n.get = "."

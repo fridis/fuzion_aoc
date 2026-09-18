@@ -3,7 +3,7 @@ dec11_part1 is
   lm : mutate is
   input := lm ! ()->
     io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-      io.buffered lm .read_lines .filter !=""
+      io.buffered lm .read_lines.or_panic.filter !=""
         .map s->(s.codepoints.map (="#"))
   image := array2 input.count input.first.or_panic.count i,j->input[i][j]
   part1 =>

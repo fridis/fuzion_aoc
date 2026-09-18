@@ -2,10 +2,10 @@ dec2_part2 is
 
   lm : mutate is
   input := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines.filter !=""
+    io.buffered lm .read_lines.or_panic .filter !=""
 
   data := input.map (.split " "
-                     .map (.parse_i32.or_panic))
+                     .map (.parse_i64.or_panic))
 
   mono(s)  => s.map_pairs (<=)
                .map_pairs (=) ∀ id
@@ -17,13 +17,13 @@ dec2_part2 is
 
   part1 => part1 data
 
-  parts(l, r Sequence i32) =>
+  parts(l, r Sequence i64) =>
     if r.count = 1
       l : nil
     else
       rh := r.take 1
       rt := r.drop 1
-      h Sequence i32 := l++rt
+      h Sequence i64 := l++rt
       h : parts (l ++ rh) rt
 
   part2 => data.filter (x -> part1 (parts [] x) > 0)

@@ -4,10 +4,10 @@ dec4_part1 is
 
   lm : mutate is
   lines := lm ! ()->io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines .filter !=""
+    io.buffered lm .read_lines.or_panic.filter !=""
 
   card(s String) is
-    wy(i) => ((s.split ":")[1].split "|")[i].split.map (.parse_i32.or_panic)
+    wy(i) => ((s.split ":")[1].split "|")[i].split.map (.parse_i64.or_panic)
     win => wy 0
     you => wy 1
     matches => ((win.combine you (=)).filter x->x).count
@@ -16,6 +16,6 @@ dec4_part1 is
   cards := (lines.map (s->card s)).as_array
 
   part1 := cards.map (.winning)
-                .fold i32.type.sum
+                .fold i64.type.sum
 
   say "dec 4: $part1"

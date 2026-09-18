@@ -2,21 +2,21 @@ dec5_part1 =>
 
   lm : mutate is
   input := lm ! ()->(io.buffered lm .Reader.instate (io.stdin.reader lm) ()->
-    io.buffered lm .read_lines)
+    io.buffered lm .read_lines.or_panic)
 
   input1 := input.filter (s -> (s.find "|")??)
   input2 := input.filter (s -> (s.find ",")??)
 
-  is_ordered(s Sequence i32) =>
+  is_ordered(s Sequence i64) =>
     match s.first
       nil => true
-      v i32 =>
+      v i64 =>
         t := s.drop 1
         (t ∀ is_less_than v) && is_ordered t
 
   is_less_than(a,b) =>
     input1.map (e -> e.split "|"
-                      .map (.parse_i32.or_panic)
+                      .map (.parse_i64.or_panic)
                       .as_array)
           .filter (e -> e[0] = b && e[1] = a)
           .is_empty
@@ -26,7 +26,7 @@ dec5_part1 =>
   part1 =>
     (input2.map s->
       n := s.split ","
-            .map (.parse_i32.or_panic)
+            .map (.parse_i64.or_panic)
 #      say "$s {is_ordered n}"
 #      m := is_ordered n ? mid n : 0
 #      say m
