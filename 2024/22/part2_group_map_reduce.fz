@@ -17,9 +17,19 @@ dec22 is
                  .take 2001
                  .map %10
                  .sliding 5
-                 .group_map_reduce (.map_pairs (-) .as_array) (.last.or_panic) x,_->x
+                 .group_map_reduce (array i64)
+                                   i64
+                                   (container.ps_map (array i64) i64)
+                                   (.map_pairs (-) .as_array)
+                                   (.last.or_panic)
+                                   (x,_->x)
                  .items)
-      .group_map_reduce x->x.0 x->x.1 (+)
+      .group_map_reduce (array i64)
+                        i64
+                        (container.ps_map (array i64) i64)
+                        (.0)
+                        (.1)
+                        (+)
       .values
       .max
 

@@ -11,7 +11,7 @@ dec14 =>
   w := envir.Args.env[1].parse_i64.or_panic
   h := envir.Args.env[2].parse_i64.or_panic
 
-  robot(x,y,vx,vy) is
+  robot(x,y,vx,vy i64) is
     move(n) =>
       robot (x+vx*n+w*1000000)%w (y+vy*n+h*1000000)%h vx vy
     quadrant =>
