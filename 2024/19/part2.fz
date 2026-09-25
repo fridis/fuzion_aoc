@@ -8,8 +8,8 @@ dec19 =>
 
   M : mutate is
   M ! ()->
-    cachePos := (container.mutable_tree_map M String bool).empty
-    cacheCnt := (container.mutable_tree_map M String i64 ).empty
+    cachePos := (container.Mutable_Tree_Map M String bool).empty
+    cacheCnt := (container.Mutable_Tree_Map M String i64 ).empty
 
     possible(s) =>
       match cachePos.get s
