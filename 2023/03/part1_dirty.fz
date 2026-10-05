@@ -19,12 +19,11 @@ dec3_part1 is
     index [](i,j) =>
       if 0 <= i < h && 0 <= j < w then a[_,i,j] else "."
 
-  String.is_digit => $"0" <= String.this <= $"9"
-  String.is_symbol => !is_digit && String.this != $"."
+  codepoint.is_symbol => !is_ascii_digit && val != ".".val
 
   number(s1 scheme, l, c i64) is
     len := for res := 1, res+1
-           while s1[l,c+res].is_digit
+           while s1[l,c+res].is_ascii_digit
            else res
     str => s1.ls[l].substring c c+len
     public redef as_string String => "$ok" + s1.ls[l].substring c c+len
