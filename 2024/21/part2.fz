@@ -14,8 +14,8 @@ dec21 is
 
     # I did not believe both paths make a difference for small keypad,
     # convinced by (or stole solution from) https://aoc.csokavar.hu/2024/21/
-    p1 := (next.y != 0 || cur.x != 0).as_option String ve+ho+"A"
-    p2 := (next.x != 0 || cur.y != 0).as_option String ho+ve+"A"
+    p1 := (next.y != 0 || cur.x != 0).as_option ve+ho+"A"
+    p2 := (next.x != 0 || cur.y != 0).as_option ho+ve+"A"
     p1 ++ p2
 
   find_shortest(d, l) i64 : memoize => keep "$d$l" _->
