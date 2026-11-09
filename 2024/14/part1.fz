@@ -24,7 +24,7 @@ dec14 =>
   w := envir.Args.env[1].parse_i64.or_panic
   h := envir.Args.env[2].parse_i64.or_panic
 
-  product(T type : numeric, l Sequence T) => l.fold T.product
+  product(T : numeric, l Sequence T) => l.fold T.product
 
   robot(x,y,vx,vy i64) is
     public redef as_string String => "$x $y $vx $vy"
