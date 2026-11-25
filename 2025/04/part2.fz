@@ -1,6 +1,6 @@
 dec4 =>
 
-  input := io.stdin.read_string.trim.split "\n"
+  input := io.stdin.read_string.or_panic.trim.split "\n"
              .map (l -> l.codepoints.map ="@" .as_array)
              .as_array
 

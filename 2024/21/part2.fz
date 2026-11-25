@@ -1,6 +1,6 @@
 dec21 is
 
-  input := io.stdin.read_lines.filter !=""
+  input := io.stdin.read_lines.or_panic.filter !=""
 
   # overlapping both layouts, put ` ` at (0,0)
   codepoint.x => "741  <8520^v963AA>"  .find codepoint.this .or_panic / 6

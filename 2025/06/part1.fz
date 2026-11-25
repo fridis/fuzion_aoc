@@ -1,6 +1,6 @@
 dec6 =>
 
-  input := io.stdin.read_string.trim.split "\n" .map (.split " " .filter !="" .as_array) .as_array
+  input := io.stdin.read_string.or_panic.trim.split "\n" .map (.split " " .filter !="" .as_array) .as_array
   h := input.count
   w := input[0].count
   tasks := (0..(w-1)).map x->(input[h-1][x], array h-1 y->input[y][x].parse_i64.or_panic)

@@ -1,6 +1,6 @@
 dec24 =>
 
-  input := io.stdin.read_string.split "\n\n" .map (.split "\n" .filter !="")
+  input := io.stdin.read_string.or_panic.split "\n\n" .map (.split "\n" .filter !="")
   wires := (input[0].map (s -> s.split ": " |> (iw -> inpt iw[0] iw[1]="1"))         .map Wire id ++
             input[1].map (s -> s.split " "  |> (ig -> gate ig[0] ig[1] ig[2] ig[4])) .map Wire id   )
   bits := wires.map (.name) .filter (.starts_with "z") .map (.replace "z" "" .parse_i64.or_panic) .fold1 max

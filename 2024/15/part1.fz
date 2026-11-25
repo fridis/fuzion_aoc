@@ -1,6 +1,6 @@
 dec15 =>
 
-  input := io.stdin.read_string
+  input := io.stdin.read_string.or_panic
              .split "\n\n"
   input1 := input[0].split "\n" .map (.codepoints)
   input2 := input[1].replace "\n" ""

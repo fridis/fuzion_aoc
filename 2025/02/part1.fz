@@ -1,6 +1,6 @@
 dec2 =>
 
-  input := io.stdin.read_string
+  input := io.stdin.read_string.or_panic
              .split "\n"
              .first.or_panic
              .split ","

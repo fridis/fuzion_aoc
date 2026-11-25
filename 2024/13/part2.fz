@@ -1,7 +1,7 @@
 dec13 =>
 
   input := io.stdin
-             .read_string.trim
+             .read_string.or_panic.trim
              .replace "Button A: X+" ""
              .replace "Button B: X+" ""
              .replace ", Y+" " "
