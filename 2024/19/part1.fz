@@ -1,6 +1,6 @@
 dec19 =>
 
-  input := io.stdin.read_lines
+  input := io.stdin.read_lines.or_panic
   input1 := input[0].split ", " .map sarr .as_array
   input2 := input.drop 2 .filter !="" .map sarr
   sarr(s) => String.from s.utf8.as_array

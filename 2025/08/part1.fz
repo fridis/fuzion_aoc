@@ -1,7 +1,7 @@
 dec8 =>
 
   say "start"
-  input0 := io.stdin.read_string.trim.split "\n" .flat_map (.split ",") .as_array
+  input0 := io.stdin.read_string.or_panic.trim.split "\n" .flat_map (.split ",") .as_array
   say "start1"
   input1 := input0.map (.parse_i64.or_panic) .as_array
   say "start2"

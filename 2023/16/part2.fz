@@ -1,6 +1,6 @@
 dec16_part2 is
 
-  input := io.stdin.read_lines
+  input := io.stdin.read_lines.or_panic
              .filter !=""
              .map (.codepoints)
   area := array2 String _ input.count input[0].count i,j->input[i][j]

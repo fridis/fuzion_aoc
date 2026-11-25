@@ -1,6 +1,6 @@
 dec25 =>
 
-  input := io.stdin.read_string.split "\n\n" .map (.split "\n" .filter !="")
+  input := io.stdin.read_string.or_panic.split "\n\n" .map (.split "\n" .filter !="")
   locks := input.filter (x -> x[0].starts_with "#") .map (x -> (0..4).map (i -> x.filter (s -> s.substring i i+1 = "#") .count-1))
   keys  := input.filter (x -> x[0].starts_with ".") .map (x -> (0..4).map (i -> x.filter (s -> s.substring i i+1 = "#") .count-1))
 

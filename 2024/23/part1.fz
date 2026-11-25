@@ -27,7 +27,7 @@ dec23 is
   lm : mutate is
   lm ! ()->
 
-    input := io.stdin.read_lines.filter !=""
+    input := io.stdin.read_lines.or_panic.filter !=""
                      .map s->(get_edge (get_vertex (s.substring 0 2))
                                        (get_vertex (s.substring 3 5)))
 

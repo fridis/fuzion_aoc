@@ -1,6 +1,6 @@
 dec22 is
 
-  input := io.stdin.read_lines.filter !="" .map (.parse_i64.or_panic)
+  input := io.stdin.read_lines.or_panic.filter !="" .map (.parse_i64.or_panic)
 
   next(s0 i64) =>
     s1 := s0 * 64

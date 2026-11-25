@@ -1,6 +1,6 @@
 dec10 =>
 
-  input := io.stdin.read_string.trim.split "\n"
+  input := io.stdin.read_string.or_panic.trim.split "\n"
              .map (.split " ") .map data .as_array
 
   data(s) is

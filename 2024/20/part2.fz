@@ -1,7 +1,7 @@
 dec20 =>
 
   min_saving := envir.Args.env.count > 1 ? envir.Args.env[1].parse_i64.or_panic : 100
-  input := io.stdin.read_lines.filter !="" .map (.codepoints)
+  input := io.stdin.read_lines.or_panic.filter !="" .map (.codepoints)
   w := input[0].count
   h := input.count
   area := array2 w h x,y->input[y][x]

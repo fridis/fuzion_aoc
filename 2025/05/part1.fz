@@ -1,6 +1,6 @@
 dec5 =>
 
-  fr,id := io.stdin.read_string.trim.split "\n\n" .as_tuples.first.or_panic
+  fr,id := io.stdin.read_string.or_panic.trim.split "\n\n" .as_tuples.first.or_panic
   fresh := fr.split "\n" .map (.split "-" .map (.parse_i64.or_panic) .as_tuple)
   ids   := id.split "\n" .map (.parse_i64.or_panic)
 

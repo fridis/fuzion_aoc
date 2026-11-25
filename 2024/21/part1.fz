@@ -1,6 +1,6 @@
 dec21 is
 
-  input := io.stdin.read_lines.filter !="" .map (.codepoints)
+  input := io.stdin.read_lines.or_panic.filter !="" .map (.codepoints)
 
   a := i64 10
   key(v i64)

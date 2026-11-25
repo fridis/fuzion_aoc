@@ -1,6 +1,6 @@
 dec17 =>
 
-  input := io.stdin.read_lines
+  input := io.stdin.read_lines.or_panic
   get(prefx) => input.filter (.starts_with prefx) .first.or_panic.replace prefx ""
   initial_A := get "Register A: " .parse_i64.or_panic
   initial_B := get "Register B: " .parse_i64.or_panic

@@ -1,6 +1,6 @@
 dec14 =>
 
-  input0 := ((((io.stdin.read_string.trim.utf8.as_array |> (s->String.type.from s)) )))
+  input0 := ((((io.stdin.read_string.or_panic.trim.utf8.as_array |> (s->String.type.from s)) )))
   say "0: "+input0.byte_count
   input1 := (input0
              .replace "," " " |> (s->String.type.from s.utf8.as_array))

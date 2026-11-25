@@ -1,6 +1,6 @@
 dec8 =>
 
-  input := io.stdin.read_string.trim.split "\n"
+  input := io.stdin.read_string.or_panic.trim.split "\n"
              .map (.split "," .map (.parse_i64.or_panic) .as_array) .as_array
   n := input.length
   m := envir.Args.env.count < 2 ? 1000 : envir.Args.env[1].parse_i64.or_panic

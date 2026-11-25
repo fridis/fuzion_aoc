@@ -1,6 +1,6 @@
 dec24 is
 
-  input := io.stdin.read_string.split "\n\n"
+  input := io.stdin.read_string.or_panic.split "\n\n"
   in_wires := input[0].split "\n" .filter !=""
   in_gates := input[1].split "\n" .filter !=""
 

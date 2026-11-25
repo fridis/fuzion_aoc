@@ -1,6 +1,6 @@
 dec6 =>
 
-  input := io.stdin.read_string.trim.split "\n" .as_array
+  input := io.stdin.read_string.or_panic.trim.split "\n" .as_array
   h := input.length-1
 
   part1 =>

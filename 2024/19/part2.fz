@@ -1,6 +1,6 @@
 dec19 =>
 
-  input := io.stdin.read_lines
+  input := io.stdin.read_lines.or_panic
   towels := input[0].split ", " .as_array
   designs := input.drop 2 .filter !=""
 

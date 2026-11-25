@@ -1,6 +1,6 @@
 dec7 =>
 
-  input := io.stdin.read_string.trim.split "\n" .map (.codepoints.as_array) .as_array
+  input := io.stdin.read_string.or_panic.trim.split "\n" .map (.codepoints.as_array) .as_array
   w := input[0].count
 
   part1 =>
