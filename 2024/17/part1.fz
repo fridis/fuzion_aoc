@@ -30,7 +30,7 @@ dec17 =>
         else if ins = 5 then regs s.a s.b     s.c s.pc+2                s.out++[combo%8]
         else if ins = 6 then regs s.a div     s.c s.pc+2                s.out
         else if ins = 7 then regs s.a s.b     div s.pc+2                s.out
-        else panic "unkown ins $ins"
+        else panic "unknown ins $ins"
       say ["adv","bxl","bst","jnz","bxc","out","bdv","cdv","777"][ins]+" "+new_regs
     else
       s.out.as_string ","

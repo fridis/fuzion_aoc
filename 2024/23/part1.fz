@@ -37,7 +37,7 @@ dec23 is
       edges := input.reduce (container.Set edge) (container.ps_set edge).empty (s,e -> s.add e)
       for e in edges.as_array do
 #        say "edge: $e"
-#        say "{e.v} as edges to {e.v.edges_to}"
+#        say "{e.v} has edges to {e.v.edges_to}"
         v := e.v; w := e.w
         for x in v.edges_to.get.as_array do
           if x > w && x != w && w.edges_to.get.contains x then
