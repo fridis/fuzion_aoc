@@ -3,7 +3,7 @@ dec9 =>
   input := io.stdin.read_string.trim.split "\n"
              .map (.split "," .map (.parse_i64.or_panic) .as_tuple) .as_array
 
-  # area or rectangle with corners a and b
+  # area of rectangle with corners a and b
   rect(a,b) => ((|a.0-b.0|)+1)*((|a.1-b.1|)+1)
 
   part1 =>
